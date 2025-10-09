@@ -39,7 +39,7 @@ jobs:
       - name: Export CSS/TW from K1.juce tokens
         working-directory: K1.juce
         run: |
-          python3 tools/tokens/export_css.py --src tokens/src/dark.json --out tokens/build/web
+          python3 tools/tokens/export_css.py --root tokens --format all --output tokens/build/web || python3 tools/tokens/export_css.py --src tokens/src/dark.json --out tokens/build/web
 
       - name: Copy tokens into site
         run: |
