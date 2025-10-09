@@ -12,33 +12,41 @@ jobs:
   sync_and_build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout site
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout K1.juce tokens (private)
+        uses: actions/checkout@v4
         with:
-          node-version: '20'
+          repository: synqing/K1.juce
+          ref: main
+          path: K1.juce
+          token: ${{ secrets.K1_JUCE_PAT }}
+          fetch-depth: 1
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Clone K1.juce tokens
-        run: |
-          git clone --depth=1 https://github.com/synqing/K1.juce ../K1.juce
-
       - name: Export CSS/TW from K1.juce tokens
-        working-directory: ../K1.juce
+        working-directory: K1.juce
         run: |
           python3 tools/tokens/export_css.py --src tokens/src/dark.json --out tokens/build/web
 
-      - name: Link tokens into site
+      - name: Copy tokens into site
         run: |
           rm -rf tokens-web
-          ln -s ../K1.juce/tokens/build/web tokens-web
+          mkdir -p tokens-web/css
+          cp -R K1.juce/tokens/build/web/css/* tokens-web/css/
+          cp K1.juce/tokens/build/web/tailwind.config.ts tokens-web/tailwind.config.ts
+          cp K1.juce/tokens/build/web/shadcn-theme.css tokens-web/shadcn-theme.css
           ls -la tokens-web
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install deps
         run: |
