@@ -1,0 +1,56 @@
+name: Sync Tokens from K1.juce
+
+on:
+  repository_dispatch:
+    types: [k1_tokens_updated]
+  workflow_dispatch:
+
+jobs:
+  sync_and_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Clone K1.juce tokens
+        run: |
+          git clone --depth=1 https://github.com/synqing/K1.juce ../K1.juce
+
+      - name: Export CSS/TW from K1.juce tokens
+        working-directory: ../K1.juce
+        run: |
+          python3 tools/tokens/export_css.py --src tokens/src/dark.json --out tokens/build/web
+
+      - name: Link tokens into site
+        run: |
+          rm -rf tokens-web
+          ln -s ../K1.juce/tokens/build/web tokens-web
+          ls -la tokens-web
+
+      - name: Install deps
+        run: |
+          if [ -f package-lock.json ]; then npm ci; elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm i --frozen-lockfile; elif [ -f yarn.lock ]; then corepack enable && yarn install --frozen-lockfile; else npm install; fi
+
+      - name: Build site
+        run: |
+          if npm run | grep -q "build"; then npm run build; else echo "No build script"; fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: |
+            .next
+            dist
+            out
+          if-no-files-found: ignore
