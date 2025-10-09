@@ -39,6 +39,22 @@ jobs:
           cp K1.juce/tokens/build/web/tailwind.config.ts tokens-web/tailwind.config.ts
           cp K1.juce/tokens/build/web/shadcn-theme.css tokens-web/shadcn-theme.css
           ls -la tokens-web
+      - name: Create Tailwind JS preset shim
+        run: |
+          cat > tokens-web/tailwind-preset.cjs <<'JS'
+          module.exports = {
+            theme: {
+              extend: {
+                colors: {
+                  primary: 'var(--color-brand-primary)',
+                  background: 'var(--color-bg-surface)',
+                  foreground: 'var(--color-fg-primary)'
+                },
+                borderRadius: { md: 'var(--radius-base)' }
+              }
+            }
+          }
+          JS
 
       - name: Create static tokens demo (public/index.html)
         run: |
