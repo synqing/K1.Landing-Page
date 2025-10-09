@@ -2,6 +2,8 @@ name: Sync Tokens from K1.juce
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 on:
   repository_dispatch:
@@ -38,9 +40,10 @@ jobs:
           cp K1.juce/tokens/build/web/shadcn-theme.css tokens-web/shadcn-theme.css
           ls -la tokens-web
 
-      - name: Create tokens demo page
+      - name: Create static tokens demo (public/index.html)
         run: |
-          cat > tokens-demo.html <<'HTML'
+          mkdir -p public
+          cat > public/index.html <<'HTML'
           <!doctype html>
           <html lang="en">
           <head>
@@ -58,12 +61,13 @@ jobs:
                       border-radius: var(--radius-base); padding: 8px 12px; text-decoration:none; margin-top: 8px; }
               .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; margin-top:16px; }
               .sw  { border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle); height: 48px; }
+              code { background: rgba(255,255,255,0.08); padding: 2px 4px; border-radius: 4px; }
             </style>
           </head>
           <body>
             <div class="card">
               <h1>K1 Tokens Demo</h1>
-              <p>CSS variables from tokens-web/css/variables.css</p>
+              <p>CSS variables exported from K1.juce → <code>tokens-web/</code></p>
               <a class="btn" href="#">Primary</a>
               <div class="grid">
                 <div class="sw" style="background:var(--color-bg-app)"></div>
@@ -75,27 +79,44 @@ jobs:
           </body>
           </html>
           HTML
+          cp -R tokens-web public/tokens-web
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install deps
+      - name: Install deps (if site exists)
         run: |
           if [ -f package.json ]; then             if [ -f package-lock.json ]; then npm ci;             elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm i --frozen-lockfile;             elif [ -f yarn.lock ]; then corepack enable && yarn install --frozen-lockfile;             else npm install; fi;           else echo "No package.json, skipping install"; fi
 
-      - name: Build site
+      - name: Build site (if script exists)
         run: |
           if [ -f package.json ]; then             if npm run | grep -q "build"; then npm run build; else echo "No build script"; fi;           else echo "No package.json, skipping build"; fi
 
-      - name: Upload build artifact
+      - name: Upload build artifact (debug)
         uses: actions/upload-artifact@v4
         with:
           name: site-build
           path: |
+            public
             .next
             dist
             out
-            tokens-demo.html
-            tokens-web
           if-no-files-found: ignore
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: sync_and_build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
