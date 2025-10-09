@@ -38,6 +38,43 @@ jobs:
           cp K1.juce/tokens/build/web/shadcn-theme.css tokens-web/shadcn-theme.css
           ls -la tokens-web
 
+      - name: Create tokens demo page
+        run: |
+          cat > tokens-demo.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>K1 Tokens Demo</title>
+            <link rel="stylesheet" href="tokens-web/css/variables.css" />
+            <link rel="stylesheet" href="tokens-web/shadcn-theme.css" />
+            <style>
+              :root { font-family: -apple-system, system-ui, Segoe UI, Inter, sans-serif; }
+              body { background: var(--color-bg-surface); color: var(--color-fg-primary); margin: 0; padding: 24px; }
+              .card { background: var(--color-bg-surface-elevated); border: 1px solid var(--color-border-subtle);
+                      border-radius: var(--radius-base); padding: 16px; max-width: 720px; }
+              .btn  { display:inline-block; background: var(--color-brand-primary); color: var(--color-fg-primary);
+                      border-radius: var(--radius-base); padding: 8px 12px; text-decoration:none; margin-top: 8px; }
+              .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; margin-top:16px; }
+              .sw  { border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle); height: 48px; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1>K1 Tokens Demo</h1>
+              <p>CSS variables from tokens-web/css/variables.css</p>
+              <a class="btn" href="#">Primary</a>
+              <div class="grid">
+                <div class="sw" style="background:var(--color-bg-app)"></div>
+                <div class="sw" style="background:var(--color-bg-surface)"></div>
+                <div class="sw" style="background:var(--color-brand-primary)"></div>
+                <div class="sw" style="background:var(--color-status-success)"></div>
+              </div>
+            </div>
+          </body>
+          </html>
+          HTML
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -59,4 +96,6 @@ jobs:
             .next
             dist
             out
+            tokens-demo.html
+            tokens-web
           if-no-files-found: ignore
