@@ -25,6 +25,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Debug K1.juce tokens tree
+        working-directory: K1.juce
+        run: |
+          set -euxo pipefail
+          python3 -V
+          ls -la
+          ls -la tools/tokens || true
+          ls -la tokens || true
+          ls -la tokens/src || true
+          test -f tokens/src/dark.json || (echo 'dark.json missing' && exit 1)
 
       - name: Export CSS/TW from K1.juce tokens
         working-directory: K1.juce
