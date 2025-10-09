@@ -15,7 +15,9 @@ jobs:
       - name: Checkout site
         uses: actions/checkout@v4
 
-      - name: Checkout K1.juce tokens (private)
+      # Prefer PAT if provided (private repo); otherwise public clone
+      - name: Checkout K1.juce with PAT
+        if: ${{ secrets.K1_JUCE_PAT != '' }}
         uses: actions/checkout@v4
         with:
           repository: synqing/K1.juce
@@ -23,6 +25,11 @@ jobs:
           path: K1.juce
           token: ${{ secrets.K1_JUCE_PAT }}
           fetch-depth: 1
+
+      - name: Checkout K1.juce (public)
+        if: ${{ secrets.K1_JUCE_PAT == '' }}
+        run: |
+          git clone --depth=1 https://github.com/synqing/K1.juce K1.juce
 
       - name: Setup Python
         uses: actions/setup-python@v5
