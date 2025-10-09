@@ -1,5 +1,8 @@
 name: Sync Tokens from K1.juce
 
+permissions:
+  contents: read
+
 on:
   repository_dispatch:
     types: [k1_tokens_updated]
