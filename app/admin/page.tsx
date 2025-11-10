@@ -28,11 +28,15 @@ export default function AdminPage() {
       const wl = await fetch('/api/waitlist', { cache: 'no-store' }).then((r) => r.json())
       setCount(wl.count ?? 0)
       setLast(wl.last ?? [])
-    } catch {}
+    } catch (error) {
+      console.error('[admin] Waitlist load failed:', error)
+    }
     try {
       const u = await fetch('/api/units', { cache: 'no-store' }).then((r) => r.json())
       setUnits(u)
-    } catch {}
+    } catch (error) {
+      console.error('[admin] Units load failed:', error)
+    }
   }
 
   useEffect(() => {

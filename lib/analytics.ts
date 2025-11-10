@@ -17,8 +17,12 @@ function send(event: string, props: EventProps) {
     const key = 'k1lp:events'
     const arr = JSON.parse(localStorage.getItem(key) || '[]')
     arr.push(payload)
-    localStorage.setItem(key, JSON.stringify(arr).slice(-4000))
-  } catch {}
+    // Keep last 100 events (not 4000 chars which corrupts JSON)
+    const trimmed = arr.slice(-100)
+    localStorage.setItem(key, JSON.stringify(trimmed))
+  } catch (error) {
+    console.error('[analytics] localStorage failed:', error)
+  }
 
   // Optional: fire-and-forget to external analytics if configured
   try {
@@ -26,7 +30,9 @@ function send(event: string, props: EventProps) {
       const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
       navigator.sendBeacon(ENDPOINT, blob)
     }
-  } catch {}
+  } catch (error) {
+    console.error('[analytics] sendBeacon failed:', error)
+  }
 
   // Always echo to console in dev for visibility
   if (process.env.NODE_ENV !== 'production') {

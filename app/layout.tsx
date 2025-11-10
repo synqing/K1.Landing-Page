@@ -1,5 +1,6 @@
 import './globals.css'
 import type { ReactNode } from 'react'
+import { CONFIG } from '@/lib/site-config'
 
 export const metadata = {
   title: 'K1-Lightwave — Founders Edition',
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           description: 'Dual edge-lit LGP with 320 addressable LEDs on ESP32-S3',
           brand: { '@type': 'Brand', name: 'K1-Lightwave' },
           offers: {
-            '@type': 'Offer', priceCurrency: 'USD', price: '249.00', availability: 'https://schema.org/PreOrder'
+            '@type': 'Offer', priceCurrency: 'USD', price: CONFIG.price.toFixed(2), availability: 'https://schema.org/PreOrder'
           }
         })}} />
         {children}

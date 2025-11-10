@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { readFile, writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
+import { rateLimit, getRateLimitIdentifier } from '@/lib/rate-limit'
 
 export async function GET() {
   try {
@@ -8,12 +9,28 @@ export async function GET() {
     const raw = await readFile(p, 'utf-8')
     const data = JSON.parse(raw)
     return NextResponse.json(data)
-  } catch (e) {
+  } catch (error) {
+    console.error('[units] GET failed:', error)
     return NextResponse.json({ unitsTotal: 100, unitsSold: 0, error: 'fallback' })
   }
 }
 
 export async function POST(req: Request) {
+  // Authentication check (server-side only)
+  const authHeader = req.headers.get('authorization')
+  const serverKey = process.env.ADMIN_KEY // NOT NEXT_PUBLIC_
+
+  if (!serverKey || authHeader !== `Bearer ${serverKey}`) {
+    console.warn('[units] Unauthorized POST attempt')
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
+  // Rate limiting: 10 requests per minute
+  const identifier = getRateLimitIdentifier(req)
+  if (!rateLimit(identifier, { max: 10, window: 60000 })) {
+    return NextResponse.json({ error: 'rate_limit_exceeded' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const total = Number.isFinite(body?.unitsTotal) ? Number(body.unitsTotal) : undefined
@@ -30,7 +47,9 @@ export async function POST(req: Request) {
     try {
       const raw = await readFile(p, 'utf-8')
       current = JSON.parse(raw)
-    } catch {}
+    } catch (error) {
+      console.error('[units] Current read failed:', error)
+    }
     const next = {
       ...current,
       ...(total !== undefined ? { unitsTotal: total } : {}),
@@ -42,7 +61,8 @@ export async function POST(req: Request) {
     }
     await writeFile(p, JSON.stringify(next, null, 2), 'utf-8')
     return NextResponse.json(next)
-  } catch {
+  } catch (error) {
+    console.error('[units] POST failed:', error)
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
 }
