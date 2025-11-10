@@ -15,6 +15,7 @@ Strategies, action plans, and production schedules driving the K1-Lightwave land
 - **K1-LP.Plan_ACTION_ITEMS_EXECUTION_v1.0_20251110.md** — Prioritized execution checklist.
 - **K1-LP.Plan_ASSET_PRODUCTION_v1.0_20251110.md** — Photo/video production workflow.
 - **K1-LP.Plan_DESIGN_VARIANT_STRATEGY_v1.0_20251110.md** — Variant plan for experimenting with layouts.
+ - **K1-LP.Plan_ASSET_INTEGRATION_AND_CHECKOUT_CHECKLIST_v1.0_20251110.md** — End‑to‑end checklist for media integration and checkout.
 
 ## Quick Navigation
 
