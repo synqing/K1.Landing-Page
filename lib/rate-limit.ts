@@ -15,6 +15,17 @@ const cache = new LRUCache<string, number>({
   ttl: defaultOptions.window,
 })
 
+/**
+ * Checks if a given identifier has exceeded a request limit within a time window.
+ *
+ * This function uses an in-memory LRU cache to track the number of requests
+ * for a given identifier. If the count exceeds the configured maximum, it
+ * returns `false`; otherwise, it increments the count and returns `true`.
+ *
+ * @param {string} identifier - A unique string for the entity being rate-limited (e.g., an IP address or API key).
+ * @param {RateLimitOptions} [options={}] - Optional configuration for `max` requests and `window` duration in milliseconds.
+ * @returns {boolean} `true` if the request is within the limit, `false` otherwise.
+ */
 export function rateLimit(
   identifier: string,
   options: RateLimitOptions = {}
@@ -32,6 +43,15 @@ export function rateLimit(
   return true
 }
 
+/**
+ * Extracts a unique identifier from an incoming request for rate-limiting purposes.
+ *
+ * It checks for common proxy headers like `x-forwarded-for` and `x-real-ip`
+ * to determine the original client IP address.
+ *
+ * @param {Request} req - The incoming `Request` object.
+ * @returns {string} The determined identifier (e.g., IP address) or 'unknown' if not found.
+ */
 export function getRateLimitIdentifier(req: Request): string {
   // Try to get real IP from headers (behind proxy/CDN)
   const forwarded = req.headers.get('x-forwarded-for')

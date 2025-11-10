@@ -3,6 +3,21 @@ import { useEffect, useState } from 'react'
 import { CONFIG } from './site-config'
 import { analytics } from './analytics'
 
+/**
+ * A React hook that provides the number of remaining units.
+ *
+ * This hook is responsible for fetching the latest count of total and sold units
+ * to calculate the number of units still available. It follows a layered approach:
+ * 1. Initializes with compile-time values from `CONFIG`.
+ * 2. Fetches the latest data from the `/api/units` endpoint.
+ * 3. Falls back to a static `/data/units.json` file if the API fails.
+ * 4. Uses the initial `CONFIG` values if both fetch attempts fail.
+ *
+ * It polls for new data every 60 seconds to keep the count fresh. It also
+ * sends an analytics event whenever the `remaining` count changes.
+ *
+ * @returns {{ remaining: number }} An object containing the number of units remaining.
+ */
 export function useUnitCounter() {
   const [remaining, setRemaining] = useState(CONFIG.unitsTotal - CONFIG.unitsSold)
 

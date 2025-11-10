@@ -24,6 +24,17 @@ export const metadata = {
   },
 }
 
+/**
+ * The root layout for the application.
+ *
+ * This component wraps all pages and provides the basic HTML structure,
+ * including the `<html>` and `<body>` tags. It also injects the site's
+ * manifest and a JSON-LD snippet for rich search results.
+ *
+ * @param {object} props - The component's props.
+ * @param {ReactNode} props.children - The child components to render within the layout.
+ * @returns {JSX.Element} The rendered root layout.
+ */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">

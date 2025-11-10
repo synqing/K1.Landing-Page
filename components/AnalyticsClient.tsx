@@ -3,6 +3,16 @@ import { useEffect } from 'react'
 import { analytics } from '@/lib/analytics'
 import { useExperiment } from '@/lib/experiments'
 
+/**
+ * A client-side component that handles analytics tracking.
+ *
+ * This component is responsible for tracking page views and scroll depth. It
+ * uses the `useExperiment` hook to determine which variants of A/B tests are
+ * currently active and includes this information in the `page_view` event.
+ *
+ * This component renders nothing to the DOM.
+ * @returns {null} This component does not render any UI.
+ */
 export default function AnalyticsClient() {
   const heroCta = useExperiment('hero_cta', ['reserve', 'secure', 'split'])
   const specs = useExperiment('specs_placement', ['overlay', 'card'])

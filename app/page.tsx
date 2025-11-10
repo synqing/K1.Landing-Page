@@ -7,6 +7,15 @@ import Community from '@/components/Community'
 import Footer from '@/components/Footer'
 import AnalyticsClient from '@/components/AnalyticsClient'
 
+/**
+ * The main page component for the application's root route.
+ *
+ * This component assembles the various sections of the landing page,
+ * including the Hero, Hardware Showcase, FAQ, and Footer. It also
+ * includes the `AnalyticsClient` component to enable tracking.
+ *
+ * @returns {JSX.Element} The rendered main page.
+ */
 export default function Page() {
   return (
     <main className="bg-flow">

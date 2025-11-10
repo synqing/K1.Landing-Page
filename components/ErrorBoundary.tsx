@@ -1,16 +1,35 @@
 'use client'
 import { Component, type ReactNode } from 'react'
 
+/**
+ * Props for the ErrorBoundary component.
+ * @typedef {object} Props
+ * @property {ReactNode} children - The child components to render within the boundary.
+ * @property {ReactNode} [fallback] - An optional fallback UI to render when an error is caught.
+ */
 type Props = {
   children: ReactNode
   fallback?: ReactNode
 }
 
+/**
+ * State for the ErrorBoundary component.
+ * @typedef {object} State
+ * @property {boolean} hasError - Indicates if an error has been caught.
+ * @property {Error} [error] - The caught error instance.
+ */
 type State = {
   hasError: boolean
   error?: Error
 }
 
+/**
+ * A React component that catches JavaScript errors in its child component tree.
+ *
+ * This component logs the errors and displays a fallback UI instead of the
+ * component tree that crashed. It can be configured with a custom fallback
+ * component, or it will render a default error screen.
+ */
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props)

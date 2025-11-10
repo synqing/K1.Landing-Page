@@ -1,6 +1,14 @@
 import { CONFIG } from '@/lib/site-config'
 import EmailCapture from '@/components/EmailCapture'
 
+/**
+ * A component that renders the community section.
+ *
+ * This section encourages users to join the community by providing links
+ * to Discord and GitHub, and includes an email capture form.
+ *
+ * @returns {JSX.Element} The rendered community section.
+ */
 export default function Community() {
   return (
     <section className="container max-w-content mx-auto p-6 py-16">

@@ -4,6 +4,19 @@ import { useUnitCounter } from '@/lib/unit-counter'
 import { useExperiment } from '@/lib/experiments'
 import { analytics } from '@/lib/analytics'
 
+/**
+ * A component that renders the pricing and scarcity section.
+ *
+ * This component displays the product price and communicates a sense of
+ * urgency by showing the number of remaining units. It dynamically adjusts
+ * the call-to-action (CTA) button and pricing details to reflect the
+ * availability of a split payment option.
+ *
+ * It uses the `useUnitCounter` hook for real-time unit counts and the
+ * `useExperiment` hook to maintain CTA consistency with other components.
+ *
+ * @returns {JSX.Element} The rendered pricing and scarcity section.
+ */
 export default function PricingScarcity() {
   const { remaining } = useUnitCounter()
   const ctaVariant = useExperiment('hero_cta', ['reserve', 'secure', 'split'])

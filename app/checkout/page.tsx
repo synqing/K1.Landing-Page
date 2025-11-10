@@ -1,3 +1,11 @@
+/**
+ * A component that renders the checkout page.
+ *
+ * This is currently a placeholder page that informs users about the upcoming
+ * checkout integration. It provides a link to return to the main site.
+ *
+ * @returns {JSX.Element} The rendered checkout page.
+ */
 export default function Checkout() {
   return (
     <main className="container max-w-content mx-auto p-6 py-16">

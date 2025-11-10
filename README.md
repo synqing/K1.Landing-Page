@@ -47,7 +47,9 @@ npm run dev   # http://localhost:3000
 
 ### Minimal API routes
 - `POST /api/waitlist` — Accepts `{ email }`; stores entries in-memory (dev/server deploy). The Email Capture form uses this endpoint with local fallback.
+- `GET /api/waitlist` — Returns the total number of waitlist entries and the 20 most recent entries (with masked emails).
 - `GET /api/units` — Returns the current unit totals by reading `public/data/units.json`.
+- `POST /api/units` — Updates the number of units sold. This is a protected endpoint that requires an admin key.
 
 For static hosting, these routes won’t be available; the UI will gracefully fallback to client-only behavior.
 
@@ -72,3 +74,15 @@ Summarized from `docs/action-items.md`:
 - **Week 3+**: Fill any asset gaps with 3D renders or AI-generated supporting imagery, then push final layout/code parity in Next.
 
 Stay honest about the V1 state, highlight the co-creator program, and always show technical credibility (specs, open-source links, community proof) above the fold.
+
+## Project Structure
+
+The codebase is organized into the following main directories:
+
+-   **`app/`**: Contains the core application logic, routing, and UI. Each subdirectory corresponds to a route, and the `page.tsx` file within it is the entry point for that route. The `layout.tsx` file defines the global layout. The `api/` subdirectory contains the serverless functions that power the backend.
+-   **`components/`**: Contains all the React components used throughout the application. Each component is in its own file and is responsible for a specific piece of the UI.
+-   **`lib/`**: Contains the application's core logic, including analytics, environment variable validation, and storage management.
+-   **`docs/`**: Contains the project's documentation, including strategy, structure, and action items.
+-   **`public/`**: Contains static assets, such as images and fonts.
+
+All functions, components, and classes are documented with JSDoc comments. For more detailed information about a specific part of the codebase, please refer to the docstrings within the relevant files.

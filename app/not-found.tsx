@@ -1,5 +1,14 @@
 import Link from 'next/link'
 
+/**
+ * A component that renders the 404 "Not Found" page.
+ *
+ * This component is displayed by Next.js when a user navigates to a route
+ * that does not exist. It provides a clear message and a link to return
+ * to the homepage.
+ *
+ * @returns {JSX.Element} The rendered 404 page.
+ */
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">

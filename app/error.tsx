@@ -1,5 +1,19 @@
 'use client'
 
+/**
+ * A component that renders as a fallback UI when an error is thrown.
+ *
+ * This component is used by Next.js to gracefully handle runtime errors
+ * in a route segment. It displays a user-friendly message and provides
+ * options to retry the action or navigate to the homepage.
+ *
+ * In development mode, it also displays detailed error information.
+ *
+ * @param {object} props - The component's props.
+ * @param {Error & { digest?: string }} props.error - The error that was thrown.
+ * @param {() => void} props.reset - A function to reset the error boundary and re-render the component.
+ * @returns {JSX.Element} The rendered error page.
+ */
 export default function Error({
   error,
   reset,

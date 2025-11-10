@@ -1,3 +1,20 @@
+/**
+ * @typedef {object} FAQItem
+ * @property {string} q - The question for the FAQ.
+ * @property {string} a - The answer to the FAQ question.
+ */
+
+/**
+ * @typedef {object} ProductInfo
+ * @property {string} name - The name of the product.
+ * @property {string} description - A brief description of the product.
+ */
+
+/**
+ * An object containing copy text for the application.
+ * This includes frequently asked questions and product information.
+ * @type {{faq: FAQItem[], product: ProductInfo}}
+ */
 export const COPY = {
   faq: [
     {

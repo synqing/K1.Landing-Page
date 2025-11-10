@@ -1,3 +1,12 @@
+/**
+ * A component that renders the hardware showcase section.
+ *
+ * This section highlights the key hardware features of the product, such as
+ * the dual edge-lit LGP and addressable LEDs. It is designed with a grid
+ * layout that includes a placeholder for a large product video.
+ *
+ * @returns {JSX.Element} The rendered hardware showcase section.
+ */
 export default function HardwareShowcase() {
   return (
     <section id="learn" className="container max-w-content mx-auto p-6 py-16">

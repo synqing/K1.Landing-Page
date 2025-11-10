@@ -1,6 +1,18 @@
 "use client"
 import { useExperiment } from '@/lib/experiments'
 
+/**
+ * A component that renders the "What Ships Now" and "Coming Soon" sections.
+ *
+ * This component uses a sticky positioning on larger screens for the "What Ships Now"
+ * section, keeping it visible while the user scrolls through the "Coming Soon"
+ * and "Quick Specs" cards.
+ *
+ * It utilizes the `useExperiment` hook to conditionally render the "Quick Specs"
+ * as a card, based on the active A/B test variant.
+ *
+ * @returns {JSX.Element} The rendered vision and roadmap section.
+ */
 export default function VisionSticky() {
   const placement = useExperiment('specs_placement', ['overlay', 'card'])
 
