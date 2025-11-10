@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Variant strategy outlining A/B/C landing page explorations
+---
+
 # K1-Lightwave: 3 Design Variant Strategy
 ## Research-Backed Design Proposals for A/B/C Testing
 

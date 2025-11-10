@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Quick reference catalog of LED/lighting landing page design patterns
+---
+
 # LED/Lighting Landing Page Design Patterns - Quick Reference
 
 ## Visual Design Comparison
@@ -465,6 +472,6 @@ From competitor analysis, track:
 
 ---
 
-**Reference:** competitor-design-analysis.md for detailed findings
+**Reference:** docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md for detailed findings
 **Last Updated:** November 2025
 **K1 Status:** Pre-launch, First 100 units

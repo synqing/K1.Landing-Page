@@ -4,7 +4,7 @@ const repo = process.env.GITHUB_REPOSITORY ? process.env.GITHUB_REPOSITORY.split
 const basePath = isCI && repo ? `/${repo}` : ''
 
 const nextConfig = {
-  output: 'export',
+  // SSR mode (API routes enabled). For static hosting, re-enable `output: 'export'`.
   images: { unoptimized: true },
   trailingSlash: true,
   basePath,

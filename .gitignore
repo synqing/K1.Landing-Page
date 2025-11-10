@@ -6,3 +6,4 @@ dist/
 
 # Deprecated files directory
 .deprecated/
+.data/

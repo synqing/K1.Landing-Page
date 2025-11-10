@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Strategy and positioning for the K1-Lightwave Founder's Edition landing page
+---
+
 # K1-Lightwave Landing Page Strategy
 
 ## Executive Summary
@@ -261,4 +268,4 @@ Pre-launch landing page for K1-Lightwave Founder's Edition: selling 100 units fo
 
 ## Next Steps
 
-See `docs/action-items.md` for prioritized execution plan.
+See `docs/04-planning/K1-LP.Plan_ACTION_ITEMS_EXECUTION_v1.0_20251110.md` for the prioritized execution plan.

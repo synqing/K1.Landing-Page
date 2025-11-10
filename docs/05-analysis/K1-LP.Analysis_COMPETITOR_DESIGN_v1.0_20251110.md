@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Comparative analysis of LED/lighting landing page design patterns
+---
+
 # LED/Lighting Product Landing Page Design Analysis
 
 ## Executive Summary
@@ -599,7 +606,7 @@ K1 is rare: A **maker-audience product with consumer appeal**. This means:
 
 Based on competitor analysis:
 
-**Current K1 Palette** (from landing-page-structure.md):
+**Current K1 Palette** (from docs/01-architecture/K1-LP.Arch_LANDING_PAGE_STRUCTURE_v1.0_20251110.md):
 - Dark background: #1C2130 ✓ (matches Elgato, Nanoleaf, Philips Hue premium aesthetic)
 - Gold accent: #FFB84D ✓ (matches Elgato's professional tone)
 - Green (success): #22DD88 ✓ (signals maker-friendly, technical)

@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Canonical Aura.build prompt for generating the K1-LP landing page layout
+---
+
 # Aura.build Prompt for K1-Lightwave Landing Page
 
 **Ready to paste into Aura.build**
@@ -511,7 +518,7 @@ Aura should generate:
 ## Next Steps After Generation
 
 1. Export HTML from Aura
-2. See `docs/action-items.md` for integration steps
+2. See `docs/04-planning/K1-LP.Plan_ACTION_ITEMS_EXECUTION_v1.0_20251110.md` for integration steps
 3. Replace placeholders with real assets
 4. Set up payment processing
 5. Launch and test

@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Production workflow for landing page photo, video, and supplemental assets
+---
+
 # K1-Lightwave Asset Production Plan
 
 Complete workflow for producing all visual assets using A7S III camera, 3D rendering (STL/STEP files), and AI generation (Gemini Ultra).
@@ -746,4 +753,4 @@ Before finalizing each asset:
 4. Gather feedback, iterate
 5. Complete full production (Weeks 2-4) as needed
 
-See `docs/action-items.md` for execution checklist.
+See `docs/04-planning/K1-LP.Plan_ACTION_ITEMS_EXECUTION_v1.0_20251110.md` for the execution checklist.

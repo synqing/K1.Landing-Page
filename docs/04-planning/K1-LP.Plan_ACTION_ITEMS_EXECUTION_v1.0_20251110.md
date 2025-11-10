@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Execution checklist for K1-Lightwave landing page launch
+---
+
 # K1-Lightwave Action Items
 
 Prioritized execution checklist for launching the Founder's Edition landing page.
@@ -44,7 +51,7 @@ Prioritized execution checklist for launching the Founder's Edition landing page
 #### **Day 3: Landing Page Integration (2 hours)**
 
 - [ ] Generate landing page in Aura
-  - Copy prompt from `docs/aura-prompt.md`
+  - Copy prompt from `docs/07-resources/K1-LP.Res_AURA_PROMPT_v1.0_20251110.md`
   - Paste into Aura.build
   - Generate and review
 
@@ -445,10 +452,10 @@ Before launching, finalize:
 ## 📞 Need Help?
 
 Reference these docs:
-- Strategy: `docs/landing-page-strategy.md`
-- Structure: `docs/landing-page-structure.md`
-- Assets: `docs/asset-production-plan.md`
-- Aura Prompt: `docs/aura-prompt.md`
+- Strategy: `docs/04-planning/K1-LP.Plan_LANDING_PAGE_STRATEGY_v1.0_20251110.md`
+- Structure: `docs/01-architecture/K1-LP.Arch_LANDING_PAGE_STRUCTURE_v1.0_20251110.md`
+- Assets: `docs/04-planning/K1-LP.Plan_ASSET_PRODUCTION_v1.0_20251110.md`
+- Aura Prompt: `docs/07-resources/K1-LP.Res_AURA_PROMPT_v1.0_20251110.md`
 
 ---
 

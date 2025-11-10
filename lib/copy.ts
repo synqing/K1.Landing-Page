@@ -1,0 +1,25 @@
+export const COPY = {
+  faq: [
+    {
+      q: 'Is V1 perfect?',
+      a: 'No. V1 is functional, not flashy. You get 12 presets, music‑reactive mode, Wi‑Fi control, and open‑source firmware + schematics.'
+    },
+    {
+      q: 'Can I hack it?',
+      a: 'Yes. ESP32‑S3, open firmware, and community support. PRs welcome.'
+    },
+    {
+      q: 'Does it work with WLED?',
+      a: 'WLED compatibility is planned; early adopters help prioritize. Firmware is open, and integrations are on the roadmap.'
+    },
+    {
+      q: 'What is the warranty?',
+      a: '30‑day money‑back guarantee and 1‑year hardware warranty.'
+    }
+  ],
+  product: {
+    name: 'K1‑Lightwave — Founder\'s Edition',
+    description: 'First 100 units. Dual edge‑lit LGP, 320 addressable LEDs, ESP32‑S3. Open hardware. V1 ships March 2026.',
+  }
+}
+

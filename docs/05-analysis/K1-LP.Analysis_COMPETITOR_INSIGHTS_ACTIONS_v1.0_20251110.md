@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Action items translating competitor insights into K1-LP execution steps
+---
+
 # K1-Lightwave: Competitor Insights Action Items
 
 Based on comprehensive analysis of 7 competitor landing pages, here are specific, actionable recommendations for K1's landing page implementation.
@@ -700,10 +707,10 @@ These should appear in every major section. Never soft-sell the advantages.
 ---
 
 **Documents Referenced:**
-- competitor-design-analysis.md
-- design-patterns-quick-reference.md
-- landing-page-structure.md
-- landing-page-strategy.md
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md`
+- `docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md`
+- `docs/01-architecture/K1-LP.Arch_LANDING_PAGE_STRUCTURE_v1.0_20251110.md`
+- `docs/04-planning/K1-LP.Plan_LANDING_PAGE_STRATEGY_v1.0_20251110.md`
 
 **Last Updated:** November 2025
 **K1 Project Phase:** Pre-launch optimization

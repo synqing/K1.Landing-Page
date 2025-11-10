@@ -1,0 +1,10 @@
+{
+  "name": "K1-Lightwave — Founders Edition",
+  "short_name": "K1-Lightwave",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1C2130",
+  "theme_color": "#1C2130",
+  "icons": []
+}
+

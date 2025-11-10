@@ -1,10 +1,17 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Index for the competitor analysis document set supporting K1-LP
+---
+
 # LED/Lighting Competitor Analysis - Document Index
 
 Complete analysis of 7 competitor landing pages and specific recommendations for K1-Lightwave.
 
 ## Quick Navigation
 
-### Start Here: ANALYSIS-SUMMARY.md (12KB)
+### Start Here: docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (12KB)
 **Best for:** Quick overview, key findings, next steps
 - Key findings at a glance
 - Top 5 design insights
@@ -16,7 +23,7 @@ Complete analysis of 7 competitor landing pages and specific recommendations for
 
 ---
 
-### Deep Dive: competitor-design-analysis.md (28KB)
+### Deep Dive: docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md (28KB)
 **Best for:** Understanding each competitor in detail
 - Detailed breakdown of all 7 companies:
   1. Govee (playful, mass-market)
@@ -39,7 +46,7 @@ Complete analysis of 7 competitor landing pages and specific recommendations for
 
 ---
 
-### Quick Reference: design-patterns-quick-reference.md (16KB)
+### Quick Reference: docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md (16KB)
 **Best for:** Visual comparisons, design decisions, testing framework
 - Visual design comparison charts
 - Design style spectrum (minimalist → information-rich)
@@ -59,7 +66,7 @@ Complete analysis of 7 competitor landing pages and specific recommendations for
 
 ---
 
-### Implementation Roadmap: competitor-insights-action-items.md (22KB)
+### Implementation Roadmap: docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md (22KB)
 **Best for:** Specific, prioritized actions with timelines
 - 9 priority areas with implementation details:
   1. Hero Section Optimization (specs overlay, CTA testing)
@@ -84,33 +91,33 @@ Complete analysis of 7 competitor landing pages and specific recommendations for
 ## Reading Paths by Role
 
 ### Design/Product Manager
-1. Start: ANALYSIS-SUMMARY.md (15 min)
-2. Deep dive: competitor-design-analysis.md - K1 Positioning Insights section (10 min)
-3. Reference: design-patterns-quick-reference.md (15 min)
-4. Action: competitor-insights-action-items.md - Priorities 1-5 (20 min)
+1. Start: docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (15 min)
+2. Deep dive: docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md - K1 Positioning Insights section (10 min)
+3. Reference: docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md (15 min)
+4. Action: docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md - Priorities 1-5 (20 min)
 
 **Total: 60 minutes**
 
 ### Engineer/Developer
-1. Start: ANALYSIS-SUMMARY.md (10 min)
-2. Deep dive: competitor-design-analysis.md - Maker Brands section (15 min)
-3. Reference: design-patterns-quick-reference.md - Performance & SEO (10 min)
-4. Action: competitor-insights-action-items.md - Priorities 2, 8, 9 (20 min)
+1. Start: docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (10 min)
+2. Deep dive: docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md - Maker Brands section (15 min)
+3. Reference: docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md - Performance & SEO (10 min)
+4. Action: docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md - Priorities 2, 8, 9 (20 min)
 
 **Total: 55 minutes**
 
 ### Marketing/Content
-1. Start: ANALYSIS-SUMMARY.md (10 min)
-2. Deep dive: competitor-design-analysis.md - All sections (45 min)
-3. Reference: design-patterns-quick-reference.md - Target Audience Signaling (10 min)
-4. Action: competitor-insights-action-items.md - Priorities 3, 4, 7, 9 (30 min)
+1. Start: docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (10 min)
+2. Deep dive: docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md - All sections (45 min)
+3. Reference: docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md - Target Audience Signaling (10 min)
+4. Action: docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md - Priorities 3, 4, 7, 9 (30 min)
 
 **Total: 95 minutes**
 
 ### Executive/Stakeholder
-1. Start: ANALYSIS-SUMMARY.md (15 min)
-2. Skim: design-patterns-quick-reference.md - Summary tables (5 min)
-3. Decision: competitor-insights-action-items.md - Implementation Timeline (10 min)
+1. Start: docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (15 min)
+2. Skim: docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md - Summary tables (5 min)
+3. Decision: docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md - Implementation Timeline (10 min)
 
 **Total: 30 minutes**
 
@@ -162,7 +169,7 @@ K1 bridges both worlds:
 
 ## Top 9 Implementation Priorities
 
-From competitor-insights-action-items.md:
+From docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md:
 
 1. **Hero specs overlay** - Add "320 LEDs, Dual-Edge LGP, ESP32-S3" to video
 2. **Quick specs card** - Scannable specs immediately below hero
@@ -236,10 +243,10 @@ From competitor-insights-action-items.md:
 
 ## Next Steps
 
-1. **Today:** Read ANALYSIS-SUMMARY.md (10 min)
-2. **Tomorrow:** Deep dive into competitor-design-analysis.md (30 min)
+1. **Today:** Read docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md (10 min)
+2. **Tomorrow:** Deep dive into docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md (30 min)
 3. **This week:** Team discussion using Design Decisions Summary table
-4. **Week 1:** Implement high-priority items from competitor-insights-action-items.md
+4. **Week 1:** Implement high-priority items from docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md
 5. **Week 2:** Finalize assets and launch prep
 6. **Week 3:** Launch and begin A/B testing
 7. **Week 4+:** Monitor metrics and iterate
@@ -250,11 +257,11 @@ From competitor-insights-action-items.md:
 
 All analysis documents saved in: `/home/user/K1.Landing-Page/docs/`
 
-- `ANALYSIS-SUMMARY.md` - Start here (12KB)
-- `competitor-design-analysis.md` - Deep dive (28KB)
-- `design-patterns-quick-reference.md` - Reference (16KB)
-- `competitor-insights-action-items.md` - Implementation (22KB)
-- `README-COMPETITOR-ANALYSIS.md` - This document (navigation guide)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md` - Start here (12KB)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md` - Deep dive (28KB)
+- `docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md` - Reference (16KB)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md` - Implementation (22KB)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_README_v1.0_20251110.md` - This document (navigation guide)
 
 **Total analysis:** 78KB of research, recommendations, and implementation guides
 

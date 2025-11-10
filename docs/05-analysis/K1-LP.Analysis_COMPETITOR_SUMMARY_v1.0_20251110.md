@@ -1,24 +1,31 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Executive summary synthesizing LED/lighting competitor research for K1-LP
+---
+
 # LED/Lighting Competitor Analysis - Executive Summary
 
 ## What You Now Have
 
 Three comprehensive analysis documents have been created:
 
-1. **competitor-design-analysis.md** (12,000+ words)
+1. **docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md** (12,000+ words)
    - Detailed breakdown of each company's design approach
    - Design style, color palette, typography, photography, CTAs
    - What works + what doesn't for each brand
    - Cross-competitive analysis matrix
    - Specific recommendations for K1
 
-2. **design-patterns-quick-reference.md** (5,000+ words)
+2. **docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md** (5,000+ words)
    - Visual comparison charts and spectrums
    - Quick reference for design decisions
    - Red flags to avoid
    - Design decision summary table
    - Testing recommendations
 
-3. **competitor-insights-action-items.md** (6,000+ words)
+3. **docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md** (6,000+ words)
    - 9 priority areas with specific actions
    - Implementation timeline
    - Measurement & testing framework
@@ -255,9 +262,9 @@ BUSINESS METRICS:
 ## Next Steps
 
 **Immediate (This Week):**
-1. Read competitor-design-analysis.md (detailed findings)
-2. Review design-patterns-quick-reference.md (visual reference)
-3. Review competitor-insights-action-items.md (implementation priorities)
+1. Read docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md (detailed findings)
+2. Review docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md (visual reference)
+3. Review docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md (implementation priorities)
 4. Discuss top 5 insights with design team
 5. Finalize photo shot list
 
@@ -318,10 +325,10 @@ After reviewing these docs, discuss:
 ## Additional Resources
 
 **Files Created:**
-- /docs/competitor-design-analysis.md (comprehensive deep-dive)
-- /docs/design-patterns-quick-reference.md (quick visual reference)
-- /docs/competitor-insights-action-items.md (implementation roadmap)
-- /docs/ANALYSIS-SUMMARY.md (this document)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_DESIGN_v1.0_20251110.md` (comprehensive deep-dive)
+- `docs/05-analysis/K1-LP.Analysis_DESIGN_PATTERNS_REFERENCE_v1.0_20251110.md` (quick visual reference)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_INSIGHTS_ACTIONS_v1.0_20251110.md` (implementation roadmap)
+- `docs/05-analysis/K1-LP.Analysis_COMPETITOR_SUMMARY_v1.0_20251110.md` (this document)
 
 **Companies Analyzed:**
 - Consumer: Govee, Elgato, Nanoleaf, Philips Hue
@@ -348,4 +355,3 @@ After reviewing these docs, discuss:
 **Next move:** Prioritize PRIORITY 1 (hero specs), PRIORITY 2 (specs card + GitHub), and PRIORITY 3 (V1 messaging). These three address the biggest objections makers will have.
 
 Good luck with launch. You're building something genuinely unique—first in market, open source, maker-friendly, beautifully designed. The landing page should reflect that authenticity.
-

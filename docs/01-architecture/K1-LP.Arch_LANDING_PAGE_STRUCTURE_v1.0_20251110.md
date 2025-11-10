@@ -1,3 +1,10 @@
+---
+status: active
+author: Spectrasynq Landing Team
+date: 2025-11-10
+intent: Structural specification for the seven-section landing page
+---
+
 # K1-Lightwave Landing Page Structure
 
 Complete specification for the 7-section landing page design.
@@ -706,6 +713,6 @@ Sold out? Join the waitlist for Kickstarter launch:
 
 ## Next Steps
 
-1. See `docs/aura-prompt.md` for complete Aura generation prompt
-2. See `docs/asset-production-plan.md` for asset creation workflow
-3. See `docs/action-items.md` for execution checklist
+1. See `docs/07-resources/K1-LP.Res_AURA_PROMPT_v1.0_20251110.md` for the complete Aura generation prompt
+2. See `docs/04-planning/K1-LP.Plan_ASSET_PRODUCTION_v1.0_20251110.md` for the asset creation workflow
+3. See `docs/04-planning/K1-LP.Plan_ACTION_ITEMS_EXECUTION_v1.0_20251110.md` for the execution checklist
