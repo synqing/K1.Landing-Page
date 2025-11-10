@@ -3,6 +3,19 @@ import { useEffect, useMemo, useState } from 'react'
 
 type WaitlistItem = { emailMasked: string; ts: number }
 
+/**
+ * A component that renders the admin dashboard page.
+ *
+ * This page provides administrative functionalities, including viewing the
+ * waitlist count, inspecting the most recent waitlist entries, and updating
+ * the number of units sold.
+ *
+ * Access is restricted via a query parameter key. The component fetches
+ * data from the `/api/waitlist` and `/api/units` endpoints and allows
+ * for updates to be sent back to the server.
+ *
+ * @returns {JSX.Element} The rendered admin page or an "Unauthorized" message.
+ */
 export default function AdminPage() {
   const [authOk, setAuthOk] = useState(false)
   const [count, setCount] = useState(0)

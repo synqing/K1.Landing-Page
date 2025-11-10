@@ -1,5 +1,13 @@
 import { COPY } from '@/lib/copy'
 
+/**
+ * A component that renders the Frequently Asked Questions (FAQ) section.
+ *
+ * This component displays a list of questions and answers sourced from the
+ * `COPY.faq` object. It arranges them in a two-column grid on larger screens.
+ *
+ * @returns {JSX.Element} The rendered FAQ section.
+ */
 export default function FAQ() {
   return (
     <section className="container max-w-content mx-auto p-6 py-16">

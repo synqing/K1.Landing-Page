@@ -2,6 +2,19 @@
 import { useState } from 'react'
 import { analytics } from '@/lib/analytics'
 
+/**
+ * A component that renders an email capture form.
+ *
+ * This component provides a form for users to join a waitlist. It handles
+ * form submission, validates the email address, and communicates with the
+ * `/api/waitlist` endpoint. If the API fails, it falls back to storing the
+ * email in `localStorage`.
+ *
+ * It tracks submission events with analytics and displays a success message
+ * upon completion.
+ *
+ * @returns {JSX.Element} The rendered email capture form or a success message.
+ */
 export default function EmailCapture() {
   const [email, setEmail] = useState('')
   const [done, setDone] = useState(false)

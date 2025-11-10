@@ -3,6 +3,17 @@ import { readFile, writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { rateLimit, getRateLimitIdentifier } from '@/lib/rate-limit'
 
+/**
+ * Handles GET requests to the `/api/units` endpoint.
+ *
+ * This function retrieves the current unit counts (total and sold) from the
+ * `public/data/units.json` file and returns them as a JSON response.
+ *
+ * It includes a fallback mechanism to return default values if the file
+ * cannot be read.
+ *
+ * @returns {Promise<NextResponse>} A promise that resolves to the response.
+ */
 export async function GET() {
   try {
     const p = join(process.cwd(), 'public', 'data', 'units.json')
@@ -15,6 +26,19 @@ export async function GET() {
   }
 }
 
+/**
+ * Handles POST requests to the `/api/units` endpoint.
+ *
+ * This function updates the number of units sold or the total number of units.
+ * It is a protected endpoint that requires an authentication key. It also
+ * implements rate limiting to prevent abuse.
+ *
+ * The function reads the current unit data, updates it with the values
+ * from the request body, and writes the new data back to the file.
+ *
+ * @param {Request} req - The incoming request object.
+ * @returns {Promise<NextResponse>} A promise that resolves to the response.
+ */
 export async function POST(req: Request) {
   // Authentication check (server-side only)
   const authHeader = req.headers.get('authorization')

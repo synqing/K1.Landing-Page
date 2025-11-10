@@ -4,6 +4,18 @@ import { analytics } from '@/lib/analytics'
 import { CONFIG } from '@/lib/site-config'
 import { useUnitCounter } from '@/lib/unit-counter'
 
+/**
+ * A component that renders the hero section of the page.
+ *
+ * This component serves as the main entry point for visitors. It displays the
+ * product name, a brief description, and a prominent call-to-action (CTA).
+ *
+ * It uses the `useExperiment` hook to A/B test different CTA labels and spec
+ * placements. It also uses the `useUnitCounter` hook to display a real-time
+ * count of the remaining units, creating a sense of urgency.
+ *
+ * @returns {JSX.Element} The rendered hero section.
+ */
 export default function Hero() {
   const ctaVariant = useExperiment('hero_cta', ['reserve', 'secure', 'split'])
   const { remaining } = useUnitCounter()

@@ -1,3 +1,12 @@
+/**
+ * A component that demonstrates the usage of design tokens.
+ *
+ * This page serves as a simple visual reference for the project's
+ * design tokens, such as colors, spacing, and typography, as
+ * applied to a button element.
+ *
+ * @returns {JSX.Element} The rendered tokens demo page.
+ */
 export default function TokensDemo(){
   return (
     <main className="mx-auto max-w-3xl p-6 space-y-6">

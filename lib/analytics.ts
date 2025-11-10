@@ -4,6 +4,16 @@ type EventProps = Record<string, unknown>
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ANALYTICS_URL
 
+/**
+ * Sends an analytics event.
+ *
+ * This function tracks a given event with associated properties. It persists
+ * the event to `localStorage` as a breadcrumb, sends it to a remote analytics
+ * endpoint if configured, and logs it to the console in development.
+ *
+ * @param {string} event - The name of the event to track.
+ * @param {EventProps} props - An object of key-value pairs that provide context for the event.
+ */
 function send(event: string, props: EventProps) {
   const payload = {
     event,
@@ -41,7 +51,16 @@ function send(event: string, props: EventProps) {
   }
 }
 
+/**
+ * Analytics tracking object.
+ * Provides a method to track application events.
+ */
 export const analytics = {
+  /**
+   * Tracks an event with the given properties.
+   * @param {string} event - The name of the event to track.
+   * @param {EventProps} props - An object of key-value pairs that provide context for the event.
+   */
   track: send,
 }
 
