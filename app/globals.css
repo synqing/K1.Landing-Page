@@ -1,5 +1,0 @@
-@import "../tokens-web/css/variables.css";
-@import "../tokens-web/shadcn-theme.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
