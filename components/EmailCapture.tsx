@@ -9,25 +9,54 @@ export default function EmailCapture() {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return
-    // Try API first; fallback to local storage
+
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+
     let ok = false
+    let alreadySubscribed = false
+
     try {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
+        signal: controller.signal,
       })
-      ok = res.ok
-    } catch {}
-    if (!ok) {
+
+      if (res.status === 409) {
+        alreadySubscribed = true
+        ok = true // Still consider it success
+      } else {
+        ok = res.ok
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn('[email-capture] Request timeout after 5s')
+      } else {
+        console.error('[email-capture] API failed:', error)
+      }
+    } finally {
+      clearTimeout(timeout)
+    }
+
+    if (!ok && !alreadySubscribed) {
       try {
         const key = 'k1lp:waitlist'
         const arr = JSON.parse(localStorage.getItem(key) || '[]')
         arr.push({ email, ts: Date.now() })
-        localStorage.setItem(key, JSON.stringify(arr).slice(-4000))
-      } catch {}
+        // Keep last 100 entries, not 4000 chars
+        const trimmed = arr.slice(-100)
+        localStorage.setItem(key, JSON.stringify(trimmed))
+      } catch (error) {
+        console.error('[email-capture] localStorage fallback failed:', error)
+      }
     }
-    analytics.track('waitlist_submit', { emailMasked: email.replace(/(^.).*(@.*$)/, '$1***$2') })
+
+    analytics.track('waitlist_submit', {
+      emailMasked: email.replace(/(^.).*(@.*$)/, '$1***$2'),
+      duplicate: alreadySubscribed
+    })
     setDone(true)
   }
 
