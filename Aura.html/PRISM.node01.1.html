@@ -1,0 +1,833 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>PRISM.node — SpectraSynq</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (approximations + exact monospace) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@400;700&amp;family=Nunito:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="min-h-screen text-[#E6E9EF] bg-[#1C2130] antialiased selection:bg-[#FFB84D]/20">
+    <!-- Top Navigation Bar -->
+    <header class="w-full border-b border-white/5 bg-[#252D3F]/60 backdrop-blur-md">
+      <div class="mx-auto max-w-[1600px] px-5 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+        <!-- Brand -->
+        <div class="flex items-center gap-3">
+          <!-- Pyramid Logo Outline -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="shrink-0 text-white/90" aria-hidden="true">
+            <path d="M12 3L3 19h18L12 3z" stroke="currentColor" stroke-width="1.5" fill="none"></path>
+            <path d="M12 3l6 10.5H6L12 3z" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.65"></path>
+          </svg>
+          <div class="flex flex-col">
+            <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; letter-spacing:0.02em;" class="text-[21px] leading-none tracking-tight uppercase text-white/95">
+              SPECTRASYNQ
+            </div>
+            <span class="h-[2px] w-16 rounded-full bg-[#FFB84D] mt-1"></span>
+          </div>
+        </div>
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="compileBtn" class="group inline-flex items-center gap-2 px-3 py-2 rounded-md bg-[#FFB84D] text-[#1C2130] hover:bg-[#E69D3A] active:bg-[#CC8625] transition-colors ring-0 focus:outline-none focus:ring-2 focus:ring-[#FFB84D]/30" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-weight:600; font-size:14px; letter-spacing:0.01em;">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            Compile
+          </button>
+          <div class="hidden md:flex items-center gap-3 px-3 py-2 rounded-md bg-white/5 hover:bg-white/7 transition-colors border border-white/10">
+            <div class="flex items-center gap-1.5 text-[#B5BDCA]" style="font-family:'JetBrains Mono',ui-monospace; font-size:12px;">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+              <span>FPS</span>
+              <span class="text-white/90">120</span>
+            </div>
+            <span class="w-px h-4 bg-white/10"></span>
+            <div class="flex items-center gap-1.5 text-[#B5BDCA]" style="font-family:'JetBrains Mono',ui-monospace; font-size:12px;">
+              <i data-lucide="git-branch" class="w-4 h-4"></i>
+              <span>Nodes</span>
+              <span class="text-white/90">6</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="mx-auto max-w-[1600px] px-5 sm:px-6 lg:px-8 py-6 grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+      <!-- Canvas Column -->
+      <section class="relative min-h-[720px] rounded-xl overflow-hidden border border-white/10">
+        <!-- LED Visualization Environment -->
+        <div class="absolute inset-0">
+          <!-- Primary LED region (vibrant, 50-70% brightness) -->
+          <div class="absolute inset-0">
+            <div class="absolute inset-0" style="background:
+                radial-gradient(800px 480px at 30% 40%, rgba(110,231,243,0.55), rgba(110,231,243,0) 60%),
+                radial-gradient(700px 520px at 65% 55%, rgba(244,114,182,0.50), rgba(244,114,182,0) 62%),
+                radial-gradient(600px 480px at 50% 80%, rgba(245,158,11,0.45), rgba(245,158,11,0) 60%),
+                radial-gradient(900px 600px at 75% 20%, rgba(99,102,241,0.45), rgba(99,102,241,0) 65%),
+                linear-gradient(180deg, rgba(28,33,48,1) 0%, rgba(28,33,48,0.8) 100%);"></div>
+          </div>
+          <!-- Grid overlay (32px spacing, 3% opacity) -->
+          <div class="absolute inset-0 pointer-events-none" style="background-image:
+              linear-gradient(to right, rgba(34,39,51,0.03) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(34,39,51,0.03) 1px, transparent 1px);
+              background-size: 32px 32px;"></div>
+          <!-- Subtle noise texture substitute -->
+          <div class="absolute inset-0 pointer-events-none opacity-[0.025]" style="background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0.5px, transparent 0.5px),
+                                   radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0.5px, transparent 0.5px);
+                   background-size: 6px 6px, 6px 6px;"></div>
+        </div>
+
+        <!-- Canvas Controls -->
+        <div class="absolute left-4 top-4 z-10 flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#B5BDCA] transition focus:outline-none focus:ring-2 focus:ring-[#FFB84D]/30" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <i data-lucide="align-justify" class="w-4 h-4 inline-block mr-1"></i>
+            Grid
+          </button>
+          <button class="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#B5BDCA] transition focus:outline-none focus:ring-2 focus:ring-[#FFB84D]/30" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <i data-lucide="zoom-in" class="w-4 h-4 inline-block mr-1"></i>
+            100%
+          </button>
+        </div>
+
+        <!-- Nodes Layer -->
+        <div id="nodes-layer" class="absolute inset-0">
+          <!-- Node Template Helpers:
+               - Light Node: backdrop-blur 20px, base fill 6%, lighter shadows
+               - Heavy Node: backdrop-blur 40px, base fill 10%, denser shadows
+               - Light source highlight (20%,20%), cyan reflection (85%,85%)
+               - Fresnel edges via inset shadows + inner rim stroke (border)
+          -->
+
+          <!-- Light Node: Position Gradient (Selected) -->
+          <div id="node-posgrad" class="group absolute" style="left:96px; top:100px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.06);
+                backdrop-filter: saturate(1.1) blur(20px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.18),
+                  0 32px 64px rgba(0,0,0,0.27);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.04) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <!-- Selection ring (applied by JS when selected) -->
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none ring-0" data-role="selection-ring"></div>
+              <!-- Hover/selected brightness overlay -->
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none opacity-0 group-hover:opacity-5 transition" style="background: rgba(255,255,255,0.05); mix-blend-mode: screen;"></div>
+
+              <!-- Header -->
+              <div class="flex flex-col gap-1">
+                <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                  POSITION GRADIENT
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                  Maps distance from center
+                </div>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <!-- Parameters -->
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Center
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    0.50, 0.50
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Falloff
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    0.80
+                  </span>
+                </div>
+              </div>
+
+              <!-- Ports -->
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" title="Field Output" style="border-color:#22D3EE; background:#22D3EE;"></div>
+              </div>
+              <div class="absolute -left-3 top-[56%] -translate-y-1/2 opacity-50">
+                <div class="w-3 h-3 rounded-full border-2" title="No input" style="border-color:#22D3EE; background:transparent;"></div>
+              </div>
+
+              <!-- Processing perimeter (hidden by default) -->
+              <svg class="absolute inset-0 pointer-events-none" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true">
+                <!-- to enable later via JS -->
+                <rect x="1" y="1" width="98" height="58" rx="6" ry="6" fill="none" stroke="#FFB84D" stroke-width="0.8" stroke-dasharray="8 4" stroke-dashoffset="0" opacity="0"></rect>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Heavy Node: Spectrum Range (Processing) -->
+          <div id="node-spectrum" class="group absolute" style="left:96px; top:340px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.10);
+                backdrop-filter: saturate(1.1) blur(40px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.32),
+                  0 32px 64px rgba(0,0,0,0.48);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.06) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none opacity-0 group-hover:opacity-5 transition" style="background: rgba(255,255,255,0.05); mix-blend-mode: screen;"></div>
+
+              <!-- Header -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                    SPECTRUM RANGE
+                  </div>
+                  <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                    Bass frequency energy (FFT)
+                  </div>
+                </div>
+                <div class="text-[#7A8194]">
+                  <i data-lucide="waves" class="w-5 h-5"></i>
+                </div>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Range
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    20–140 Hz
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Smoothing
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    0.12
+                  </span>
+                </div>
+              </div>
+
+              <!-- Ports -->
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F59E0B; background:#F59E0B;" title="Scalar Output"></div>
+              </div>
+              <div class="absolute -left-3 top-[56%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F59E0B; background:transparent; opacity:0.6;" title="Scalar Input (Disconnected)"></div>
+              </div>
+
+              <!-- Processing Border Animation (traveling line) -->
+              <svg class="absolute inset-0 pointer-events-none" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="procGold" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#FFB84D" stop-opacity="0.0"></stop>
+                    <stop offset="50%" stop-color="#FFB84D" stop-opacity="1.0"></stop>
+                    <stop offset="100%" stop-color="#FFB84D" stop-opacity="0.0"></stop>
+                  </linearGradient>
+                </defs>
+                <rect x="1" y="1" width="98" height="58" rx="6" ry="6" fill="none" stroke="url(#procGold)" stroke-width="1" stroke-dasharray="260 260">
+                  <animate attributeName="stroke-dashoffset" from="520" to="0" dur="1.5s" repeatCount="indefinite"></animate>
+                </rect>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Light Node: Multiply (Selected) -->
+          <div id="node-multiply" class="group absolute" style="left:500px; top:190px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.06);
+                backdrop-filter: saturate(1.1) blur(20px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.18),
+                   32px 64px rgba(0,0,0,0.27);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.04) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <!-- Inject selection on load -->
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none ring-1 ring-[#FFB84D]" data-role="selection-ring"></div>
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none opacity-[0.08]" style="background: rgba(255,255,255,0.08); mix-blend-mode: screen;"></div>
+
+              <div class="flex flex-col gap-1">
+                <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                  MULTIPLY
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                  Scales field by scalar amplitude
+                </div>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Clamp
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    true
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Gain
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    1.25
+                  </span>
+                </div>
+              </div>
+
+              <!-- Ports (two inputs: field + scalar) -->
+              <div class="absolute -left-3 top-[46%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#22D3EE; background:#22D3EE;" title="Field Input (Connected)"></div>
+              </div>
+              <div class="absolute -left-3 top-[62%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F59E0B; background:#F59E0B;" title="Scalar Input (Connected)"></div>
+              </div>
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#22D3EE; background:#22D3EE;" title="Field Output"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Light Node: Palette Interpolate (Error) -->
+          <div id="node-palette" class="group absolute" style="left:500px; top:440px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.06);
+                backdrop-filter: saturate(1.1) blur(20px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.18),
+                  0 32px 64px rgba(0,0,0,0.27);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.04) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <!-- Error Outline -->
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none ring-2 ring-[#EF4444]"></div>
+
+              <div class="flex flex-col gap-1">
+                <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                  PALETTE INTERPOLATE
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                  Map field → color via palette
+                </div>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Palette
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    Neon-City
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Gamma
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    2.2
+                  </span>
+                </div>
+              </div>
+
+              <!-- Error Badge -->
+              <div class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#EF4444] flex items-center justify-center shadow-md" title="1 Error">
+                <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px; color:#FFFFFF;">
+                  1
+                </span>
+              </div>
+
+              <!-- Ports -->
+              <div class="absolute -left-3 top-[46%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#22D3EE; background:#22D3EE;" title="Field Input (Connected)"></div>
+              </div>
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F472B6; background:#F472B6;" title="Color Output"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heavy Node: Beat Detector -->
+          <div id="node-beat" class="group absolute" style="left:900px; top:200px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.10);
+                backdrop-filter: saturate(1.1) blur(40px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.32),
+                  0 32px 64px rgba(0,0,0,0.48);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.06) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none opacity-0 group-hover:opacity-5 transition" style="background: rgba(255,255,255,0.05); mix-blend-mode: screen;"></div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                    BEAT
+                  </div>
+                  <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                    Peak + decay trigger
+                  </div>
+                </div>
+                <i data-lucide="activity" class="w-5 h-5 text-[#7A8194]"></i>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Sensitivity
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    0.65
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Decay
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    180 ms
+                  </span>
+                </div>
+              </div>
+
+              <!-- Ports -->
+              <div class="absolute -left-3 top-[54%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F59E0B; background:transparent; opacity:0.6;" title="Scalar Input (Disconnected)"></div>
+              </div>
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#F59E0B; background:#F59E0B;" title="Scalar Output"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heavy Node: Render Output -->
+          <div id="node-output" class="group absolute" style="left:900px; top:460px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.10);
+                backdrop-filter: saturate(1.1) blur(40px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.32),
+                  0 32px 64px rgba(0,0,0,0.48);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.06) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <div class="absolute inset-0 rounded-[16px] pointer-events-none opacity-0 group-hover:opacity-5 transition" style="background: rgba(255,255,255,0.05); mix-blend-mode: screen;"></div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                    RENDER OUTPUT
+                  </div>
+                  <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                    Send to LEDs (ESP32-S3)
+                  </div>
+                </div>
+                <i data-lucide="monitor" class="w-5 h-5 text-[#7A8194]"></i>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    Device
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    ESP32-S3
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                    FPS Target
+                  </span>
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                    120
+                  </span>
+                </div>
+              </div>
+
+              <!-- Ports -->
+              <div class="absolute -left-3 top-[46%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#34D399; background:transparent; opacity:0.6;" title="Output Wire (Input)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Light Node: Utility (for completeness) -->
+          <div id="node-utility" class="group absolute" style="left:96px; top:560px; width:280px;">
+            <div class="relative rounded-[16px] p-4 border border-white/20 hover:border-white/25 transition-all duration-300" style="
+                background-color: rgba(255,255,255,0.06);
+                backdrop-filter: saturate(1.1) blur(20px);
+                box-shadow:
+                  inset 0 1px 2px rgba(255,255,255,0.15),
+                  inset 0 -1px 1px rgba(0,0,0,0.10),
+                  0 12px 24px rgba(0,0,0,0.18),
+                  0 32px 64px rgba(0,0,0,0.27);
+                background-image:
+                  radial-gradient(ellipse 200px 200px at 20% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%),
+                  radial-gradient(ellipse 180px 180px at 85% 85%, rgba(110,231,243,0.04) 0%, rgba(110,231,243,0) 50%);
+              ">
+              <div class="flex flex-col gap-1">
+                <div style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase text-white/95 tracking-tight">
+                  NORMALIZE
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:11px;" class="text-[#B5BDCA]/70">
+                  Rescale field 0–1
+                </div>
+              </div>
+              <div class="h-px bg-white/10 my-2"></div>
+              <div class="flex items-center justify-between">
+                <span style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#B5BDCA]/80">
+                  Mode
+                </span>
+                <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-white/95">
+                  Adaptive
+                </span>
+              </div>
+
+              <div class="absolute -left-3 top-[46%] -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#22D3EE; background:#22D3EE;"></div>
+              </div>
+              <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+                <div class="w-3 h-3 rounded-full border-2" style="border-color:#22D3EE; background:#22D3EE;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wires Layer -->
+        <svg class="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <defs>
+            <!-- Glow filters per semantic type -->
+            <filter id="wireGlowScalar" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#F59E0B" flood-opacity="0.30"></feDropShadow>
+            </filter>
+            <filter id="wireGlowField" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#22D3EE" flood-opacity="0.30"></feDropShadow>
+            </filter>
+            <filter id="wireGlowColor" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#F472B6" flood-opacity="0.30"></feDropShadow>
+            </filter>
+            <filter id="wireGlowOutput" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3.5" flood-color="#34D399" flood-opacity="0.30"></feDropShadow>
+            </filter>
+          </defs>
+
+          <!-- Field (Cyan) Position Gradient -> Multiply -->
+          <path d="M 382 165 C 427 165, 449 230, 494 230" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round" filter="url(#wireGlowField)"></path>
+
+          <!-- Scalar (Orange) Spectrum -> Multiply -->
+          <path d="M 382 410 C 427 410, 449 265, 494 265" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" filter="url(#wireGlowScalar)"></path>
+
+          <!-- Color (Magenta) Palette -> Beat (demonstrating long diagonal) -->
+          <path d="M 786 510 C 886 510, 794 260, 894 260" fill="none" stroke="#F472B6" stroke-width="4" stroke-linecap="round" filter="url(#wireGlowColor)"></path>
+
+          <!-- Output (Green) Palette -> Render Output -->
+          <path d="M 786 530 C 836 530, 844 520, 894 520" fill="none" stroke="#34D399" stroke-width="5" stroke-linecap="round" filter="url(#wireGlowOutput)"></path>
+        </svg>
+
+        <!-- Wire Legend -->
+        <div class="absolute right-4 top-4 z-10 flex flex-col gap-1 p-3 rounded-md bg-[#252D3F]/70 backdrop-blur-md border border-white/10">
+          <div class="flex items-center gap-2" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <span class="w-6 h-1.5 rounded-full" style="background:#F59E0B;"></span>
+            <span class="text-[#B5BDCA]">Scalar</span>
+          </div>
+          <div class="flex items-center gap-2" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <span class="w-6 h-1.5 rounded-full" style="background:#22D3EE;"></span>
+            <span class="text-[#B5BDCA]">Field</span>
+          </div>
+          <div class="flex items-center gap-2" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <span class="w-6 h-1.5 rounded-full" style="background:#F472B6;"></span>
+            <span class="text-[#B5BDCA]">Color</span>
+          </div>
+          <div class="flex items-center gap-2" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            <span class="w-6 h-1.5 rounded-full" style="background:#34D399;"></span>
+            <span class="text-[#B5BDCA]">Output</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compilation Feedback Panel (Heavy Glass) -->
+      <aside class="relative rounded-l-[16px] rounded-r-none p-6 xl:p-6 border-l border-t border-b border-white/10 bg-white/10" style="
+          background-color: rgba(255,255,255,0.10);
+          backdrop-filter: saturate(1.1) blur(40px);
+          box-shadow:
+            inset 0 1px 2px rgba(255,255,255,0.15),
+            inset 0 -1px 1px rgba(0,0,0,0.10),
+            0 12px 24px rgba(0,0,0,0.32),
+            0 32px 64px rgba(0,0,0,0.48);
+          ">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:16px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight">
+              Compilation Status
+            </span>
+            <span class="inline-flex w-4 h-4 rounded-full" style="background:#22DD88;"></span>
+          </div>
+          <i data-lucide="check-circle" class="w-5 h-5 text-[#22DD88]"></i>
+        </div>
+
+        <div class="h-px bg-white/10 my-4"></div>
+
+        <!-- Graph Health -->
+        <section class="mb-6">
+          <h3 style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight mb-2">
+            Graph Health
+          </h3>
+          <ul class="space-y-1">
+            <li style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:14px;" class="text-[#E6E9EF]">
+              N:
+              <span style="font-family:'JetBrains Mono',ui-monospace;">6</span>
+              • M:
+              <span style="font-family:'JetBrains Mono',ui-monospace;">4</span>
+            </li>
+            <li style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:14px;" class="text-[#E6E9EF]">
+              Outdegree min/max/avg:
+              <span style="font-family:'JetBrains Mono',ui-monospace;">
+                0/2/0.7
+              </span>
+            </li>
+            <li style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:14px;">
+              DAG:
+              <span class="text-[#22DD88]" style="font-family:'JetBrains Mono',ui-monospace;">
+                ✓
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <div class="h-px bg-white/10 my-4"></div>
+
+        <!-- Performance Budget -->
+        <section class="mb-6">
+          <h3 style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight mb-2">
+            Performance Budget
+          </h3>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[#B5BDCA]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                Predicted
+              </span>
+              <span class="text-[#22DD88]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                6.92 ms
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[#B5BDCA]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                CPU
+              </span>
+              <span class="text-[#E6E9EF]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                57%
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[#B5BDCA]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                Topo time
+              </span>
+              <span class="text-[#E6E9EF]" style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;">
+                0.45 ms
+              </span>
+            </div>
+            <!-- CPU bar -->
+            <div class="relative h-4 rounded-md overflow-hidden border border-white/10">
+              <div class="absolute inset-0" style="background: linear-gradient(90deg, #22DD88 0%, #22DD88 50%, #F59E0B 60%, #EF4444 100%); opacity:0.25;"></div>
+              <div class="absolute top-0 bottom-0 left-0 rounded-r-md" style="width:57%; background: linear-gradient(90deg, #22DD88, #F59E0B);"></div>
+              <div class="absolute inset-y-0" style="left:57%; width:2px; background:#FFFFFF;"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="h-px bg-white/10 my-4"></div>
+
+        <!-- Validation -->
+        <section class="mb-6">
+          <h3 style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight mb-2">
+            Semantics
+          </h3>
+          <div class="flex items-center justify-between mb-2">
+            <span style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;" class="text-[#B5BDCA]">
+              Errors
+            </span>
+            <span style="font-family:'JetBrains Mono',ui-monospace; font-size:14px;" class="text-[#EF4444]">
+              1
+            </span>
+          </div>
+          <div class="rounded-md border border-white/10 bg-white/5 p-3">
+            <div class="flex items-start gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-[#EF4444] mt-[2px]"></i>
+              <div class="flex-1">
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:13px;" class="text-[#E6E9EF]">
+                  Missing palette input for node
+                  <span style="font-family:'JetBrains Mono',ui-monospace; font-size:13px;" class="text-[#EF4444]">
+                    PALETTE INTERPOLATE
+                  </span>
+                </div>
+                <button class="mt-2 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[#B5BDCA] transition focus:outline-none focus:ring-2 focus:ring-[#FFB84D]/30" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+                  Highlight Node
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-[#22DD88] hidden" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:13px;">
+            ✓ All validations passed
+          </div>
+        </section>
+
+        <div class="h-px bg-white/10 my-4"></div>
+
+        <!-- Risk Preview -->
+        <section>
+          <h3 style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight mb-2">
+            Risk Preview
+          </h3>
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="mt-1 w-2 h-2 rounded-full" style="background:#F59E0B;"></span>
+              <div class="flex-1">
+                <div class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+                  Changed:
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#E6E9EF]">
+                  MULTIPLY, SPECTRUM RANGE, NORMALIZE
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="mt-1 w-2 h-2 rounded-full" style="background:#F59E0B;"></span>
+              <div class="flex-1">
+                <div class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+                  Impacted:
+                </div>
+                <div style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;" class="text-[#E6E9EF]">
+                  PALETTE INTERPOLATE, RENDER OUTPUT
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <!-- Footer Validation Checklist (compact, optional display) -->
+    <footer class="mx-auto max-w-[1600px] px-5 sm:px-6 lg:px-8 pb-8">
+      <div class="mt-2 rounded-lg border border-white/10 bg-[#252D3F]/60 backdrop-blur-md p-3">
+        <div class="flex flex-wrap gap-x-4 gap-y-2 items-center">
+          <span style="font-family:'Bebas Neue Pro','Bebas Neue',ui-sans-serif; font-size:14px; font-weight:600; letter-spacing:0.02em;" class="uppercase tracking-tight text-white/90">
+            Validation
+          </span>
+          <span class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            Single light source ✓
+          </span>
+          <span class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            Heavy vs Light glass ✓
+          </span>
+          <span class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            Wire semantics ✓
+          </span>
+          <span class="text-[#B5BDCA]" style="font-family:'Rama Gothic Rounded','Nunito',ui-sans-serif; font-size:12px;">
+            Contrast AA ✓
+          </span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Interactivity (minimal, non-animating state toggles) -->
+    <script>
+      // Initialize lucide with stroke width 1.5
+      window.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+
+        // Enable selection + dragging for nodes
+        const selectable = ['node-posgrad','node-multiply','node-spectrum','node-palette','node-beat','node-output','node-utility'];
+        selectable.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.style.cursor = 'grab';
+
+          // Dragging state
+          let isDragging = false;
+          let startX = 0, startY = 0;
+          let origLeft = 0, origTop = 0;
+
+          const onMouseMove = (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            el.style.left = (origLeft + dx) + 'px';
+            el.style.top = (origTop + dy) + 'px';
+          };
+
+          const onMouseUp = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            el.style.cursor = 'grab';
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+          };
+
+          el.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // primary only
+            el.style.cursor = 'grabbing';
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            origLeft = parseInt(el.style.left, 10) || 0;
+            origTop = parseInt(el.style.top, 10) || 0;
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+          });
+
+          el.addEventListener('mouseup', () => el.style.cursor = 'grab');
+
+          // Toggle selection ring on click
+          el.addEventListener('click', () => {
+            const card = el.querySelector('.relative');
+            const ring = el.querySelector('[data-role="selection-ring"]');
+            if (!card) return;
+            const isSelected = ring && ring.classList.contains('ring-[#FFB84D]');
+            // Clear selection on all
+            selectable.forEach(oid => {
+              const q = document.getElementById(oid);
+              if (!q) return;
+              const r = q.querySelector('[data-role="selection-ring"]');
+              if (r) r.classList.remove('ring-[#FFB84D]','ring-1');
+            });
+            // Apply to current
+            if (!isSelected && ring) {
+              ring.classList.add('ring-1','ring-[#FFB84D]');
+            }
+          });
+        });
+
+        // Compile button toast (non-blocking)
+        const compileBtn = document.getElementById('compileBtn');
+        compileBtn?.addEventListener('click', () => {
+          compileBtn.classList.add('ring-2');
+          setTimeout(()=>compileBtn.classList.remove('ring-2'), 300);
+        });
+      });
+    </script>
+  
+</body></html>

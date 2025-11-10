@@ -1,0 +1,553 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>PRISM.node — Glass Physics System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts: Substitutions to closely match spec -->
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      :root{
+        /* Brand structural colors */
+        --bg:#1C2130;
+        --surface:#252D3F;
+        --elev:#2F3849;
+        --text:#E6E9EF;
+        --text-2:#B5BDCA;
+
+        /* Semantic */
+        --gold:#FFB84D;
+        --ok:#22DD88;
+        --warn:#F59E0B;
+        --err:#EF4444;
+        --info:#6EE7F3;
+
+        /* Data types (wires/ports) */
+        --scalar:#F59E0B;   /* orange */
+        --field:#22D3EE;    /* cyan (slightly adjusted from info) */
+        --color:#F472B6;    /* magenta */
+        --output:#34D399;   /* green */
+      }
+
+      /* Background LED flow (single dominant light from top-left reinforced by vignette) */
+      .led-flow{
+        background:
+          radial-gradient(1200px 800px at 20% 20%, rgba(255,255,255,0.08), rgba(255,255,255,0) 60%) ,
+          radial-gradient(900px 700px at 85% 85%, rgba(110,231,243,0.08), rgba(110,231,243,0) 60%),
+          conic-gradient(from 220deg at 60% 40%, rgba(99,102,241,0.28), rgba(236,72,153,0.28), rgba(234,179,8,0.25), rgba(59,130,246,0.28), rgba(99,102,241,0.28));
+        background-blend-mode: screen, overlay, normal;
+        filter: saturate(1.2) brightness(0.95);
+      }
+      .led-animate{
+        animation: flow 24s linear infinite;
+        background-size: 200% 200%;
+      }
+      @keyframes flow{
+        0%{background-position: 0% 50%;}
+        50%{background-position: 100% 50%;}
+        100%{background-position: 0% 50%;}
+      }
+
+      /* Subtle noise */
+      .noise{
+        background-image:
+          radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.03) 0, transparent 60%),
+          radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.025) 0, transparent 60%),
+          radial-gradient(1px 1px at 30% 60%, rgba(0,0,0,0.04) 0, transparent 60%);
+        background-size: 320px 320px, 280px 280px, 360px 360px;
+        pointer-events:none;
+      }
+
+      /* Grid overlay (32px spacing) */
+      .grid-overlay{
+        background-image:
+          linear-gradient(to right, rgba(34,39,51,0.12) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(34,39,51,0.12) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events:none;
+      }
+
+      /* Glass card shared; Fresnel (inner stroke) via inset shadows; single light source + env reflection via overlays */
+      .glass{
+        position: relative;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.20); /* Fresnel edge line */
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow:
+          0 12px 24px rgba(0,0,0,0.18),
+          0 32px 64px rgba(0,0,0,0.27);
+      }
+      .glass:before{
+        /* Single Light Source highlight (top-left) */
+        content:"";
+        position:absolute; inset:0;
+        background:
+          radial-gradient(200px 200px at 20% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%);
+        border-radius: inherit;
+        pointer-events:none;
+      }
+      .glass:after{
+        /* Environmental reflection (bottom-right pick-up) */
+        content:"";
+        position:absolute; inset:0;
+        background:
+          radial-gradient(180px 180px at 85% 85%, rgba(110,231,243,0.04) 0%, rgba(110,231,243,0) 50%);
+        border-radius: inherit;
+        pointer-events:none;
+      }
+      .glass-inset{
+        /* Inner highlights: subtle Fresnel + bottom edge definition */
+        box-shadow:
+          inset 0 1px 2px rgba(255,255,255,0.15),
+          inset 0 -1px 1px rgba(0,0,0,0.10);
+      }
+
+      /* Heavy node overrides per spec */
+      .glass-heavy{
+        background: rgba(255,255,255,0.10);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        box-shadow:
+          0 12px 24px rgba(0,0,0,0.32),
+          0 32px 64px rgba(0,0,0,0.48);
+      }
+      .glass-heavy:before{
+        background:
+          radial-gradient(200px 200px at 20% 20%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 60%);
+      }
+      .glass-heavy:after{
+        background:
+          radial-gradient(180px 180px at 85% 85%, rgba(110,231,243,0.06) 0%, rgba(110,231,243,0) 50%);
+      }
+
+      /* Ports */
+      .port{
+        width: 12px; height: 12px; border-radius: 9999px;
+        box-shadow: 0 0 0 2px currentColor inset;
+      }
+      .port.connected{
+        background: currentColor;
+      }
+      .port.disconnected{
+        background: transparent;
+        opacity: 0.6;
+      }
+
+      /* Wires */
+      svg.wires path{
+        fill: none;
+        stroke-linecap: round;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.0)); /* base, overridden inline with same color glow */
+      }
+
+      /* Typography mapping */
+      .font-display{ font-family: "Bebas Neue", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+      .font-ui{ font-family: "M PLUS Rounded 1c", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
+      .font-mono{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+      /* Selection state ring (gold) */
+      .ring-gold{
+        box-shadow: 0 0 0 1px var(--gold), 0 0 0 6px rgba(255,184,77,0.20);
+      }
+
+      /* Palette item selected pink ring (for preset grid) */
+      .ring-pink{
+        box-shadow: 0 0 0 2px rgba(236,72,153,1), 0 0 0 8px rgba(236,72,153,0.25);
+      }
+    </style>
+  <link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link id="all-fonts-link-font-bricolage" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link id="all-fonts-link-font-jakarta" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link id="all-fonts-link-font-manrope" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link id="all-fonts-link-font-space-grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link id="all-fonts-link-font-work-sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link id="all-fonts-link-font-pt-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link id="all-fonts-link-font-geist-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link id="all-fonts-link-font-space-mono" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&amp;display=swap"><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link id="all-fonts-link-font-quicksand" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style><link id="all-fonts-link-font-nunito" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&amp;display=swap"><style id="all-fonts-style-font-nunito">.font-nunito { font-family: 'Nunito', sans-serif !important; }</style></head>
+
+  <body class="min-h-screen bg-[var(--bg)] text-[var(--text)] antialiased">
+
+<!-- Background (component) added by Aura -->
+<div class="aura-background-component fixed top-0 w-full h-screen -z-10" data-alpha-mask="80" style="; mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)"><div data-us-project="p7Ff6pfTrb5Gs59C7nLC" class="absolute w-full h-full left-0 top-0 -z-10"></div><script type="text/javascript">!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script></div>
+    <!-- Canvas -->
+    <main class="relative min-h-screen overflow-hidden">
+      <!-- LED visualization background (canvas itself) -->
+      <div class="absolute inset-0 led-flow led-animate"></div>
+      <!-- Dark canvas base + noise + grid -->
+      <div class="absolute inset-0 bg-[var(--bg)]/40 mix-blend-multiply"></div>
+      <div class="absolute inset-0 noise"></div>
+      <div class="absolute inset-0 grid-overlay"></div>
+
+      <!-- Top bar -->
+      <header class="pointer-events-none absolute left-6 right-6 top-5 flex items-center justify-between">
+        <div class="pointer-events-auto flex items-center gap-3">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-[var(--gold)] via-amber-500 to-rose-500 shadow-lg"></div>
+          <h1 class="font-display tracking-tight text-[24px] leading-none font-semibold uppercase text-[var(--text)]">PRISM.node</h1>
+          <span class="ml-3 px-2 py-0.5 rounded-md text-xs font-ui text-[12px] font-medium bg-[var(--surface)]/60 border border-white/10">ESP32‑S3 • 120+ FPS</span>
+        </div>
+        <div class="pointer-events-auto flex items-center gap-2">
+          <button class="glass glass-inset px-3 py-2 rounded-md text-sm font-ui text-[13px] font-medium flex items-center gap-2 border border-white/20">
+            <i data-lucide="play" class="w-4 h-4 text-[var(--gold)]"></i>
+            <span class="text-[var(--text)]">Compile &amp; Run</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Right dock: Compilation Panel -->
+      <aside class="absolute right-0 top-0 h-full w-[320px] p-4">
+        <div class="relative h-full glass glass-heavy glass-inset rounded-l-2xl rounded-r-none border border-white/20 flex flex-col">
+          <div class="p-6 flex items-center gap-3">
+            <i data-lucide="cpu" class="w-5 h-5 text-[var(--text)]"></i>
+            <div class="flex items-center gap-2">
+              <h3 class="font-display tracking-tight uppercase text-[16px] leading-none font-semibold">Compilation Status</h3>
+              <span class="inline-flex h-4 w-4 rounded-full bg-[var(--ok)] shadow-[0_0_0_4px_rgba(34,221,136,0.25)]"></span>
+            </div>
+          </div>
+
+          <div class="px-6">
+            <div class="h-px w-full bg-white/10"></div>
+          </div>
+
+          <!-- Graph Health -->
+          <section class="px-6 py-5 space-y-3">
+            <h4 class="font-display uppercase text-[14px] font-semibold tracking-tight text-[var(--text)]">Graph Health</h4>
+            <div class="text-[14px] font-ui text-[var(--text-2)] space-y-2">
+              <div>N: <span class="font-mono text-[13px] text-[var(--text)]">12</span> • M: <span class="font-mono text-[13px] text-[var(--text)]">15</span></div>
+              <div>Outdegree min/max/avg: <span class="font-mono text-[13px] text-[var(--text)]">0/3/1.7</span></div>
+              <div class="flex items-center gap-2">
+                <span>DAG:</span>
+                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[var(--surface)]/70 border border-white/10">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-[var(--ok)]"></i>
+                  <span class="font-mono text-[13px] text-[var(--ok)]">OK</span>
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <div class="px-6">
+            <div class="h-px w-full bg-white/10"></div>
+          </div>
+
+          <!-- Performance Budget -->
+          <section class="px-6 py-5 space-y-3">
+            <h4 class="font-display uppercase text-[14px] font-semibold tracking-tight">Performance Budget</h4>
+            <div class="space-y-2">
+              <div class="flex justify-between text-[14px] font-ui text-[var(--text-2)]">
+                <span>Predicted</span>
+                <span class="font-mono text-[13px] text-[var(--text)]">6.4 ms</span>
+              </div>
+              <div class="flex justify-between text-[14px] font-ui text-[var(--text-2)]">
+                <span>CPU</span>
+                <span class="font-mono text-[13px] text-[var(--text)]">58%</span>
+              </div>
+              <div class="flex justify-between text-[14px] font-ui text-[var(--text-2)]">
+                <span>Topo time</span>
+                <span class="font-mono text-[13px] text-[var(--text)]">1.2 ms</span>
+              </div>
+
+              <!-- CPU bar -->
+              <div class="mt-2">
+                <div class="w-full h-4 rounded-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 relative">
+                  <div class="absolute top-0 bottom-0 left-[58%] w-[2px] bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.7)]"></div>
+                </div>
+                <div class="mt-1 text-[11px] font-ui text-[var(--text-2)] opacity-80">Target: 120 FPS (8.33 ms)</div>
+              </div>
+            </div>
+          </section>
+
+          <div class="px-6">
+            <div class="h-px w-full bg-white/10"></div>
+          </div>
+
+          <!-- Validation -->
+          <section class="px-6 py-5 space-y-3">
+            <h4 class="font-display uppercase text-[14px] font-semibold tracking-tight">Semantics</h4>
+            <div class="flex items-center justify-between">
+              <span class="text-[14px] font-ui text-[var(--text-2)]">Errors</span>
+              <span class="font-mono text-[13px] px-2 py-0.5 rounded-md bg-[var(--surface)]/70 border border-white/10 text-[var(--text)]">0</span>
+            </div>
+          </section>
+
+          <div class="px-6">
+            <div class="h-px w-full bg-white/10"></div>
+          </div>
+
+          <!-- Risk Preview -->
+          <section class="px-6 py-5 space-y-3">
+            <h4 class="font-display uppercase text-[14px] font-semibold tracking-tight">Risk Preview</h4>
+            <div class="space-y-2">
+              <div class="text-[14px] font-ui text-[var(--text-2)]">
+                Changed:
+                <span class="font-mono text-[13px] text-amber-300">SPECTRUM RANGE</span>,
+                <span class="font-mono text-[13px] text-amber-300">POSITION GRADIENT</span>
+              </div>
+              <div class="text-[14px] font-ui text-[var(--text-2)]">
+                Impacted:
+                <span class="font-mono text-[13px] text-yellow-300">MIX</span>,
+                <span class="font-mono text-[13px] text-yellow-300">OUTPUT</span>,
+                <span class="font-mono text-[13px] text-yellow-300">COLORIZE</span> and 4 more…
+              </div>
+            </div>
+          </section>
+
+          <div class="mt-auto px-6 py-4">
+            <button class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-[var(--gold)]/90 text-[#0B0B0B] font-ui text-[14px] font-semibold hover:bg-[var(--gold)] transition">
+              <i data-lucide="flash" class="w-4 h-4"></i>
+              Build Firmware
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Color Management panel (Preset Palettes) -->
+      <section class="absolute left-6 bottom-6 w-[420px]">
+        <div class="glass glass-inset p-5 rounded-xl border border-white/20">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="palette" class="w-4 h-4 text-[var(--info)]"></i>
+            <h3 class="font-ui text-[14px] font-medium text-[var(--text)]">Color Management</h3>
+          </div>
+          <div class="text-[13px] font-ui text-[var(--text-2)] mb-3">Preset Palettes</div>
+
+          <!-- Palettes grid to match reference -->
+          <div class="grid grid-cols-3 gap-3">
+            <!-- Palette Card Template: swatches row + label -->
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#F59E0B]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FB923C]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FDBA74]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FDE68A]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FCD34D]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Sunset</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#0EA5E9]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#06B6D4]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#22D3EE]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#67E8F9]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#7DD3FC]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Ocean</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#0EA5E9]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#22D3EE]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#67E8F9]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#38BDF8]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#2563EB]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Cyber</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#EC4899]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F472B6]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FB7185]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#A78BFA]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#7C3AED]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Neon</div>
+            </div>
+
+            <!-- Selected: Fire (pink ring) -->
+            <div class="relative rounded-xl p-3 flex flex-col gap-2 bg-[var(--surface)]/60 border border-white/10">
+              <div class="absolute inset-[-6px] rounded-2xl ring-pink pointer-events-none"></div>
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#EF4444]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F97316]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FB923C]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F59E0B]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FACC15]"></div>
+              </div>
+              <div class="text-[13px] font-ui" style="color:#F472B6">Fire</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#14532D]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#166534]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#15803D]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#16A34A]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#22C55E]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Forest</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#A78BFA]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#C4B5FD]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#DDD6FE]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#E9D5FF]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F5F3FF]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Lavender</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#FFFFFF]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#DD5DB]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#9CA3AF]div&gt; &lt;div class=" h-4="" w-6="" rounded-sm="" bg-[#6b7280]"=""></div>
+                <div class="h-4 w-6 rounded-sm bg-[#374151]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Monochrome</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#EC4899]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#A78BFA]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#10B981]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#06B6D4]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FDE68A]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Vapor</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#450A0A]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#7F1D1D]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#DC2626]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#EA580C]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F59E0B]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Lava</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#D1FAE5]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#A7F3D0]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#99F6E4]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#67E8F9]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#38BDF8]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">Arctic</div>
+            </div>
+
+            <div class="relative rounded-xl border border-white/10 bg-[var(--surface)]/60 p-3 flex flex-col gap-2">
+              <div class="flex gap-1">
+                <div class="h-4 w-6 rounded-sm bg-[#60A5FA]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#34D399]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#FBBF24]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#F472B6]"></div>
+                <div class="h-4 w-6 rounded-sm bg-[#22D3EE]"></div>
+              </div>
+              <div class="text-[13px] font-ui text-[var(--text-2)]">PRISM</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Node canvas area (left of the dock) -->
+      <section class="h-[calc(100vh-0px)] pr-[340px] relative" id="canvas">
+  <!-- SVG wires layer -->
+  <svg class="wires absolute inset-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- Example Nodes -->
+  <!-- Light Node: POSITION GRADIENT -->
+  <div class="glass glass-inset w-[280px] pt-4 pr-4 pb-4 pl-4 absolute top-[140px] left-[80px]" id="node-posgrad">
+    <div class="flex flex-col gap-3 gap-x-3 gap-y-3">
+      <div class="flex flex-col gap-1">
+        <div class="uppercase text-[14px] leading-none font-semibold tracking-[0.02em] font-display">Position Gradient
+        </div>
+        <div class="font-ui text-[11px] text-[var(--text-2)] opacity-70">Maps distance from center (0.0 at center to 1.0
+          at edges)</div>
+      </div>
+      <div class="h-px w-full bg-white/10"></div>
+      <div class="flex flex-col gap-2 gap-x-2 gap-y-2">
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">shape</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">radial</div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">scale</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">1.00</div>
+        </div>
+      </div>
+    </div>
+    <!-- Ports -->
+    <div class="absolute -left-3 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+      <div class="port disconnected" style="color:var(--scalar)" id="in-posgrad-1" title="Scalar in"></div>
+    </div>
+    <div class="absolute -right-3 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+      <div class="port connected" style="color:var(--field)" id="out-posgrad-field" title="Field out"></div>
+    </div>
+  </div>
+
+  <!-- Heavy Node: SPECTRUM RANGE (Selected) -->
+  <div id="node-spectrum" class="glass glass-heavy glass-inset w-[280px] pt-4 pr-4 pb-4 pl-4 absolute top-[120px] left-[420px]">
+    <div class="absolute inset-0 rounded-2xl pointer-events-none ring-gold"></div>
+    <div class="flex flex-col gap-3 gap-x-3 gap-y-3">
+      <div class="flex flex-col gap-1">
+        <div class="font-display uppercase tracking-[0.02em] text-[14px] leading-none font-semibold">Spectrum Range
+        </div>
+        <div class="font-ui text-[11px] text-[var(--text-2)] opacity-70">Bass frequency range</div>
+      </div>
+      <div class="h-px w-full bg-white/10"></div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">band</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">low</div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">smoothing</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">0.65</div>
+        </div>
+      </div>
+    </div>
+    <!-- Ports -->
+    <div class="absolute -left-3 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+      <div class="port disconnected" style="color:var(--field)" id="in-spectrum-field" title="Field in"></div>
+    </div>
+    <div class="absolute -right-3 top-[42%] flex flex-col gap-3">
+      <div class="port connected" style="color:var(--scalar)" id="out-spectrum-scalar" title="Scalar out"></div>
+    </div>
+  </div>
+
+  <!-- Light Node: MIX -->
+  <div class="glass glass-inset w-[280px] pt-4 pr-4 pb-4 pl-4 absolute top-[200px] left-[760px]" id="node-mix">
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-1">
+        <div class="uppercase text-[14px] leading-none font-semibold tracking-[0.02em] font-display">Mix</div>
+        <div class="font-ui text-[11px] text-[var(--text-2)] opacity-70">Blend scalar into field</div>
+      </div>
+      <div class="h-px w-full bg-white/10"></div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">amount</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">0.50</div>
+        </div>
+      </div>
+    </div>
+    <!-- Ports -->
+    <div class="absolute -left-3 top-[35%] flex flex-col gap-3">
+      <div class="port connected" style="color:var(--field)" id="in-mix-field"></div>
+      <div class="port connected" style="color:var(--scalar)" id="in-mix-scalar"></div>
+    </div>
+    <div class="absolute -right-3 top-1/2 -translate-y-1/2">
+      <div class="port connected" style="color:var(--field)" id="out-mix-field"></div>
+    </div>
+  </div>
+
+  <!-- Heavy Node: COLORIZE -->
+  <div id="node-colorize" class="glass glass-heavy glass-inset absolute left-[1080px] top-[240px] w-[280px] p-4">
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-1">
+        <div class="font-display uppercase tracking-[0.02em] text-[14px] leading-none font-semibold">Colorize</div>
+        <div class="font-ui text-[11px] text-[var(--text-2)] opacity-70">Map field to gradient</div>
+      </div>
+      <div class="h-px w-full bg-white/10"></div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <div class="font-ui text-[12px] text-[var(--text-2)] opacity-80">palette</div>
+          <div class="font-mono text-[13px] text-[var(--text)]">Fire</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section></main></body></html>

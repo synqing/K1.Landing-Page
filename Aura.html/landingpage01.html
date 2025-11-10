@@ -1,0 +1,536 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>K1-Lightwave – Founder's Edition</title>
+    <meta name="description" content="K1-Lightwave Founder's Edition: dual edge-lit LGP, 320 addressable RGB LEDs, ESP32-S3. First 100 units. Help build v2. Ships March 2026.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="min-h-screen antialiased selection:bg-yellow-300/20 selection:text-yellow-300" style="--bg:#1C2130; --surface:#252D3F; --elev:#2F3849; --text:#E6E9EF; --text-2:#B5BDCA; --gold:#FFB84D; --ok:#22DD88; --warn:#F59E0B; --info:#6EE7F3; background-color: var(--bg); color: var(--text); font-family:'M PLUS Rounded 1c', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';">
+    <!-- BACKGROUND LAYERS -->
+    <div class="fixed inset-0 -z-20 overflow-hidden">
+      <!-- Dark canvas base -->
+      <div class="absolute inset-0" style="background: radial-gradient(1200px 800px at 10% 0%, rgba(255,255,255,0.04), transparent 60%), radial-gradient(1000px 600px at 90% 100%, rgba(255,255,255,0.03), transparent 60%), var(--bg);"></div>
+      <!-- LED flow conic gradient disk -->
+      <div class="absolute -top-48 -left-48 w-[900px] h-[900px] rounded-full blur-3xl opacity-[0.12] animate-[spin_24s_linear_infinite]" style="background: conic-gradient(from 180deg at 50% 50%, rgba(255,184,77,0.7), rgba(110,231,243,0.6), rgba(34,221,136,0.6), rgba(245,158,11,0.7), rgba(255,184,77,0.7));"></div>
+      <!-- Secondary glow -->
+      <div class="absolute -bottom-56 -right-56 w-[800px] h-[800px] rounded-full blur-3xl opacity-[0.10] animate-[spin_24s_linear_infinite]" style="background: conic-gradient(from 0deg at 50% 50%, rgba(110,231,243,0.45), rgba(255,184,77,0.45), rgba(245,158,11,0.45), rgba(34,221,136,0.45), rgba(110,231,243,0.45)); animation-direction: reverse;"></div>
+      <!-- Subtle noise overlay -->
+      <div class="absolute inset-0 opacity-[0.06] mix-blend-overlay pointer-events-none" style="background-image: radial-gradient(rgba(255,255,255,0.4) 0.5px, transparent 0.5px); background-size: 6px 6px;"></div>
+    </div>
+
+    <!-- NAV BAR (simple) -->
+    <header class="sticky top-0 z-40 backdrop-blur-xl bg-white/5 ring-1 ring-white/10">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-5 w-5 rounded-[4px]" style="background: linear-gradient(135deg, var(--gold), #ffe0a6); box-shadow: 0 0 24px rgba(255,184,77,0.35);"></div>
+          <div class="text-[18px] tracking-tight uppercase" style="font-family:'Bebas Neue', system-ui; letter-spacing:-0.02em;">K1-Lightwave</div>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm text-[color:var(--text-2)]">
+          <a href="#hardware" class="hover:text-[color:var(--text)] transition">Hardware</a>
+          <a href="#vision" class="hover:text-[color:var(--text)] transition">Vision</a>
+          <a href="#perks" class="hover:text-[color:var(--text)] transition">Perks</a>
+          <a href="#pricing" class="hover:text-[color:var(--text)] transition">Pricing</a>
+          <a href="#faq" class="hover:text-[color:var(--text)] transition">FAQ</a>
+        </nav>
+        <a href="#pricing" class="inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium hover:scale-[1.03] active:scale-95 transition bg-[color:var(--gold)] text-black ring-1 ring-black/10 shadow-[0_12px_24px_rgba(255,184,77,0.25)]">
+          <span>Reserve – $249</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- 1. HERO -->
+    <section class="relative min-h-[100vh] flex items-center justify-center" id="hero">
+      <div class="absolute inset-0 -z-10">
+        <img src="https://images.unsplash.com/photo-1621619856624-42fd193a0661?w=1080&amp;q=80" alt="K1-Lightwave on a desk with LED glow" class="w-full h-full object-cover opacity-70">
+        <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.55));"></div>
+      </div>
+
+      <div class="mx-auto max-w-4xl px-6">
+        <div class="relative rounded-3xl p-8 sm:p-10 md:p-12 backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+          <!-- glass highlights -->
+          <div class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-full blur-2xl opacity-50" style="background: radial-gradient(closest-side, rgba(255,255,255,0.18), transparent);"></div>
+          <div class="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full blur-2xl opacity-30" style="background: radial-gradient(closest-side, rgba(110,231,243,0.25), transparent);"></div>
+
+          <div class="flex items-center gap-3 mb-6">
+            <div class="h-6 w-6 rounded-md" style="background: linear-gradient(135deg, var(--gold), #ffe0a6); box-shadow: 0 0 24px rgba(255,184,77,0.35);"></div>
+            <span class="text-sm text-[color:var(--text-2)]">Early Access</span>
+          </div>
+
+          <h1 class="text-5xl sm:text-6xl md:text-7xl tracking-tight uppercase" style="font-family:'Bebas Neue', system-ui; letter-spacing:-0.02em;">K1-Lightwave</h1>
+          <p class="mt-2 text-xl font-medium" style="color: var(--gold);">Founder's Edition</p>
+          <p class="mt-5 text-2xl max-w-2xl">First 100 Units. Help Us Build V2.</p>
+          <p class="mt-4 text-lg max-w-3xl text-[color:var(--text-2)]">Dual edge-lit LGP. 320 individually addressable LEDs. ESP32-S3. Open hardware. V1 ships March 2026.</p>
+
+          <div class="mt-6 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ring-1 ring-[color:var(--warn)]/40 bg-white/10">
+            <span class="text-[color:var(--warn)]">⚠️ 73 of 100 units remaining</span>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <a href="#pricing" class="group inline-flex justify-center items-center gap-3 rounded-xl px-6 py-4 text-lg font-semibold tracking-tight bg-[color:var(--gold)] text-black ring-1 ring-black/10 hover:scale-[1.05] active:scale-95 transition shadow-[0_14px_36px_rgba(255,184,77,0.3)]">
+              <i data-lucide="credit-card" class="w-5 h-5"></i>
+              <span>Reserve Yours – $249</span>
+            </a>
+            <a href="#hardware" class="inline-flex justify-center items-center gap-2 rounded-xl px-6 py-4 text-lg font-medium ring-1 ring-white/20 bg-white/5 text-[color:var(--text)] hover:bg-white/10 hover:ring-white/30 transition">
+              <i data-lucide="chevrons-down" class="w-5 h-5"></i>
+              <span>Learn More ↓</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-5 left-1/2 -translate-x-1/2 text-[color:var(--text-2)] flex flex-col items-center gap-2">
+        <i data-lucide="mouse-pointer-2" class="w-4 h-4 animate-pulse"></i>
+        <i data-lucide="chevron-down" class="w-5 h-5 animate-bounce"></i>
+      </div>
+    </section>
+
+    <!-- 2. HARDWARE SHOWCASE -->
+    <section id="hardware" class="relative py-20 md:py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <h2 class="text-4xl sm:text-5xl tracking-tight text-center uppercase mb-10 sm:mb-14" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">What Makes K1 Different</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5">
+          <!-- Large 3D/Video Card -->
+          <div class="md:col-span-8 md:row-span-2 rounded-2xl overflow-hidden relative min-h-[320px] md:min-h-[520px] bg-[color:var(--elev)] ring-1 ring-white/10">
+            <img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&amp;w=2069&amp;auto=format&amp;fit=crop" alt="Rotating multi-angle view placeholder" class="absolute inset-0 w-full h-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent"></div>
+            <div class="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1 ring-white/20 bg-white/10">Demo Render</div>
+            <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+              <div class="flex items-center gap-2 text-[color:var(--text-2)]">
+                <i data-lucide="rotate-3d" class="w-5 h-5"></i>
+                <span class="text-sm">Multi-angle preview</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="rounded-lg px-3 py-1.5 text-xs font-medium ring-1 ring-white/20 bg-white/10 hover:ring-white/30 hover:bg-white/15 transition">Pause</button>
+                <button class="rounded-lg px-3 py-1.5 text-xs font-medium ring-1 ring-white/20 bg-white/10 hover:ring-white/30 hover:bg-white/15 transition">Fullscreen</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Right: Dual Edge-Lit -->
+          <div class="md:col-span-4 rounded-2xl relative p-6 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <div class="absolute -top-6 -left-6 h-16 w-16 rounded-full blur-xl opacity-40" style="background: radial-gradient(closest-side, rgba(255,184,77,0.4), transparent);"></div>
+            <div class="flex items-start gap-4">
+              <div class="shrink-0 rounded-xl p-2 ring-1 ring-white/10 bg-white/10">
+                <i data-lucide="scan-line" class="w-6 h-6 text-[color:var(--gold)]"></i>
+              </div>
+              <div>
+                <h3 class="text-xl tracking-tight uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">Dual Edge-Lit LGP</h3>
+                <p class="mt-2 text-[color:var(--text-2)] text-sm sm:text-base">First consumer device with dual-edge illumination. Light enters from both sides, creating even, diffused glow with zero hotspots. Not an LED strip. A light guide.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle Right: 320 LEDs -->
+          <div class="md:col-span-4 rounded-2xl relative p-6 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <div class="absolute -top-6 -right-6 h-16 w-16 rounded-full blur-xl opacity-40" style="background: radial-gradient(closest-side, rgba(110,231,243,0.35), transparent);"></div>
+            <div class="flex items-start gap-4">
+              <div class="shrink-0 rounded-xl p-2 ring-1 ring-white/10 bg-white/10">
+                <i data-lucide="grid-3x3" class="w-6 h-6 text-cyan-300"></i>
+              </div>
+              <div>
+                <h3 class="text-xl tracking-tight uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">320 Addressable LEDs</h3>
+                <p class="mt-2 text-[color:var(--text-2)] text-sm sm:text-base">Not RGB zones. True per-LED control (RGBIC). 160 LEDs per edge. Powered by ESP32-S3 dual-core. Run patterns at 120+ FPS.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Full Width -->
+          <div class="md:col-span-12 rounded-2xl relative overflow-hidden min-h-[240px] ring-1 ring-white/10">
+            <img src="https://images.unsplash.com/photo-1642615835477-d303d7dc9ee9?w=1080&amp;q=80" alt="K1 on a real desk" class="absolute inset-0 w-full h-full object-cover opacity-90">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+            <div class="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-end justify-between">
+              <div>
+                <div class="inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs font-medium ring-1 ring-white/20 bg-white/10">Built for Desks</div>
+                <p class="mt-3 max-w-3xl text-[color:var(--)] text-sm sm:text-base">32cm length. Sits perfectly under 27–34” monitors. USB-C powered. Mounts via 3M adhesive or stand. Cable management built in.</p>
+              </div>
+              <a href="#pricing" class="mt-4 sm:mt-0 inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium bg-[color:var(--gold)] text-black ring-1 ring-black/10 hover:scale-[1.03] active:scale-95 transition">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Reserve – $249</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. THE VISION - STICKY SPLIT -->
+    <section id="vision" class="relative">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="md:grid md:grid-cols-12 md:gap-6">
+          <!-- Left Sticky -->
+          <aside class="md:col-span-5 md:h-screen md:sticky md:top-20">
+            <div class="rounded-3xl p-6 sm:p-7 md:p-8 backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+              <h3 class="text-3xl sm:text-4xl tracking-tight uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">What Ships Now</h3>
+              <p class="mt-2 text-lg text-[color:var(--text-2)]">V1 firmware is functional, not flashy. You get:</p>
+
+              <ul class="mt-5 space-y-3 text-lg">
+                <li class="flex items-start gap-3">
+                  <i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i>
+                  <span>12 preset patterns</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i>
+                  <span>Music-reactive (spectrum analyzer)</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i>
+                  <span>WiFi control (web UI)</span>
+                </li>
+                <li class="flex items-start gap-3">
+                  <i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i>
+                  <span>Open source firmware (ESP-IDF)</span>
+                </li>
+              </ul>
+
+              <div class="mt-6 rounded-xl p-4 ring-1 ring-[color:var(--warn)]/50 bg-white/5">
+                <div class="font-semibold">Honest talk:</div>
+                <p class="mt-1 text-[color:var(--text-2)] text-sm">This is v1. It works. It's not polished. If you need plug-and-play perfection, wait for v2.</p>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Right Scrollable -->
+          <div class="md:col-span-7 md:pt-10 space-y-6">
+            <div class="rounded-3xl p-6 sm:p-7 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20 transition-opacity duration-500 opacity-100 will-change-auto vision-step" data-step="1">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center rounded-full bg-[color:var(--gold)] text-black text-xs font-medium px-2.5 py-1 ring-1 ring-black/10">STEP 1</span>
+                <span class="text-xs text-[color:var(--text-2)]">coming soon</span>
+              </div>
+              <h4 class="mt-3 text-2xl sm:text-3xl tracking-tight" style="font-family:'Bebas Neue'">PRISM.node</h4>
+              <p class="mt-1 text-[color:var(--text-2)]">Visual programming interface. No code required.</p>
+              <div class="mt-4 overflow-hidden rounded-2xl ring-1 ring-white/10">
+                <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&amp;w=1974&amp;auto=format&amp;fit=crop" alt="PRISM.node mockup" class="w-full h-64 object-cover">
+              </div>
+            </div>
+
+            <div class="rounded-3xl p-6 sm:p-7 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20 transition-opacity duration-500 opacity-60 will-change-auto vision-step" data-step="2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center rounded-full bg-cyan-300/80 text-black text-xs font-medium px-2.5 py-1 ring-1 ring-black/10">STEP 2</span>
+                <span class="text-xs text-[color:var(--text-2)]">community-led</span>
+              </div>
+              <h4 class="mt-3 text-2xl sm:text-3xl tracking-tight" style="font-family:'Bebas Neue'">Pattern Marketplace</h4>
+              <p class="mt-1 text-[color:var(--text-2)]">Share patterns. Sell designs. Community-driven.</p>
+              <div class="mt-4 grid grid-cols-3 gap-3">
+                <div class="aspect-video rounded-xl ring-1 ring-white/10 bg-white/5 flex items-center justify-center text-[12px] text-[color:var(--text-2)]">Preview</div>
+                <div class="aspect-video rounded-xl ring-1 ring-white/10 bg-white/5 flex items-center justify-center text-[12px] text-[color:var(--text-2)]">Creator</div>
+                <div class="aspect-video rounded-xl ring-1 ring-white/10 bg-white/5 flex items-center justify-center text-[12px] text-[color:var(--text-2)]">Ratings</div>
+              </div>
+            </div>
+
+            <div class="rounded-3xl p-6 sm:p-7 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20 transition-opacity duration-500 opacity-40 will-change-auto vision-step" data-step="3">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center rounded-full bg-[color:var(--ok)]/90 text-black text-xs font-medium px-2.5 py-1 ring-1 ring-black/10">STEP 3</span>
+                <span class="text-xs text-[color:var(--text-2)]">integrations</span>
+              </div>
+              <h4 class="mt-3 text-2xl sm:text-3xl tracking-tight" style="font-family:'Bebas Neue'">Platform Integrations</h4>
+              <p class="mt-1 text-[color:var(--text-2)]">Home Assistant, WLED, Spotify, IFTTT.</p>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <div class="inline-flex items-center gap-2 rounded-lg px-3 py-2 ring-1 ring-white/10 bg-white/5 text-sm"><i data-lucide="home" class="w-4 h-4"></i>Home Assistant</div>
+                <div class="inline-flex items-center gap-2 rounded-lg px-3 py-2 ring-1 ring-white/10 bg-white/5 text-sm"><i data-lucide="music" class="w-4 h-4"></i>Spotify</div>
+                <div class="inline-flex items-center gap-2 rounded-lg px-3 py-2 ring-1 ring-white/10 bg-white/5 text-sm"><i data-lucide="git-branch" class="w-4 h-4"></i>WLED</div>
+                <div class="inline-flex items-center gap-2 rounded-lg px-3 py-2 ring-1 ring-white/10 bg-white/5 text-sm"><i data-lucide="zap" class="w-4 h-4"></i>IFTTT</div>
+              </div>
+            </div>
+
+            <div class="mt-8 rounded-3xl p-6 sm:p-7 backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 text-center shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+              <div class="text-lg font-semibold">The first 100 decide priority.</div>
+              <p class="mt-2 text-[color:var(--text-2)]">Weekly dev updates. Discord access. Feedback surveys. Your needs shape the roadmap. You're not customers—you're co-creators.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CO-CREATOR PITCH -->
+    <section id="perks" class="relative py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <h2 class="text-4xl sm:text-5xl tracking-tight text-center uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">You're Not Buying a Product.</h2>
+        <p class="mt-2 text-2xl text-center text-[color:var(--text-2)]">You're joining a journey.</p>
+
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+          <div class="rounded-2xl p-6 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <div class="text-5xl">📬</div>
+            <h3 class="mt-3 text-2xl tracking-tight uppercase" style="font-family:'Bebas Neue'">Weekly Dev Updates</h3>
+            <p class="mt-2 text-[color:var(--text-2)]">Behind-the-scenes. Firmware progress. Feature previews. No marketing fluff.</p>
+          </div>
+
+          <div class="rounded-2xl p-6 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <div class="text-5xl">💬</div>
+            <h3 class="mt-3 text-2xl tracking-tight uppercase" style="font-family:'Bebas Neue'">Founder's Discord</h3>
+            <p class="mt-2 text-[color:var(--text-2)]">Direct access to dev team. Ask questions. Share patterns. Debug together.</p>
+          </div>
+
+          <div class="rounded-2xl p-6 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <div class="text-5xl">🗳️</div>
+            <h3 class="mt-3 text-2xl tracking-tight uppercase" style="font-family:'Bebas Neue'">Priority Input</h3>
+            <p class="mt-2 text-[color:var(--text-2)]">Monthly surveys. Feature votes. Your needs shape what we build next.</p>
+          </div>
+        </div>
+
+        <div class="mt-8 rounded-3xl p-6 sm:p-8 backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+          <h4 class="text-2xl sm:text-3xl tracking-tight uppercase" style="font-family:'Bebas Neue'">Founder's Edition Perks</h4>
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">Numbered Unit</div>
+                  <div class="text-[color:var(--text-2)] text-base" style="font-family:'JetBrains Mono', monospace;">Laser-etched serial (e.g., "23/100")</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">Beta Firmware Access</div>
+                  <div class="text-[color:var(--text-2)] text-base">New features before public release</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">Credits</div>
+                  <div class="text-[color:var(--text-2)] text-base">Your name in firmware &amp; docs</div>
+                </div>
+              </li>
+            </ul>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">Lifetime Updates</div>
+                  <div class="text-[color:var(--text-2)] text-base">All firmware updates, forever</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">20% Off V2</div>
+                  <div class="text-[color:var(--text-2)] text-base">When we launch the next gen</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-[color:var(--gold)] mt-1"></i>
+                <div>
+                  <div class="font-medium">Open Hardware</div>
+                  <div class="text-[color:var(--text-2)] text-base">Schematics + firmware source on GitHub</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. WHO IS THIS FOR -->
+    <section id="fit" class="relative py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <h2 class="text-4xl sm:text-5xl tracking-tight text-center uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">Is K1 Right For You?</h2>
+
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Left: Love This -->
+          <div class="rounded-3xl p-6 sm:p-8 backdrop-blur-2xl bg-white/10 ring-1 ring-white/20">
+            <h3 class="text-2xl sm:text-3xl tracking-tight uppercase text-[color:var(--ok)]" style="font-family:'Bebas Neue'">✓ You'll Love This If...</h3>
+            <ul class="mt-4 space-y-3 text-lg">
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> You tinker with ESP32, Arduino, or Raspberry Pi</li>
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> You've used WLED, FastLED, or similar LED projects</li>
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> Your desk setup is on r/battlestations (or should be)</li>
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> You want the first dual edge-lit LGP light bar</li>
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> You're okay with "v1" rough edges</li>
+              <li class="flex items-start gap-3"><span class="text-[color:var(--ok)] mt-1">→</span> You want to shape what this becomes</li>
+            </ul>
+          </div>
+
+          <!-- Right: Not For You -->
+          <div class="rounded-3xl p-6 sm:p-8 backdrop-blur-2xl bg-white/10 ring-1 ring-[color:var(--warn)]/50">
+            <h3 class="text-2xl sm:text-3xl tracking-tight uppercase text-[color:var(--warn)]" style="font-family:'Bebas Neue'">⚠️ This Isn't For You If...</h3>
+            <ul class="mt-4 space-y-3 text-lg text-[color:var(--text-2)]">
+              <li class="flex items-start gap-3"><span class="mt-1">→</span> You want plug-and-play perfection</li>
+              <li class="flex items-start gap-3"><span class="mt-1">→</span> You need extensive customer support</li>
+              <li class="flex items-start gap-3"><span class="mt-1">→</span> You expect mobile apps and mature integrations now</li>
+              <li class="flex items-start gap-3"><span class="mt-1">→</span> You've never flashed firmware or edited config files</li>
+              <li class="flex items-start gap-3"><span class="mt-1">→</span> You're buying this as a gift for someone non-technical</li>
+            </ul>
+
+            <div class="mt-5 rounded-xl p-4 ring-1 ring-[color:var(--warn)]/40 bg-white/5">
+              <div class="font-semibold">We're being honest:</div>
+              <p class="mt-1 text-[color:var(--text-2)] text-sm">V1 is for pioneers. If you need mature software, wait for our Kickstarter in Q3 2026.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. PRICING -->
+    <section id="pricing" class="relative py-20 md:py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <h2 class="text-5xl sm:text-6xl tracking-tight text-center uppercase" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">Founder's Edition</h2>
+        <p class="mt-2 text-center text-lg text-[color:var(--text-2)]">One tier. Fair price. Ships March 2026.</p>
+
+        <div class="mx-auto mt-10 max-w-2xl rounded-3xl p-6 sm:p-8 backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+          <div class="flex items-center justify-center">
+            <span class="inline-flex items-center rounded-full bg-[color:var(--gold)] text-black text-xs font-medium px-3 py-1 ring-1 ring-black/10">Unit 73/100</span>
+          </div>
+          <div class="mt-4 text-center">
+            <div class="text-6xl sm:text-7xl font-semibold tracking-tight" style="color: var(--gold); font-family:'Bebas Neue'; letter-spacing: -0.02em;">$249</div>
+          </div>
+
+          <div class="my-6 h-px bg-white/10"></div>
+
+          <div>
+            <div class="text-lg tracking-tight uppercase" style="font-family:'Bebas Neue'">What's Included</div>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
+              <ul class="space-y-3">
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> 1x K1-Lightwave (numbered)</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> USB-C cable + power adapter</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> Mounting kit (adhesive + stand)</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> Beta firmware access</li>
+              </ul>
+              <ul class="space-y-3">
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> Founder's Discord</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> Lifetime updates</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> 20% off v2 hardware</li>
+                <li class="flex items-start gap-3"><i data-lucide="check-circle" class="w-5 h-5 text-[color:var(--ok)] mt-1"></i> Name in credits</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="my-6 h-px bg-white/10"></div>
+
+          <div class="text-center text-lg">Ships: March 2026</div>
+
+          <a href="#checkout" class="mt-6 w-full inline-flex justify-center items-center gap-3 rounded-xl px-6 py-4 text-2xl font-semibold tracking-tight bg-[color:var(--gold)] text-black ring-1 ring-black/10 hover:scale-[1.05] active:scale-95 transition shadow-[0_16px_40px_rgba(255,184,77,0.35)]">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+            <span>Reserve Your Unit</span>
+          </a>
+
+          <div class="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4 text-[color:var(--text-2)] text-base">
+            <div class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-[color:var(--ok)]"></i> 30-day returns</div>
+            <div class="flex items-center gap-2"><i data-lucide="badge-check" class="w-4 h-4 text-[color:var(--ok)]"></i> 1-year warranty</div>
+            <div class="flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4 text-[color:var(--gold)]"></i> Pay now, or 50% deposit + 50% at ship</div>
+          </div>
+          <div class="mt-3 text-center text-sm text-[color:var(--text-2)]">14 units reserved in last 24h</div>
+
+          <div class="mt-6 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ring-1 ring-[color:var(--warn)]/40 bg-white/10">
+            <span class="text-[color:var(--warn)]">⚠️ 73 of 100 units remaining</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section id="faq" class="relative py-20">
+      <div class="mx-auto max-w-5xl px-6">
+        <h2 class="text-4xl sm:text-5xl tracking-tight text-center uppercase mb-8" style="font-family:'Bebas Neue'; letter-spacing:-0.02em;">Questions?</h2>
+
+        <div class="space-y-3">
+          <!-- FAQ Item -->
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">What exactly ships in March 2026?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">Hardware: K1-Lightwave unit, USB-C cable, power adapter, mounting kit. Firmware: V1 with 12 preset patterns, music-reactive mode, WiFi control. Not included: PRISM.node (coming Q3 2026), mobile app (TBD).</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">Can I return it if I don't like it?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">Yes. 30-day return window from delivery date. Full refund minus shipping. We're confident you'll love it, but we understand v1 isn't for everyone.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">Is the firmware really open source?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">Yes. Full source on GitHub (Apache 2.0 license). Hardware schematics too. Fork it, mod it, share it. We encourage hacking.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">Will there be more than 100 units?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">Yes, but not immediately. This is a limited founder's run. After we ship these 100 and gather feedback, we'll launch a full Kickstarter (Q3 2026) with v2 improvements. Founder's Edition holders get 20% off v2 + priority shipping.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">What if something breaks?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">1-year hardware warranty covers defects. We'll replace or repair. For v1, we also offer Discord support (founders-only channel) where we troubleshoot together.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">Why should I buy v1 instead of waiting for v2?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">If you want to shape the product: Your feedback becomes features. If you want exclusivity: Only 100 numbered units exist. If you want savings: V2 will cost more (~$329). You get 20% off as a founder. If you want to wait: That's totally fine. We'll see you at the Kickstarter.</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl ring-1 ring-white/20 bg-white/5 overflow-hidden">
+            <button class="w-full flex items-center justify-between px-5 sm:px-6 py-4 cursor-pointer faq-toggle">
+              <div class="text-lg sm:text-xl tracking-tight uppercase text-left" style="font-family:'Bebas Neue'">What's the difference between K1 and other LED strips?</div>
+              <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div class="faq-content px-5 sm:px-6 max-h-0 overflow-hidden transition-all duration-300">
+              <p class="pb-5 text-[color:var(--text-2)] text-lg">It's not an LED strip. It's a dual edge-lit light guide plate. LEDs are hidden at the edges. Light diffuses through the acrylic. No hotspots, no visible LEDs. Clean, even glow. Also: 320 individually addressable LEDs (RGBIC), not RGB zones.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. FOOTER -->
+    <footer class="relative pt-12 pb-10">
+      <div class="absolute inset-x-0 top-0 h-px bg-white/10"></div>
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="rounded-3xl p-6 sm:p-8 text-center backdrop-blur-3xl bg-white/10 ring-1 ring-white/20 shadow-[0_12px_24px_rgba(0,0,0,0.18),_0_32px_64px_rgba(0,0,0,0.27)]">
+          <div class="text-2xl font-medium">Ready to join the first 100?</div>
+          <a href="#pricing" class="mt-5 inline-flex items-center gap-3 rounded-xl px-6 py-3 text-lg font-semibold tracking-tight bg-[color:var(--gold)] text-black ring-1 ring-black/10 hover:scale-[1.05] active:scale-95 transition shadow-[0_12px_28px_rgba(255,184,77,0.3)]">
+            <i data-lucide="rocket" class="w-5 h-5"></i>
+            <span>Reserve Your Unit – $249</span>
+          </a>
+
+          <div class="mt-8 text-[color:var(--text-2)]">Sold out? Join the waitlist for Kickstarter launch:</div>
+          <form class="mt-3 mx-auto max-w-md flex items-center gap-2">
+            <div class="flex-1">
+              <input type="email" required="" placeholder="your@email.com" class="w-full rounded-xl px-4 py-3 bg-white/5 placeholder:text-[color:var(--text-2)]/70 text-[color:var(--text)] ring-1 ring-white/15 focus:ring-white/30 outline-none transition">
+            </div>
+            <button type="submit" class="rounded-xl px-4 py-3 bg-[color:var(--gold)] text-black font-medium ring-1 ring-black/10 hover:scale-[1.03] active:scale-95 transition">Notify Me</button>
+          </form>
+        </div>
+
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-sm">
+          <div class="space-y-2">
+            <a href="#" class="block text-[color:var(--text)] hover:underline">About</a>
+            <a href="#" class="block text-[color:var(--text)] hover:underline">Contact</a>
+            <a href="#" class="block text-[color:var(--text)] hover:underline">Press Kit</a>
+          </div>
+          <div class="space-y-2">
+            <a href="#" class="block text-[color:var(--text)] hover:underline">GitHub</a>
+            <a href="#" class="block text-[color:var(--text)] hover:underline">Discord</a>
+            <a href="#" class="block text-[color:var(--text)] hover:underline">Twitter</a>
+          </div>
+          </div></div></footer></body></html>
