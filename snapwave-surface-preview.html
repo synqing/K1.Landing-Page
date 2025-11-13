@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snapwave Simulator - K1 Lightwave</title>
+    <title>Snapwave Surface Preview - K1 Lightwave</title>
     <style>
         * {
             margin: 0;
@@ -31,7 +31,7 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: 48px;
             color: #FFB84D;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: 2px;
         }
 
@@ -40,6 +40,21 @@
             color: #B5BDCA;
             margin-bottom: 30px;
             font-size: 14px;
+        }
+
+        .warning {
+            grid-column: 1 / -1;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .warning strong {
+            color: #F59E0B;
         }
 
         .controls {
@@ -151,6 +166,12 @@
             background: #ffc266;
         }
 
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
         .canvas-container {
             background: rgba(255,255,255,0.06);
             border: 1px solid rgba(255,255,255,0.2);
@@ -159,24 +180,20 @@
             backdrop-filter: blur(20px);
         }
 
+        .preview-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 990px; /* 330mm × 3 scale */
+            margin: 0 auto;
+            aspect-ratio: 330 / 54; /* K1 aspect ratio */
+        }
+
         canvas {
             width: 100%;
-            height: 600px;
+            height: 100%;
             border-radius: 8px;
             background: #000;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            transition: filter 0.3s;
-        }
-
-        canvas.surface-mode {
-            filter: blur(3px) brightness(1.2) saturate(1.1);
-            image-rendering: auto;
-        }
-
-        canvas.surface-mode-glow {
-            filter: blur(3px) brightness(1.3) saturate(1.1) drop-shadow(0 0 20px rgba(255,255,255,0.5));
-            image-rendering: auto;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
         }
 
         .stats {
@@ -206,39 +223,30 @@
             font-weight: bold;
         }
 
-        .preset-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 6px;
-        }
-
-        .export-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 8px;
-        }
-
-        .checkbox-group label {
+        .info-box {
+            margin-top: 20px;
+            background: rgba(110, 231, 243, 0.1);
+            border: 1px solid rgba(110, 231, 243, 0.3);
+            padding: 16px;
+            border-radius: 8px;
             font-size: 12px;
-            color: #B5BDCA;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #6EE7F3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>SNAPWAVE SIMULATOR</h1>
+        <h1>SNAPWAVE SURFACE PREVIEW</h1>
         <div class="subtitle">
-            Exact implementation of LightwaveOS Snapwave Mode • 320 LEDs • Real-time chromagram control
+            Realistic K1-Lightwave visualization • Proper vertical blending • Glowing frosted surface
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ SURFACE MODE:</strong> This preview shows what users actually see - a unified glowing surface with top/bottom edge blending. NOT discrete LED pixels. This is the correct visualization for landing page videos and marketing materials.
         </div>
 
         <div class="controls">
@@ -255,6 +263,24 @@
                         <span class="note-value" id="amplitude-value">0.50</span>
                     </div>
                     <input type="range" id="amplitude" min="0" max="100" value="50" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Surface Settings</h3>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Bloom Strength</span>
+                        <span class="note-value" id="bloom-value">1.3</span>
+                    </div>
+                    <input type="range" id="bloom" min="100" max="200" value="130" step="1">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Blur Radius</span>
+                        <span class="note-value" id="blur-value">3.0</span>
+                    </div>
+                    <input type="range" id="blur" min="10" max="80" value="30" step="1">
                 </div>
             </div>
 
@@ -278,28 +304,15 @@
                 </div>
             </div>
 
-            <div class="control-group export-section">
-                <h3>Display Mode</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="mirror-enabled" checked>
-                    <label for="mirror-enabled">Mirror Mode (160 LEDs/edge)</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="surface-mode" onchange="toggleSurfaceMode()">
-                    <label for="surface-mode">Surface Mode (blur/glow preview)</label>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Export</h3>
-                <div class="button-group" style="grid-template-columns: 1fr;">
-                    <button class="primary" onclick="exportFrameData()">📥 Export KeyShot Data</button>
-                </div>
+            <div class="info-box">
+                <strong>What you see:</strong> Frosted acrylic surface (330mm × 54mm) with dual edge-lit LED illumination. Light enters at top/bottom edges, diffuses through acrylic volume, creates unified glow. Top ~40% shows top edge dominant, middle ~20% is additive blend, bottom ~40% shows bottom edge dominant.
             </div>
         </div>
 
         <div class="canvas-container">
-            <canvas id="led-canvas"></canvas>
+            <div class="preview-wrapper">
+                <canvas id="surface-canvas"></canvas>
+            </div>
             <div class="stats">
                 <div class="stat">
                     <div class="stat-label">Time</div>
@@ -310,7 +323,7 @@
                     <div class="stat-value" id="stat-frame">0</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">Position</div>
+                    <div class="stat-label">Center Pos</div>
                     <div class="stat-value" id="stat-pos">160</div>
                 </div>
                 <div class="stat">
@@ -323,7 +336,9 @@
 
     <script>
         // Constants
-        const NATIVE_RESOLUTION = 320;
+        const SURFACE_WIDTH = 330;   // Pixels (one per LED)
+        const SURFACE_HEIGHT = 54;    // Pixels (K1 height)
+        const LED_COUNT = 320;
         const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const NOTE_COLORS = [
             '#FF0000', '#FF4000', '#FF8000', '#FFBF00',
@@ -334,18 +349,20 @@
         // State
         let chromagram = new Array(12).fill(0);
         let amplitude = 0.5;
-        let leds = new Array(NATIVE_RESOLUTION).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        let ch1_leds = new Array(160).fill(null).map(() => ({r: 0, g: 0, b: 0})); // Bottom edge
+        let ch2_leds = new Array(160).fill(null).map(() => ({r: 0, g: 0, b: 0})); // Top edge
         let waveform_peak_scaled_last = 0.0;
         let startTime = Date.now();
         let frameCount = 0;
         let isPlaying = true;
-        let exportData = [];
+        let bloomStrength = 1.3;
+        let blurRadius = 3.0;
 
         // Canvas setup
-        const canvas = document.getElementById('led-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 1000;
-        canvas.height = 320;
+        const canvas = document.getElementById('surface-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = SURFACE_WIDTH;
+        canvas.height = SURFACE_HEIGHT;
 
         // Initialize chromagram sliders
         const slidersContainer = document.getElementById('chromagram-sliders');
@@ -374,13 +391,24 @@
             document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
         });
 
+        // Bloom slider
+        document.getElementById('bloom').addEventListener('input', (e) => {
+            bloomStrength = e.target.value / 100;
+            document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
+        });
+
+        // Blur slider
+        document.getElementById('blur').addEventListener('input', (e) => {
+            blurRadius = e.target.value / 10;
+            document.getElementById('blur-value').textContent = blurRadius.toFixed(1);
+        });
+
         // Helper functions
         function tanh(x) {
             return Math.tanh(x);
         }
 
         function hsv_to_rgb(h, s, v) {
-            // h: 0-1, s: 0-1, v: 0-1
             let c = v * s;
             let x = c * (1 - Math.abs((h * 6) % 2 - 1));
             let m = v - c;
@@ -401,26 +429,22 @@
         }
 
         function shift_leds_up(leds) {
-            // Shift all LEDs up by 1 position (scrolling effect)
-            for (let i = NATIVE_RESOLUTION - 1; i > 0; i--) {
-                leds[i] = {...leds[i - 1]};
+            // Shift all LEDs up by 1 position
+            for (let i = SURFACE_HEIGHT - 1; i > 0; i--) {
+                for (let ch = 0; ch < 2; ch++) {
+                    const ledArray = ch === 0 ? ch1_leds : ch2_leds;
+                    // This is just for the scrolling effect, not used in surface rendering
+                }
             }
         }
 
-        function mirror_image_downwards(leds) {
-            const half = NATIVE_RESOLUTION / 2;
-            for (let i = 0; i < half; i++) {
-                leds[NATIVE_RESOLUTION - 1 - i] = {...leds[i]};
-            }
-        }
-
-        // Main Snapwave algorithm (exact implementation)
+        // Main Snapwave algorithm (adapted for dual-channel)
         function snapwave_step() {
             const SQUARE_ITER = 2.0;
             const SATURATION = 1.0;
             const PHOTONS = 1.0;
 
-            // Smooth the waveform peak (98% smoothing)
+            // Smooth the waveform peak
             waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
 
             // --- Color Calculation from Chromagram ---
@@ -431,7 +455,6 @@
                 let prog = c / 12.0;
                 let bin = chromagram[c];
 
-                // Contrast enhancement
                 let bright = bin;
                 for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
                     bright *= bright;
@@ -443,7 +466,6 @@
                     bright = bright * (1.0 - fract_iter) + squared * fract_iter;
                 }
 
-                // Only add colors from active notes
                 if (bright > 0.05) {
                     let note_col = hsv_to_rgb(prog, SATURATION, bright);
                     current_sum_color.r += note_col.r;
@@ -453,7 +475,6 @@
                 }
             }
 
-            // Normalize by total magnitude (chromatic mode)
             if (total_magnitude > 0.01) {
                 current_sum_color.r /= total_magnitude;
                 current_sum_color.g /= total_magnitude;
@@ -464,70 +485,56 @@
                 current_sum_color.b *= total_magnitude;
             }
 
-            // Apply PHOTONS brightness scaling
             current_sum_color.r *= PHOTONS;
             current_sum_color.g *= PHOTONS;
             current_sum_color.b *= PHOTONS;
 
-            // --- Dynamic Fading for Trails ---
-            let abs_amp = Math.abs(waveform_peak_scaled_last);
-            if (abs_amp > 1.0) abs_amp = 1.0;
-
-            let max_fade_reduction = 0.10;
-            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
-
-            // Apply the dynamic fade
-            for (let i = 0; i < NATIVE_RESOLUTION; i++) {
-                leds[i].r *= dynamic_fade_amount;
-                leds[i].g *= dynamic_fade_amount;
-                leds[i].b *= dynamic_fade_amount;
-            }
-
-            // --- Waveform Display ---
-            shift_leds_up(leds);
-
+            // --- Calculate oscillation (same as original Snapwave) ---
             let amp = waveform_peak_scaled_last;
-
-            // Apply threshold
             let threshold = 0.05;
-            if (Math.abs(amp) < threshold) {
-                amp = 0.0;
-            }
+            if (Math.abs(amp) < threshold) amp = 0.0;
 
-            // CRITICAL: Time-based oscillation from chromagram
             let oscillation = 0.0;
             let millis = Date.now() - startTime;
 
             for (let i = 0; i < 12; i++) {
                 if (chromagram[i] > 0.1) {
-                    // Each note contributes with different phase
                     oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
                 }
             }
 
-            // Normalize with tanh (creates the "snap")
             oscillation = tanh(oscillation * 2.0);
-
-            // Mix oscillation with amplitude
             amp = oscillation * waveform_peak_scaled_last * 0.7;
 
-            // Clamp
             if (amp > 1.0) amp = 1.0;
             else if (amp < -1.0) amp = -1.0;
 
-            // Calculate position
-            let center = NATIVE_RESOLUTION / 2;
-            let pos_f = center + amp * (NATIVE_RESOLUTION / 2.0);
+            // Calculate position (0-159 range for LED index)
+            let center = 80; // Center of 160 LEDs
+            let pos_f = center + amp * 80;
             let pos = Math.round(pos_f);
             if (pos < 0) pos = 0;
-            if (pos >= NATIVE_RESOLUTION) pos = NATIVE_RESOLUTION - 1;
+            if (pos >= 160) pos = 159;
 
-            // Set the new dot
-            leds[pos] = {...current_sum_color};
+            // Update BOTH edges with same color (mirrored mode)
+            // This simulates the dual-edge illumination
+            ch1_leds[pos] = {...current_sum_color};
+            ch2_leds[pos] = {...current_sum_color};
 
-            // Mirror if enabled
-            if (document.getElementById('mirror-enabled').checked) {
-                mirror_image_downwards(leds);
+            // Fade trails
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
+            let max_fade_reduction = 0.10;
+            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            for (let i = 0; i < 160; i++) {
+                ch1_leds[i].r *= dynamic_fade_amount;
+                ch1_leds[i].g *= dynamic_fade_amount;
+                ch1_leds[i].b *= dynamic_fade_amount;
+
+                ch2_leds[i].r *= dynamic_fade_amount;
+                ch2_leds[i].g *= dynamic_fade_amount;
+                ch2_leds[i].b *= dynamic_fade_amount;
             }
 
             // Update stats
@@ -539,23 +546,60 @@
             frameCount++;
         }
 
-        // Render LEDs to canvas
-        function render() {
-            const ledWidth = canvas.width / NATIVE_RESOLUTION;
+        // Vertical blending function
+        function blendInfluence(y_position, exponent = 1.5) {
+            const bottom_influence = Math.pow(1.0 - y_position, exponent);
+            const top_influence = Math.pow(y_position, exponent);
+            return { bottom: bottom_influence, top: top_influence };
+        }
 
-            // Clear with black
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Render surface with proper vertical blending
+        function renderSurface() {
+            const imageData = ctx.createImageData(SURFACE_WIDTH, SURFACE_HEIGHT);
+            const data = imageData.data;
 
-            // Draw each LED as a vertical line
-            for (let i = 0; i < NATIVE_RESOLUTION; i++) {
-                const led = leds[i];
-                const r = Math.floor((led.r / 65535) * 255);
-                const g = Math.floor((led.g / 65535) * 255);
-                const b = Math.floor((led.b / 65535) * 255);
+            for (let y = 0; y < SURFACE_HEIGHT; y++) {
+                const y_norm = y / (SURFACE_HEIGHT - 1);
+                const influence = blendInfluence(y_norm, 1.5);
 
-                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                ctx.fillRect(i * ledWidth, 0, ledWidth, canvas.height);
+                for (let x = 0; x < SURFACE_WIDTH; x++) {
+                    // Map x position to LED index (330 pixels → 160 LEDs)
+                    const led_index = Math.floor(x * (160 / SURFACE_WIDTH));
+
+                    // Get LED colors
+                    const top_color = ch2_leds[led_index];
+                    const bottom_color = ch1_leds[led_index];
+
+                    // Additive blending with vertical influence
+                    let r = bottom_color.r * influence.bottom + top_color.r * influence.top;
+                    let g = bottom_color.g * influence.bottom + top_color.g * influence.top;
+                    let b = bottom_color.b * influence.bottom + top_color.b * influence.top;
+
+                    // Apply bloom
+                    r *= bloomStrength;
+                    g *= bloomStrength;
+                    b *= bloomStrength;
+
+                    // Convert from 16-bit to 8-bit
+                    r = Math.min(255, (r / 65535) * 255);
+                    g = Math.min(255, (g / 65535) * 255);
+                    b = Math.min(255, (b / 65535) * 255);
+
+                    const idx = (y * SURFACE_WIDTH + x) * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = 255;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Apply blur for diffusion effect
+            if (blurRadius > 0.1) {
+                ctx.filter = `blur(${blurRadius}px)`;
+                ctx.drawImage(canvas, 0, 0);
+                ctx.filter = 'none';
             }
         }
 
@@ -563,7 +607,7 @@
         function animate() {
             if (isPlaying) {
                 snapwave_step();
-                render();
+                renderSurface();
             }
             requestAnimationFrame(animate);
         }
@@ -580,10 +624,10 @@
                     amplitude = 0.7;
                     break;
                 case 'dim7':
-                    chromagram[0] = 0.7;  // C
-                    chromagram[3] = 0.7;  // D#
-                    chromagram[6] = 0.7;  // F#
-                    chromagram[9] = 0.7;  // A
+                    chromagram[0] = 0.7;
+                    chromagram[3] = 0.7;
+                    chromagram[6] = 0.7;
+                    chromagram[9] = 0.7;
                     amplitude = 0.8;
                     break;
                 case 'chromatic':
@@ -623,78 +667,8 @@
             startTime = Date.now();
             frameCount = 0;
             waveform_peak_scaled_last = 0.0;
-            leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
-        }
-
-        // Surface mode toggle
-        function toggleSurfaceMode() {
-            const canvas = document.getElementById('led-canvas');
-            const enabled = document.getElementById('surface-mode').checked;
-
-            if (enabled) {
-                canvas.classList.add('surface-mode-glow');
-            } else {
-                canvas.classList.remove('surface-mode-glow');
-            }
-        }
-
-        // Export frame data for KeyShot
-        function exportFrameData() {
-            const duration = 15; // 15 seconds
-            const fps = 30;
-            const totalFrames = duration * fps;
-
-            let exportFrames = [];
-
-            // Save current state
-            let savedTime = Date.now() - startTime;
-            let savedLeds = leds.map(led => ({...led}));
-            let savedPeak = waveform_peak_scaled_last;
-            let savedFrame = frameCount;
-
-            // Reset for export
-            resetTime();
-
-            // Generate frames
-            for (let f = 0; f < totalFrames; f++) {
-                snapwave_step();
-
-                let frameData = {
-                    frame: f,
-                    time: f / fps,
-                    leds: leds.map((led, i) => ({
-                        index: i,
-                        r: Math.floor(led.r),
-                        g: Math.floor(led.g),
-                        b: Math.floor(led.b),
-                        r_norm: led.r / 65535,
-                        g_norm: led.g / 65535,
-                        b_norm: led.b / 65535
-                    }))
-                };
-
-                exportFrames.push(frameData);
-
-                // Advance time to next frame
-                startTime -= (1000 / fps);
-            }
-
-            // Restore state
-            startTime = Date.now() - savedTime;
-            leds = savedLeds;
-            waveform_peak_scaled_last = savedPeak;
-            frameCount = savedFrame;
-
-            // Download as JSON
-            const dataStr = JSON.stringify(exportFrames, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'snapwave_keyshot_data.json';
-            link.click();
-
-            alert(`Exported ${totalFrames} frames (${duration}s @ ${fps}fps)\n\nFile: snapwave_keyshot_data.json\n\nEach frame contains 320 LED states with RGB values (0-65535)`);
+            ch1_leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
+            ch2_leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
         }
 
         // Start animation

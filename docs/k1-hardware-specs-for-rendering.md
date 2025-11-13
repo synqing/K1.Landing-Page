@@ -81,59 +81,177 @@ Result: Even, diffused glow with ZERO hotspots
 
 ## KeyShot Rendering Strategy
 
-### Option A: Emissive Geometry (Recommended)
+### ⚠️ CRITICAL: What Users Actually See
 
+**Users DO NOT see individual LED dots.**
+
+The K1 is a **glowing frosted surface** - like Apple Magic Keyboard backlight or Audi ambient lighting. Light enters at hidden edges, diffuses through the acrylic volume, and creates unified surface illumination.
+
+**Visual Perception**:
+- Frosted, semi-translucent surface (NOT glossy)
+- Soft, diffused glow (NOT discrete LED pixels)
+- Vertical gradient: edges slightly brighter, center slightly softer
+- Additive blending: top and bottom lights blend in middle ~20% zone
+- Motion appears as "surface flow" (like water ripples or light blooms)
+
+**DO NOT RENDER**: 320 visible LED dots, matrix displays, or pixel grids
+
+**DO RENDER**: Unified glowing plane with bloom/glow post-processing
+
+---
+
+### Recommended Approach: Volumetric Emissive Surface
+
+**Geometry Setup**:
 ```
-Geometry Setup:
-1. Light guide plate: 330mm × 54mm × 4mm box
-2. Material: Translucent acrylic (IOR 1.49, slight blue tint)
-3. Edge emissive strips: Two thin planes (330mm × 0.5mm) at long edges
-
-Animation Strategy:
-1. Create 160 point lights along each edge (320 total)
-2. Space lights 2.0625mm apart
-3. Animate color/intensity per frame from Snapwave data
-4. Let KeyShot's light solver handle diffusion
-```
-
-**Pros**:
-- Physically accurate light behavior
-- KeyShot handles diffusion/scattering
-- Clean, realistic result
-
-**Cons**:
-- 320 animated lights = slow render
-- Complex setup
-
-### Option B: Emissive Texture (Fast Prototyping)
-
-```
-Geometry Setup:
-1. Light guide plate: 330mm × 54mm × 4mm box
-2. Material: Emissive shader with animated texture
-
-Texture Setup:
-1. Convert Snapwave JSON to image sequence (320×1 pixels)
-2. Map to emissive channel
-3. Use UV projection to stretch across edges
-4. Animate texture sequence at 30 FPS
+1. Main LGP: 330mm × 54mm × 4mm acrylic box
+2. Hidden edge emitters: Two thin planes (330mm × 0.5mm) at top/bottom edges
+   - Position: Flush with LGP edges, NOT visible to camera
+   - Purpose: Light source only (camera never sees these)
 ```
 
-**Pros**:
-- Fast setup, fast render
-- Easy iteration
-- Good for prototyping
-
-**Cons**:
-- Less physically accurate
-- Won't capture true light guide behavior
-
-### Option C: Hybrid (Best Quality)
-
+**Material: Frosted Acrylic**
 ```
-1. Use Option A for light sources (320 point lights)
-2. Add Option B's texture as supplemental emissive overlay
-3. Blend between light solver (realism) and texture (control)
+Base Material:
+- Type: Translucent/Dielectric
+- Color: Very slight blue tint (RGB: 250, 252, 255)
+- IOR: 1.49 (PMMA acrylic)
+- Roughness: 0.3-0.4 (CRITICAL: frosted, NOT polished)
+- Transparency: 85-95%
+
+Surface Treatment:
+- Front/back faces: Slight roughness (simulates extraction features)
+- Edge faces: Polished (0.0 roughness)
+
+Subsurface Scattering:
+- Enable: Yes
+- Scatter distance: 5-8mm (creates vertical blending)
+- Scatter color: White with hint of blue
+- Density: Low (0.1-0.2)
+```
+
+**Animation Strategy**:
+
+**Method 1: Emissive Texture Sequence (Recommended for Speed)**
+```
+1. Convert Snapwave JSON to vertical gradient images:
+   - Input: 320 LED values per frame
+   - Process: Apply vertical blending algorithm (see below)
+   - Output: 330px × 54px images (one per frame)
+
+2. Apply to LGP emissive channel:
+   - Map texture to front face
+   - Emissive intensity: 2.0-5.0 (adjust for desired glow)
+   - Animate sequence at 30 FPS
+
+3. Post-processing:
+   - Bloom/glow: ESSENTIAL (strength 1.5-2.0)
+   - Blur radius: 0.4-0.6
+   - Threshold: 0.85
+```
+
+**Method 2: Volumetric Light Sources (Most Accurate)**
+```
+1. Create hidden edge light arrays:
+   - Top edge: 160 area lights (2mm × 2mm each)
+   - Bottom edge: 160 area lights (mirrored)
+   - Position: Inside edge emitter planes (not visible to camera)
+
+2. Animate light colors from Snapwave data:
+   - Import LED values per frame
+   - Map to light color/intensity
+   - Let KeyShot's light solver handle diffusion
+
+3. Rendering:
+   - Samples: 1024+ (critical for subsurface scattering)
+   - Ray bounces: 16+ (light needs to scatter through volume)
+   - Caustics: Optional (adds realism but slower)
+```
+
+**Method 3: Hybrid (Best Quality + Control)**
+```
+1. Use Method 2 for physical accuracy (volumetric lights)
+2. Add Method 1 as supplemental emissive overlay (5-10% contribution)
+3. Blend:
+   - 90% physical light solver (realism)
+   - 10% emissive texture (ensures exact pattern fidelity)
+```
+
+---
+
+### Vertical Blending Algorithm
+
+**CRITICAL**: Top and bottom LED edges don't create distinct zones. They blend additively in the middle.
+
+**Influence Distribution**:
+```
+Vertical Position (0.0 = bottom, 1.0 = top):
+
+Top Edge Influence:    Bottom Edge Influence:
+    1.0 ┤ ████              0.0 ┤
+    0.8 ┤ ████              0.2 ┤ ░░
+    0.6 ┤ ████              0.4 ┤ ░░░
+    0.4 ┤ ▓▓░░  ← BLEND    0.6 ┤ ░░░░
+    0.2 ┤ ░░                0.8 ┤ ████
+    0.0 ┤                   1.0 ┤ ████
+        └────────                └────────
+     Bottom   Top            Bottom   Top
+```
+
+**Blending Formula** (for texture generation):
+```python
+def calculate_surface_color(y_position, top_color, bottom_color):
+    """
+    y_position: 0.0 (bottom edge) to 1.0 (top edge)
+    top_color: RGB from CH2 (top edge LEDs)
+    bottom_color: RGB from CH1 (bottom edge LEDs)
+    """
+    # Brightness falloff from edges (power curve creates soft blend)
+    bottom_influence = (1.0 - y_position) ** 1.5
+    top_influence = y_position ** 1.5
+
+    # Additive blending
+    r = bottom_color.r * bottom_influence + top_color.r * top_influence
+    g = bottom_color.g * bottom_influence + top_color.g * top_influence
+    b = bottom_color.b * bottom_influence + top_color.b * top_influence
+
+    return RGB(r, g, b)
+```
+
+**Zone Breakdown**:
+- **Top ~40%**: Top edge dominant (80-100% top, 0-20% bottom)
+- **Middle ~20%**: Additive blend zone (40-60% each)
+- **Bottom ~40%**: Bottom edge dominant (80-100% bottom, 0-20% top)
+
+**NO hard horizontal lines** - all transitions are smooth gradients
+
+---
+
+### Post-Processing: Bloom/Glow is MANDATORY
+
+Without bloom, the LGP looks like a dull plastic panel. With bloom, it becomes a glowing surface.
+
+**KeyShot Post-Processing**:
+```
+Enable Bloom/Glow:
+- Strength: 1.5-2.5 (adjust to taste)
+- Radius: 0.4-0.8 (wider = softer glow)
+- Threshold: 0.7-0.9 (only bright areas glow)
+
+Optional Enhancements:
+- Lens effects: Subtle (0.1-0.2 strength)
+- Chromatic aberration: Disabled (looks artificial)
+- Vignette: Subtle edge darkening (0.05-0.1)
+```
+
+**In Blender/After Effects**:
+```
+Compositor/Effect Chain:
+1. Base render (LGP with emissive)
+2. Gaussian Blur (radius 20-40px at 1080p)
+3. Add blend mode (composite over base)
+4. Opacity: 40-60%
+5. Levels adjustment (brighten slightly)
 ```
 
 ---
@@ -145,19 +263,36 @@ Texture Setup:
 2. **Enable "Mirror Mode"** (critical for dual-edge representation)
 3. Adjust chromagram/amplitude for desired pattern
 4. Click "Export KeyShot Data"
-5. Receive `snapwave_keyshot_data.json`
+5. Receive `snapwave_keyshot_data.json` (raw LED data)
 
-### Step 2: Convert to KeyShot Format
+### Step 2: Convert to Surface Textures (NEW - Proper Method)
 
-**Option A: Image Sequence**
+**⚠️ UPDATED**: Convert raw LED data to **surface textures** with vertical blending.
+
+**Option A: Surface Texture Sequence (Recommended)**
+```bash
+python scripts/convert-snapwave-to-surface.py \
+    snapwave_keyshot_data.json \
+    output_surface_frames/ \
+    --width 330 \
+    --height 54 \
+    --blend-exponent 1.5
+```
+Result: `frame_0000.png` through `frame_0449.png` (330×54 pixels each)
+- **330px width**: One pixel per LED (horizontal axis)
+- **54px height**: Vertical surface with proper blending
+- **Blending**: Top/bottom edges blended with power curve (y^1.5)
+
+**Option B: Raw LED Data (Legacy - For Debugging Only)**
 ```bash
 python scripts/convert-snapwave-to-images.py \
     snapwave_keyshot_data.json \
     output_frames/
 ```
-Result: `frame_0000.png` through `frame_0449.png` (320×1 pixels each)
+Result: `frame_0000.png` (320×1 pixels) - shows discrete LED values
+⚠️ **NOT recommended for final renders** (doesn't show surface diffusion)
 
-**Option B: CSV for Scripting**
+**Option C: CSV for Custom Scripting**
 ```bash
 python scripts/convert-snapwave-to-images.py \
     snapwave_keyshot_data.json \
@@ -165,41 +300,46 @@ python scripts/convert-snapwave-to-images.py \
 ```
 Result: CSV with columns `frame,led,r,g,b,r_norm,g_norm,b_norm`
 
-### Step 3: KeyShot Setup
+### Step 3: KeyShot Setup (Surface Texture Method)
 
-#### For Image Sequence Method:
+#### Recommended Workflow:
 ```
-1. Create K1 geometry (330×54×4mm box)
-2. Create emissive material
-3. Diffuse → Texture → Type: Image Sequence
-4. Select frame_0000.png from output_frames/
-5. Set Animation → FPS: 30
-6. Set UV mapping: Edge projection
-7. Render animation (15s = 450 frames)
+1. Create K1 geometry:
+   - Main LGP: 330mm × 54mm × 4mm box
+   - Material: Frosted acrylic (see Material Properties section)
+
+2. Apply surface texture sequence:
+   - Emissive → Texture → Type: Image Sequence
+   - Select: output_surface_frames/frame_0000.png
+   - Mapping: Planar (front face)
+   - Scale: Fit to face (330mm × 54mm)
+   - Emissive intensity: 3.0-5.0
+
+3. Animation settings:
+   - FPS: 30
+   - Duration: 15 seconds (450 frames)
+   - Loop: Enabled
+
+4. Render settings:
+   - Samples: 1024+
+   - Bloom/glow: MANDATORY (strength 1.5-2.0)
+   - Resolution: 1920×1080 (hero video)
+
+5. Output:
+   - Format: H.264 MP4
+   - Target size: <5MB (for web)
 ```
 
-#### For Light Array Method (Python):
-```python
-import keyshot
+#### Alternative: Volumetric Light Method (Most Accurate, Slower)
+```
+Use scripts/generate-keyshot-lights.py to create light array:
 
-# Load CSV data
-frames = load_csv('animation_data.csv')
+python scripts/generate-keyshot-lights.py \
+    animation_data.csv \
+    keyshot_light_script.py
 
-# Create 320 lights along edges
-for i in range(160):
-    # Top edge lights
-    x = (i / 160.0) * 330  # Position along 330mm edge
-    light_top = create_point_light(pos=[x, 54, 2])  # Top edge
-
-    # Bottom edge lights (mirrored)
-    light_bottom = create_point_light(pos=[x, 0, 2])  # Bottom edge
-
-    # Keyframe colors from CSV
-    for frame in frames:
-        if frame['led'] == i:
-            set_light_color(light_top, frame, rgb=[...])
-        if frame['led'] == i + 160:
-            set_light_color(light_bottom, frame, rgb=[...])
+Then import into KeyShot Python console to create 320 animated lights.
+See Method 2 in "Recommended Approach" section above.
 ```
 
 ---
