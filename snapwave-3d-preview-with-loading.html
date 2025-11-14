@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K1 Lightwave - ULTIMATE ULTRA BANGER // Fluid, Spectral, TAA</title>
+    <style>
+        /* Minimalist Presentation Styling */
+         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000000; /* True black */
+            color: #FFFFFF;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFB84D;
+            font-family: monospace;
+            font-size: 16px;
+            letter-spacing: 2px;
+            z-index: 200;
+            background: linear-gradient(90deg, #FFB84D 0%, #6EE7F3 50%, #FFB84D 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* lil-gui customization for dark/premium theme */
+        .lil-gui {
+            --font-family: 'Inter', sans-serif;
+            --font-size: 11px;
+            --background-color: rgba(5, 5, 15, 0.7);
+            --text-color: #E6E9EF;
+            --title-background-color: #111122;
+            --title-text-color: #FFB84D;
+            --widget-color: #303040;
+            --hover-color: #404050;
+            --focus-color: #505060;
+            --number-color: #6EE7F3;
+            --string-color: #FFB84D;
+            --padding: 6px;
+            --spacing: 6px;
+            --widget-height: 24px;
+            --slider-knob-width: 14px;
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .lil-gui.root {
+             margin-top: 20px;
+             margin-right: 20px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div id="loading"></div>
+
+    <script>
+        // Epic Loading Sequence - runs FIRST before any imports
+        console.log('[LOADING] Starting epic sequence...');
+
+        const loadingElement = document.getElementById('loading');
+        const loadingText = 'INITIALIZING ULTRA BANGER ENGINE...';
+        let charIndex = 0;
+
+        // Global flag for module to check
+        window.loadingAnimationComplete = false;
+
+        // Typewriter effect
+        function typeWriter() {
+            if (charIndex < loadingText.length) {
+                loadingElement.textContent = loadingText.substring(0, charIndex + 1);
+                charIndex++;
+                setTimeout(typeWriter, 50 + Math.random() * 50);
+            } else {
+                console.log('[LOADING] Typewriter complete, starting shimmer...');
+                setTimeout(startShimmer, 300);
+            }
+        }
+
+        // Shimmer/glisten effect
+        function startShimmer() {
+            loadingElement.style.animation = 'shimmer 1.5s ease-in-out';
+            setTimeout(() => {
+                console.log('[LOADING] Shimmer complete, setting flag = true');
+                window.loadingAnimationComplete = true;
+            }, 1500);
+        }
+
+        // Start the sequence immediately
+        typeWriter();
+    </script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/",
+            "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.2/dist/lil-gui.esm.js",
+            "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+        import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+        import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
+        import { TAARenderPass } from 'three/addons/postprocessing/TAARenderPass.js'; // TAA
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+        import GUI from 'lil-gui';
+        import gsap from 'gsap';
+
+        // Configuration
+        const K1_WIDTH = 330;
+        const K1_HEIGHT = 54;
+        const K1_DEPTH = 4;
+        const SCALE = 0.1;
+        const LED_COUNT = 160; // Simulation resolution
+
+        let globalTime = 0;
+        let isCinematicMode = true;
+        let taaRenderPass;
+
+        // Parameters (Controlled via lil-gui)
+        const params = {
+            // Fluid Engine
+            damping: 0.98,
+            tension: 0.05,
+            velocity: 0.8,
+            injectionBoost: 1.5,
+            // Optics
+            diffusion: 0.75,
+            dispersion: 0.7, // Controls the prism effect strength
+            anisotropy: 0.6,
+            // Rendering
+            glowIntensity: 12.0,
+            bloomStrength: 1.5,
+            bloomRadius: 1.0,
+            exposure: 1.8,
+            // Lens FX
+            dofAperture: 1.0,
+            chromaticAberration: 0.5,
+            grain: 0.025,
+            // Actions
+            inject: 'C Major',
+            simulation: 'Fluid Dynamic',
+            toggleCinematic: () => toggleCinematicMode()
+        };
+
+        // Scene Setup
+        const scene = new THREE.Scene();
+
+        // Camera (Cinematic FOV)
+        const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // Renderer Setup (ULTRA Pipeline)
+        const renderer = new THREE.WebGLRenderer({
+            antialias: false, // MUST be false when using TAA
+            powerPreference: "high-performance",
+            logarithmicDepthBuffer: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Optimized DPR for TAA
+
+        // ACES Filmic Tone Mapping
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = params.exposure;
+
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Orbit controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 5;
+        controls.maxDistance = 100;
+        controls.maxPolarAngle = Math.PI / 2 - 0.01;
+        controls.enabled = false; // Disabled during intro
+
+        // TAA Management: Reset accumulation when camera moves
+        controls.addEventListener('change', () => {
+            if (taaRenderPass) taaRenderPass.accumulate = false;
+        });
+        // Detect user interaction to stop cinematic mode
+        controls.addEventListener('start', () => {
+            if (isCinematicMode) {
+                toggleCinematicMode(false);
+            }
+        });
+
+
+        // --- HDR Environment Lighting (IBL) - The "Gallery" ---
+        // Wait for loading animation before starting HDRI load
+        function startHDRILoad() {
+            if (window.loadingAnimationComplete) {
+                console.log('[HDRI] Animation complete, loading HDRI...');
+                new RGBELoader()
+                    // 'autoshop_01_1k.hdr' (Public Domain via Poly Haven) - High contrast, clean reflections.
+                    .load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/autoshop_01_1k.hdr', function (texture) {
+                        console.log('[HDRI] Loaded successfully!');
+                        texture.mapping = THREE.EquirectangularReflectionMapping;
+
+                        scene.environment = texture;
+                        scene.background = new THREE.Color(0x000000);
+
+                        document.getElementById('loading').style.display = 'none';
+                        // Start the cinematic intro once assets are ready
+                        playIntroAnimation();
+                    }, undefined, () => {
+                        // Fallback Lighting
+                        console.log('[HDRI] Load failed, using fallback lighting');
+                        const ambientLight = new THREE.AmbientLight(0xffffff, 3.0);
+                        scene.add(ambientLight);
+                        scene.background = new THREE.Color(0x000000);
+                        document.getElementById('loading').textContent = 'HDRI FAILED. RUNNING.';
+                        controls.enabled = true;
+                    });
+            } else {
+                console.log('[HDRI] Waiting for animation... flag =', window.loadingAnimationComplete);
+                // Check again in 100ms
+                setTimeout(startHDRILoad, 100);
+            }
+        }
+
+        // Start checking for animation completion
+        console.log('[HDRI] Starting load checker...');
+        startHDRILoad();
+
+        // --- The Stage (Mirror Finish Floor) ---
+        const stageGeometry = new THREE.PlaneGeometry(200, 200);
+        const stageMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x010101,
+            metalness: 1.0,
+            roughness: 0.05,
+        });
+        const stageMesh = new THREE.Mesh(stageGeometry, stageMaterial);
+        stageMesh.rotation.x = -Math.PI / 2;
+        stageMesh.position.y = -(K1_DEPTH * SCALE / 2);
+        scene.add(stageMesh);
+
+
+        // --- Post-processing Setup (ULTRA Cinematic Pipeline) ---
+
+        const pixelRatio = renderer.getPixelRatio();
+        const width = window.innerWidth * pixelRatio;
+        const height = window.innerHeight * pixelRatio;
+
+        const renderTarget = new THREE.WebGLRenderTarget(
+            width, height, { type: THREE.HalfFloatType } // HDR
+        );
+
+        const composer = new EffectComposer(renderer, renderTarget);
+
+        // 1. Temporal Anti-Aliasing (TAA) Pass
+        taaRenderPass = new TAARenderPass(scene, camera);
+        taaRenderPass.unbiased = true;
+        taaRenderPass.sampleLevel = 3; // High quality accumulation
+        composer.addPass(taaRenderPass);
+
+        // 2. Depth of Field (BokehPass)
+        const bokehPass = new BokehPass(scene, camera, {
+            focus: 10.0,
+            aperture: 0.01,
+            maxblur: 0.01,
+        });
+        composer.addPass(bokehPass);
+
+        // 3. Bloom Pass
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            params.bloomStrength, params.bloomRadius, 0.001
+        );
+        composer.addPass(bloomPass);
+
+        // 4. Chromatic Aberration
+        const ChromaticAberrationShader = {
+            uniforms: {
+                "tDiffuse": { value: null },
+                "intensity": { value: 0.005 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse; uniform float intensity; varying vec2 vUv;
+                void main() {
+                    vec2 uv = vUv; vec2 center = vec2(0.5); vec2 direction = uv - center;
+                    float aberrationAmount = intensity * pow(length(direction), 1.5);
+                    vec2 offset = direction * aberrationAmount;
+                    vec4 colorR = texture2D(tDiffuse, uv + offset);
+                    vec4 colorG = texture2D(tDiffuse, uv);
+                    vec4 colorB = texture2D(tDiffuse, uv - offset);
+                    gl_FragColor = vec4(colorR.r, colorG.g, colorB.b, colorG.a);
+                }
+            `
+        };
+        const chromaticAberrationPass = new ShaderPass(ChromaticAberrationShader);
+        composer.addPass(chromaticAberrationPass);
+
+        // 5. Polish Pass (Grain & Vignette)
+         const PolishShader = {
+            uniforms: {
+                "tDiffuse": { value: null },
+                "time": { value: 0.0 },
+                "grainIntensity": { value: params.grain },
+                "vignetteDarkness": { value: 0.8 }
+            },
+            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            fragmentShader: `
+                uniform sampler2D tDiffuse; uniform float time; uniform float grainIntensity; uniform float vignetteDarkness; varying vec2 vUv;
+                float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123); }
+                void main() {
+                    vec4 color = texture2D(tDiffuse, vUv);
+                    // Grain
+                    color.rgb += (random(vUv + time) - 0.5) * grainIntensity;
+                    // Vignette
+                    vec2 uv = (vUv - vec2(0.5)) * 1.2;
+                    color.rgb = mix(color.rgb, vec3(0.0), pow(length(uv), 1.2) * vignetteDarkness);
+                    gl_FragColor = color;
+                }
+            `
+        };
+        const polishPass = new ShaderPass(PolishShader);
+        composer.addPass(polishPass);
+
+        // 6. Output pass
+        const outputPass = new OutputPass();
+        composer.addPass(outputPass);
+
+
+        // --- K1 Light Guide Plate Setup ---
+
+        const lgpGeometry = new THREE.BoxGeometry(K1_WIDTH * SCALE, K1_HEIGHT * SCALE, K1_DEPTH * SCALE);
+
+        // 1D Texture for LED data (Using FloatType for direct HDR data transfer from simulation)
+        const ledData = new Float32Array(LED_COUNT * 4);
+        const ledTexture = new THREE.DataTexture(ledData, LED_COUNT, 1, THREE.RGBAFormat, THREE.FloatType);
+        ledTexture.minFilter = THREE.LinearFilter;
+        ledTexture.magFilter = THREE.LinearFilter;
+        ledTexture.needsUpdate = true;
+
+        // Ultra-Banger Acrylic Material (Spectral, Volumetric, Anisotropic)
+        const lgpMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            roughness: 0.30,
+            metalness: 0.0,
+            transmission: 0.95,
+            ior: 1.49, // Base IOR for Acrylic
+            thickness: K1_DEPTH * SCALE * 1.5,
+            side: THREE.DoubleSide,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.02,
+             // Anisotropy: Simulates extrusion lines.
+            anisotropy: params.anisotropy,
+            anisotropyRotation: Math.PI / 2
+        });
+
+        // Extend the material: Dispersion, Volumetrics, Diffusion
+        lgpMaterial.onBeforeCompile = (shader) => {
+            lgpMaterial.userData.shader = shader;
+            shader.uniforms.ledTexture = { value: ledTexture };
+            shader.uniforms.diffusionFactor = { value: params.diffusion };
+            shader.uniforms.emissiveIntensityDynamic = { value: params.glowIntensity };
+            shader.uniforms.dispersionFactor = { value: params.dispersion * 0.03 }; // Scaled dispersion factor
+
+            // Vertex shader (Pass UVs and View Direction/Normal for Volumetrics)
+            shader.vertexShader = shader.vertexShader.replace('#include <common>',
+                `#include <common>
+                varying vec2 vUv; varying vec3 vViewDir; varying vec3 vWorldNormal;
+                `);
+            shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>',
+                `#include <uv_vertex>
+                vUv = uv;
+                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                vViewDir = normalize(cameraPosition - worldPosition.xyz);
+                vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                `);
+
+            // Fragment shader: Core (Diffusion, Volumetrics)
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <common>',
+                `
+                #include <common>
+                uniform sampler2D ledTexture;
+                uniform float diffusionFactor;
+                uniform float emissiveIntensityDynamic;
+                uniform float dispersionFactor; // Used in transmission_fragment
+                varying vec2 vUv; varying vec3 vViewDir; varying vec3 vWorldNormal;
+
+                // --- Organic Light Diffusion Model (Dual Edge-Lit) ---
+                vec3 getDiffusedLight(vec2 uv) {
+                    // 1. Sample LED color (HDR data directly from FloatTexture)
+                    vec3 color = texture2D(ledTexture, vec2(uv.x, 0.5)).rgb;
+
+                    // 2. Calculate attenuation
+                    float distTop = 1.0 - uv.y; float distBottom = uv.y;
+                    float falloff = 1.8;
+                    float attenuationTop = pow(1.0 - smoothstep(0.0, diffusionFactor, distTop), falloff);
+                    float attenuationBottom = pow(1.0 - smoothstep(0.0, diffusionFactor, distBottom), falloff);
+                    float attenuation = max(attenuationTop, attenuationBottom);
+
+                    // 3. Unified Plane refinement
+                    float verticalGradient = 1.0 - pow(abs(uv.y - 0.5) * 2.0, 5.0);
+                    attenuation = mix(attenuation, verticalGradient * attenuation, 0.5);
+
+                    return color * attenuation;
+                }
+
+                // --- Volumetric Internal Scattering Approximation ---
+                float getVolumetricScattering(vec3 viewDir, vec3 normal, float lightIntensity) {
+                    // Fresnel effect at grazing angles
+                    float fresnel = pow(1.0 - saturate(dot(viewDir, normal)), 4.0);
+                    // Density based on light intensity
+                    float density = smoothstep(0.0, 1.0, lightIntensity);
+                    return fresnel * density * 0.8;
+                }
+                `
+            );
+
+            // Inject Diffusion and Volumetrics into Emissive
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <emissivemap_fragment>',
+                `
+                vec3 lightwaveEmission = getDiffusedLight(vUv);
+                float emissionIntensity = length(lightwaveEmission);
+
+                // Calculate Volumetric contribution
+                float volumetric = getVolumetricScattering(vViewDir, vWorldNormal, emissionIntensity);
+                vec3 volumetricColor = lightwaveEmission * volumetric;
+
+                // Main HDR emissive driver + Volumetric boost
+                totalEmissiveRadiance = lightwaveEmission * emissiveIntensityDynamic;
+                totalEmissiveRadiance += volumetricColor * emissiveIntensityDynamic * 0.5;
+                `
+            );
+
+            // --- Spectral Dispersion Injection (The "Prism" Effect on Transmission) ---
+            // This intercepts the PBR refraction logic to split RGB channels.
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <transmission_fragment>',
+                `
+                // Base IOR (IOR macro)
+                float iorG = IOR;
+                // Calculate R and B IORs based on the dispersion factor
+                float iorR = IOR * (1.0 - dispersionFactor);
+                float iorB = IOR * (1.0 + dispersionFactor);
+
+                // Calculate transmission (refraction) vectors for each channel using internal helper
+                vec3 transmissionRayR = getVolumeTransmissionRay(input.normal, input.viewDir, input.thickness, iorR, input.modelMatrix);
+                vec3 transmissionRayG = getVolumeTransmissionRay(input.normal, input.viewDir, input.thickness, iorG, input.modelMatrix);
+                vec3 transmissionRayB = getVolumeTransmissionRay(input.normal, input.viewDir, input.thickness, iorB, input.modelMatrix);
+
+                // Sample the transmission map (environment/background) using the split rays
+                vec4 transmissionR = texture(transmissionSamplerMap, transmissionRayR.xy);
+                vec4 transmissionG = texture(transmissionSamplerMap, transmissionRayG.xy);
+                vec4 transmissionB = texture(transmissionSamplerMap, transmissionRayB.xy);
+
+                // Recombine the channels
+                vec3 dispersiveTransmission = vec3(transmissionR.r, transmissionG.g, transmissionB.b);
+
+                // Apply color attenuation (Beer-Lambert Law approximation)
+			    vec3 thicknessAbsorbed = transmissionAttenuation(input.thickness, transmissionAttenuationColor);
+
+                // Final transmitted color
+                totalTransmission = dispersiveTransmission * thicknessAbsorbed;
+
+                // Mix the result
+                diffuseColor.rgb = mix(diffuseColor.rgb, totalTransmission, transmission);
+                `
+            );
+        };
+
+        const lgpMesh = new THREE.Mesh(lgpGeometry, lgpMaterial);
+        lgpMesh.position.y = (K1_DEPTH * SCALE / 2);
+        scene.add(lgpMesh);
+
+
+        // --- Fluid Light / Wave Propagation Engine ---
+
+        // Simulation State (Using normalized floats 0.0-1.0 for HDR compatibility)
+        let led_buffer = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        let led_velocity = new Array(LED_COUNT).fill(0);
+
+        // Helper (HSV to RGB normalized float)
+        function hsv_to_rgb_float(h, s, v) {
+            let r, g, b, i, f, p, q, t;
+            i = Math.floor(h * 6); f = h * 6 - i;
+            p = v * (1 - s); q = v * (1 - f * s); t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break;
+                case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break;
+                case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break;
+            }
+            return { r: r, g: g, b: b };
+        }
+
+        // Inject energy and color into the simulation
+        function injectWave(position_normalized, color_hsv) {
+            const pos = Math.floor(position_normalized * LED_COUNT);
+            const color_rgb = hsv_to_rgb_float(color_hsv.h, color_hsv.s, color_hsv.v * params.injectionBoost);
+
+            if (pos >= 0 && pos < LED_COUNT) {
+                // Inject color (additive blending, clamped at 1.0)
+                led_buffer[pos].r = Math.min(1.0, led_buffer[pos].r + color_rgb.r);
+                led_buffer[pos].g = Math.min(1.0, led_buffer[pos].g + color_rgb.g);
+                led_buffer[pos].b = Math.min(1.0, led_buffer[pos].b + color_rgb.b);
+
+                // Inject initial velocity (kick)
+                led_velocity[pos] += color_hsv.v * 0.5;
+            }
+        }
+
+        // The core physics simulation step (Wave Propagation)
+        function updateFluidSimulation() {
+            // 1. Calculate Accelerations (based on neighbors)
+            for (let i = 0; i < LED_COUNT; i++) {
+                const left = (i > 0) ? led_buffer[i-1] : led_buffer[i];
+                const right = (i < LED_COUNT - 1) ? led_buffer[i+1] : led_buffer[i];
+                const current = led_buffer[i];
+
+                // Calculate average intensity (height) of neighbors
+                const avgIntensity = (left.r + left.g + left.b + right.r + right.g + right.b) / 6.0;
+                const currentIntensity = (current.r + current.g + current.b) / 3.0;
+
+                // Calculate difference (force) and update velocity
+                const force = avgIntensity - currentIntensity;
+                led_velocity[i] += force * params.tension;
+            }
+
+            // 2. Apply Velocities and Propagate Color/Energy
+            const new_buffer = led_buffer.map(led => ({...led}));
+
+            for (let i = 0; i < LED_COUNT; i++) {
+                // Apply damping (energy loss)
+                led_velocity[i] *= params.damping;
+
+                // Calculate movement
+                const movement = led_velocity[i] * params.velocity;
+                const direction = Math.sign(movement);
+                const magnitude = Math.abs(movement);
+
+                if (magnitude < 0.001) continue;
+
+                const target_index = i + direction;
+
+                // Handle boundary conditions (Bouncing)
+                if (target_index < 0 || target_index >= LED_COUNT) {
+                    led_velocity[i] *= -0.6; // Bounce reflection
+                    continue;
+                }
+
+                // Move color from current pixel to target pixel
+                const colorToMove = {
+                    r: new_buffer[i].r * magnitude,
+                    g: new_buffer[i].g * magnitude,
+                    b: new_buffer[i].b * magnitude
+                };
+
+                // Update target (additive) and current (subtractive)
+                new_buffer[target_index].r = Math.min(1.0, new_buffer[target_index].r + colorToMove.r);
+                new_buffer[target_index].g = Math.min(1.0, new_buffer[target_index].g + colorToMove.g);
+                new_buffer[target_index].b = Math.min(1.0, new_buffer[target_index].b + colorToMove.b);
+
+                new_buffer[i].r -= colorToMove.r;
+                new_buffer[i].g -= colorToMove.g;
+                new_buffer[i].b -= colorToMove.b;
+            }
+
+            led_buffer = new_buffer;
+        }
+
+
+        // Update the 1D LED texture (Upload HDR Float data to GPU)
+        function updateLEDTexture() {
+            const data = ledData;
+            for (let i = 0; i < LED_COUNT; i++) {
+                const led = led_buffer[i];
+                const idx = i * 4;
+                // Send linear normalized float data directly (no gamma correction needed here).
+                data[idx] = led.r;
+                data[idx + 1] = led.g;
+                data[idx + 2] = led.b;
+                data[idx + 3] = 1.0;
+            }
+            ledTexture.needsUpdate = true;
+        }
+
+        // --- Presets and Controls ---
+
+        // Injection Presets
+        const injectionPresets = {
+            'C Major': () => {
+                injectWave(0.2, { h: 0/12.0, s: 1.0, v: 0.8 });
+                injectWave(0.5, { h: 4/12.0, s: 1.0, v: 0.6 });
+                injectWave(0.8, { h: 7/12.0, s: 1.0, v: 0.7 });
+            },
+            'Diminished 7th': () => {
+                injectWave(0.1, { h: 0/12.0, s: 1.0, v: 0.7 });
+                injectWave(0.3, { h: 3/12.0, s: 1.0, v: 0.7 });
+                injectWave(0.6, { h: 6/12.0, s: 1.0, v: 0.7 });
+                injectWave(0.9, { h: 9/12.0, s: 1.0, v: 0.7 });
+            },
+            'Spectral Cascade': () => {
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => injectWave(0.1 + i*0.15, { h: i/6.0, s: 1.0, v: 0.9 }), i * 150);
+                }
+            },
+            'Central Pulse': () => {
+                 injectWave(0.5, { h: 0.6, s: 0.9, v: 1.5 });
+            }
+        };
+
+        // Simulation Parameter Presets
+        const simulationPresets = {
+            'Fluid Dynamic': { damping: 0.98, tension: 0.05, velocity: 0.8 },
+            'Ethereal (Slow)': { damping: 0.995, tension: 0.02, velocity: 0.5 },
+            'Viscous (Sharp)': { damping: 0.95, tension: 0.1, velocity: 1.2 }
+        };
+
+        function clearSimulation() {
+            for (let i = 0; i < LED_COUNT; i++) {
+                led_buffer[i] = { r: 0, g: 0, b: 0 };
+                led_velocity[i] = 0;
+            }
+        }
+
+        // --- Cinematic Sequence (GSAP) ---
+        let cinematicTimeline;
+
+        function playIntroAnimation() {
+            toggleCinematicMode(true);
+            clearSimulation();
+
+            // Start position for the intro
+            camera.position.set(0, 30, 150);
+            controls.target.set(0, 0, 0);
+
+            cinematicTimeline = gsap.timeline({
+                onComplete: () => {
+                    // Switch to interactive mode when intro finishes
+                    toggleCinematicMode(false);
+                }
+            });
+
+            // 1. Slow approach and initial light injection
+            cinematicTimeline.to(camera.position, { duration: 6, z: 50, y: 10, ease: "power2.inOut" }, 0);
+            cinematicTimeline.add(() => injectionPresets['C Major'](), 2.0);
+            cinematicTimeline.add(() => injectionPresets['Diminished 7th'](), 4.5);
+
+            // 2. Extreme Close-up Detail Shot (Showcasing Dispersion and Anisotropy)
+            cinematicTimeline.to(camera.position, { duration: 8, x: 18, y: 1, z: 5, ease: "power3.inOut" }, "+=1");
+            cinematicTimeline.to(controls.target, { duration: 8, x: 15, y: 0, ease: "power3.inOut" }, "<");
+            cinematicTimeline.add(() => injectionPresets['Central Pulse'](), "+=0.5");
+
+            // 3. Settle into final 3/4 hero shot
+            cinematicTimeline.to(camera.position, { duration: 6, x: 35, y: 15, z: 40, ease: "power2.inOut" }, "+=3");
+            cinematicTimeline.to(controls.target, { duration: 6, x: 0, y: 0, z: 0, ease: "power2.inOut" }, "<");
+            cinematicTimeline.add(() => injectionPresets['Spectral Cascade'](), "<1");
+        }
+
+        function toggleCinematicMode(state = !isCinematicMode) {
+            isCinematicMode = state;
+            if (cinematicTimeline) cinematicTimeline.kill();
+
+            if (isCinematicMode) {
+                controls.enabled = false;
+                // Toggling ON restarts the intro.
+                playIntroAnimation();
+            } else {
+                controls.enabled = true;
+                controls.update();
+            }
+        }
+
+         // --- Professional Control Interface (lil-gui) ---
+        function setupGUI() {
+            const gui = new GUI({ title: 'K1 LIGHTWAVE // ULTRA' });
+
+            // Helper to reset TAA when visual parameters change (prevents ghosting)
+            const resetTAA = () => { if (taaRenderPass) taaRenderPass.accumulate = false; };
+
+            // Presets Folder
+            const presetsFolder = gui.addFolder('Presets & Actions');
+            presetsFolder.add(params, 'inject', Object.keys(injectionPresets)).name('Inject Waveform').onChange(name => {
+                injectionPresets[name]();
+            });
+            presetsFolder.add({clear: clearSimulation}, 'clear').name('Reset Simulation Buffer');
+            presetsFolder.add(params, 'toggleCinematic').name('Restart Intro (GSAP)');
+
+
+            // Fluid Engine Folder
+            const fluidFolder = gui.addFolder('Fluid Dynamics Engine');
+            fluidFolder.add(params, 'simulation', Object.keys(simulationPresets)).name('Simulation Preset').onChange(name => {
+                const p = simulationPresets[name];
+                Object.assign(params, p);
+                // Update GUI controllers manually
+                fluidFolder.controllers.forEach(c => c.updateDisplay());
+            });
+            fluidFolder.add(params, 'damping', 0.9, 0.999).name('Damping (Trails)').listen();
+            fluidFolder.add(params, 'tension', 0.01, 0.2).name('Tension (Spring)').listen();
+            fluidFolder.add(params, 'velocity', 0.1, 2.0).name('Velocity (Spread)').listen();
+            fluidFolder.add(params, 'injectionBoost', 0.5, 3.0).name('Injection Boost');
+
+            // Optics Folder
+            const opticsFolder = gui.addFolder('Optical Physics (PBR)');
+            opticsFolder.add(params, 'diffusion', 0.1, 1.5).name('LGP Diffusion').onChange(v => {
+                if (lgpMaterial.userData.shader) lgpMaterial.userData.shader.uniforms.diffusionFactor.value = v;
+                resetTAA();
+            });
+            opticsFolder.add(params, 'dispersion', 0.0, 1.5).name('Spectral Dispersion').onChange(v => {
+                 if (lgpMaterial.userData.shader) lgpMaterial.userData.shader.uniforms.dispersionFactor.value = v * 0.03;
+                 resetTAA();
+            });
+            opticsFolder.add(params, 'anisotropy', 0.0, 1.0).name('Anisotropy (Stretch)').onChange(v => {
+                 lgpMaterial.anisotropy = v;
+                 resetTAA();
+            });
+
+
+            // Cinematic Rendering Folder
+            const renderingFolder = gui.addFolder('Cinematic Rendering');
+            renderingFolder.add(params, 'glowIntensity', 1.0, 30.0).name('Glow Intensity (HDR)').onChange(v => {
+                 if (lgpMaterial.userData.shader) lgpMaterial.userData.shader.uniforms.emissiveIntensityDynamic.value = v;
+                 resetTAA();
+            });
+            renderingFolder.add(params, 'exposure', 0.5, 3.0).name('Exposure (ToneMap)').onChange(v => {
+                renderer.toneMappingExposure = v;
+            });
+            renderingFolder.add(params, 'bloomStrength', 0.0, 3.0).name('Bloom Strength').onChange(v => {
+                bloomPass.strength = v;
+            });
+            renderingFolder.add(params, 'bloomRadius', 0.0, 1.0).name('Bloom Softness').onChange(v => {
+                bloomPass.radius = v;
+            });
+
+            // Lens FX Folder
+            const lensFolder = gui.addFolder('Lens Effects');
+            lensFolder.add(params, 'dofAperture', 0.0, 3.0).name('DoF (Bokeh)').onChange(v => {
+                 bokehPass.enabled = v > 0.01;
+                 bokehPass.uniforms.aperture.value = v * 0.01;
+            });
+            lensFolder.add(params, 'chromaticAberration', 0.0, 2.0).name('Chromatic Aberration').onChange(v => {
+                chromaticAberrationPass.uniforms.intensity.value = v * 0.01;
+            });
+            lensFolder.add(params, 'grain', 0.0, 0.1).name('Film Grain').onChange(v => {
+                polishPass.uniforms.grainIntensity.value = v;
+            });
+
+            // Start optimized
+            fluidFolder.close();
+            opticsFolder.close();
+            renderingFolder.close();
+            lensFolder.close();
+        }
+
+        // Raycaster for Auto-Focus
+        const raycaster = new THREE.Raycaster();
+        const centerScreen = new THREE.Vector2(0, 0);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            globalTime += 0.016;
+
+            // 1. Update Physics Simulation (CPU)
+            updateFluidSimulation();
+
+            // 2. Update GPU texture (HDR data transfer)
+            updateLEDTexture();
+
+            // 3. Update Controls and TAA Management
+            // controls.update() returns true if the camera moved (due to damping or user input)
+            const cameraMoved = controls.update();
+
+            // If camera stopped moving, resume TAA accumulation
+            if (!cameraMoved && taaRenderPass && !taaRenderPass.accumulate) {
+                 taaRenderPass.accumulate = true;
+            }
+
+            // 4. Auto-Focus (Cinematic DoF)
+            if (bokehPass.enabled) {
+                if (!isCinematicMode) {
+                    // Interactive focus (Raycast)
+                    raycaster.setFromCamera(centerScreen, camera);
+                    const intersects = raycaster.intersectObject(lgpMesh);
+                    if (intersects.length > 0) {
+                        const targetDistance = intersects[0].distance;
+                        bokehPass.uniforms.focus.value += (targetDistance - bokehPass.uniforms.focus.value) * 0.1;
+                    }
+                } else {
+                    // Cinematic focus (based on camera distance to target during GSAP animation)
+                    const distance = camera.position.distanceTo(controls.target);
+                    bokehPass.uniforms.focus.value += (distance - bokehPass.uniforms.focus.value) * 0.1;
+                }
+            }
+
+            // 5. Update Polish Shader (Grain needs time)
+            polishPass.uniforms.time.value = globalTime;
+
+            // 6. Render the scene
+            composer.render();
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio, 1.5);
+
+            // Update Camera
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+
+            // Update Renderer and Composer
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(dpr);
+            composer.setSize(width, height);
+
+            // Update TAA pass dimensions
+            if (taaRenderPass) {
+                taaRenderPass.setSize(width * dpr, height * dpr);
+            }
+            // Reset TAA on resize
+            if (taaRenderPass) taaRenderPass.accumulate = false;
+        });
+
+        // Initialize
+        setupGUI();
+
+        // Start
+        animate();
+    </script>
+</body>
+</html>
