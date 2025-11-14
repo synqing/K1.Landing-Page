@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snapwave 3D Preview - K1 Lightwave</title>
+    <title>K1 Lightwave - Premium PBR Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Modernized, High-End UI Styling */
         * {
             margin: 0;
             padding: 0;
@@ -12,42 +14,43 @@
         }
 
         body {
-            font-family: 'JetBrains Mono', monospace;
-            background: #0a0a0a;
-            color: #E6E9EF;
+            font-family: 'Inter', sans-serif;
+            background: #050505; /* Darker background for maximum contrast */
+            color: #FFFFFF;
             overflow: hidden;
         }
 
         #info {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(28, 33, 48, 0.95);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 20px;
-            backdrop-filter: blur(20px);
-            max-width: 350px;
+            top: 30px;
+            left: 30px;
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(30px);
+            max-width: 320px;
             z-index: 100;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
+            font-weight: 700;
+            font-size: 24px;
             color: #FFB84D;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            color: #B5BDCA;
-            font-size: 11px;
-            margin-bottom: 16px;
+            color: #9999aa;
+            font-size: 12px;
+            margin-bottom: 24px;
             line-height: 1.5;
         }
 
         .control-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .control-group h3 {
@@ -55,95 +58,98 @@
             color: #FFB84D;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
 
         .slider-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .slider-label {
             display: flex;
             justify-content: space-between;
-            font-size: 10px;
-            margin-bottom: 4px;
-            color: #B5BDCA;
+            font-size: 11px;
+            margin-bottom: 6px;
+            color: #9999aa;
         }
 
         .slider-label .note-name {
-            font-weight: bold;
+            font-weight: 500;
             color: #E6E9EF;
         }
 
         .slider-label .note-value {
             color: #6EE7F3;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         input[type="range"] {
             width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
             outline: none;
             -webkit-appearance: none;
+            transition: background 0.2s;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: #FFB84D;
             cursor: pointer;
             border-radius: 50%;
+            transition: transform 0.1s ease;
         }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            background: #FFB84D;
-            cursor: pointer;
-            border-radius: 50%;
-            border: none;
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
         }
 
         button {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #E6E9EF;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
             font-family: inherit;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin: 2px;
+            margin: 2px 0;
             transition: all 0.2s;
         }
 
         button:hover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #FFB84D;
         }
 
         button.active {
             background: #FFB84D;
-            color: #1C2130;
+            color: #050505;
+            font-weight: 600;
+            border-color: #FFB84D;
         }
 
         .button-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4px;
+            gap: 8px;
         }
 
         .stats {
-            font-size: 9px;
-            color: #B5BDCA;
-            line-height: 1.5;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 10px;
+            color: #9999aa;
+            line-height: 1.6;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         #canvas-container {
@@ -153,19 +159,30 @@
             width: 100%;
             height: 100%;
         }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFB84D;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 200;
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <div id="loading">LOADING HDRI...</div>
 
     <div id="info">
-        <h1>K1 LIGHTWAVE 3D</h1>
+        <h1>K1 LIGHTWAVE</h1>
         <div class="subtitle">
-            Realistic WebGL preview with Three.js • Frosted acrylic material • Bloom post-processing
+            PBR Simulation • Shader-based Organic Diffusion • HDR Lighting • ACES Filmic Rendering.
         </div>
 
         <div class="control-group">
-            <h3>Quick Presets</h3>
+            <h3>Presets</h3>
             <div class="button-grid">
                 <button onclick="loadPreset('cmajor')">C Major</button>
                 <button onclick="loadPreset('dim7')">Dim 7th</button>
@@ -175,13 +192,31 @@
         </div>
 
         <div class="control-group">
-            <h3>Amplitude</h3>
+            <h3>Input</h3>
             <div class="slider-group">
                 <div class="slider-label">
-                    <span class="note-name">Energy</span>
+                    <span class="note-name">Energy (Amplitude)</span>
                     <span class="note-value" id="amplitude-value">0.70</span>
                 </div>
                 <input type="range" id="amplitude" min="0" max="100" value="70">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Light Physics</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Diffusion Spread</span>
+                    <span class="note-value" id="diffusion-value">0.60</span>
+                </div>
+                <input type="range" id="diffusion" min="10" max="100" value="60">
+            </div>
+             <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Edge Falloff (Curve)</span>
+                    <span class="note-value" id="falloff-value">1.50</span>
+                </div>
+                <input type="range" id="falloff" min="50" max="400" value="150">
             </div>
         </div>
 
@@ -190,24 +225,24 @@
             <div class="slider-group">
                 <div class="slider-label">
                     <span class="note-name">Bloom Strength</span>
-                    <span class="note-value" id="bloom-value">1.5</span>
+                    <span class="note-value" id="bloom-value">1.0</span>
                 </div>
-                <input type="range" id="bloom" min="50" max="300" value="150">
+                <input type="range" id="bloom" min="0" max="300" value="100">
             </div>
             <div class="slider-group">
                 <div class="slider-label">
-                    <span class="note-name">Emissive</span>
-                    <span class="note-value" id="emissive-value">3.0</span>
+                    <span class="note-name">Glow Intensity (HDR)</span>
+                    <span class="note-value" id="emissive-value">5.0</span>
                 </div>
-                <input type="range" id="emissive" min="10" max="100" value="30">
+                <input type="range" id="emissive" min="10" max="150" value="50">
             </div>
         </div>
 
         <div class="control-group">
             <h3>Camera</h3>
-            <div class="button-grid">
-                <button id="cam-front" class="active" onclick="setCamera('front')">Front</button>
-                <button id="cam-angle" onclick="setCamera('angle')">3/4 View</button>
+            <div class="button-grid" id="camera-controls">
+                <button id="cam-front" onclick="setCamera('front')">Front</button>
+                <button id="cam-angle" class="active" onclick="setCamera('angle')">3/4 View</button>
                 <button id="cam-top" onclick="setCamera('top')">Top</button>
                 <button id="cam-orbit" onclick="setCamera('orbit')">Orbit</button>
             </div>
@@ -215,7 +250,6 @@
 
         <div class="stats">
             <div><strong>FPS:</strong> <span id="fps">60</span></div>
-            <div><strong>Frame:</strong> <span id="frame">0</span></div>
             <div><strong>Oscillation:</strong> <span id="osc">0.00</span></div>
         </div>
     </div>
@@ -223,8 +257,8 @@
     <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
         }
     }
     </script>
@@ -235,43 +269,48 @@
         import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
         import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
         import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
         // Configuration
-        const K1_WIDTH = 330;   // mm
-        const K1_HEIGHT = 54;   // mm
-        const K1_DEPTH = 4;     // mm
-        const SCALE = 0.1;      // Display scale
-        const LED_COUNT = 160;  // Per edge
+        const K1_WIDTH = 330;
+        const K1_HEIGHT = 54;
+        const K1_DEPTH = 4;
+        const SCALE = 0.1;
+        const LED_COUNT = 160;
 
-        // State
+        // State Initialization
         let chromagram = new Array(12).fill(0);
         let amplitude = 0.7;
         let waveform_peak_scaled_last = 0.0;
-        let frameCount = 0;
         let startTime = Date.now();
-        let bloomStrength = 1.5;
-        let emissiveIntensity = 3.0;
-        let cameraMode = 'front';
-        let orbitEnabled = false;
 
-        // Scene setup
+        // Rendering State (Defaults optimized for organic glow)
+        let bloomStrength = 1.0;
+        let emissiveIntensity = 5.0; // Higher intensity for HDR pipeline
+        let diffusionFactor = 0.6;
+        let falloff = 1.5;
+        let cameraMode = 'angle'; // Start with an engaging 3/4 view
+
+        // Scene Setup
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a0a);
-        scene.fog = new THREE.Fog(0x0a0a0a, 50, 200);
+        scene.background = new THREE.Color(0x050505);
 
         // Camera
-        const camera = new THREE.PerspectiveCamera(
-            45,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
-        camera.position.set(0, 0, 50);
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        // Renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        // Renderer Setup (Modern PBR Pipeline)
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            powerPreference: "high-performance"
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimized DPR
+
+        // Enable ACES Filmic Tone Mapping for cinematic color and highlights
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         // Orbit controls
@@ -280,106 +319,217 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
 
-        // Post-processing
-        const composer = new EffectComposer(renderer);
+        // --- HDR Environment Lighting (IBL) ---
+        // Crucial for realistic PBR reflections on the acrylic.
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
+
+        // Load a neutral studio HDR map (Public Domain via Poly Haven)
+        new RGBELoader()
+            .setDataType(THREE.HalfFloatType)
+            // Using a subtle studio HDR for clean reflections
+            .load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', function (texture) {
+                const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+                scene.environment = envMap; // Apply environment lighting
+                texture.dispose();
+                pmremGenerator.dispose();
+                document.getElementById('loading').style.display = 'none';
+            }, undefined, (error) => {
+                console.error("HDRI Loading Failed. Falling back to basic lighting.", error);
+                // Fallback lighting if HDRI fails
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+                scene.add(ambientLight);
+                document.getElementById('loading').textContent = 'HDRI FAILED';
+            });
+
+
+        // Post-processing Setup (HDR Compatible)
+        const renderTarget = new THREE.WebGLRenderTarget(
+            window.innerWidth, window.innerHeight,
+            {
+                type: THREE.HalfFloatType, // Use HalfFloat for HDR
+            }
+        );
+
+        const composer = new EffectComposer(renderer, renderTarget);
+        composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
+        // Bloom Pass (Tuned for soft, wide diffusion)
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
             bloomStrength,  // strength
-            0.4,            // radius
-            0.85            // threshold
+            0.8,            // radius (wide diffusion)
+            0.01            // threshold (low threshold to capture subtle glow)
         );
         composer.addPass(bloomPass);
 
-        // Create K1 Light Guide Plate geometry
-        const lgpGeometry = new THREE.BoxGeometry(
-            K1_WIDTH * SCALE,
-            K1_HEIGHT * SCALE,
-            K1_DEPTH * SCALE
-        );
+        // Output pass (Applies Tone Mapping correctly in the modern pipeline)
+        const outputPass = new OutputPass();
+        composer.addPass(outputPass);
 
-        // Create surface texture for emissive map
-        const textureWidth = 330;
-        const textureHeight = 54;
-        const surfaceData = new Uint8Array(textureWidth * textureHeight * 4);
-        const surfaceTexture = new THREE.DataTexture(
-            surfaceData,
-            textureWidth,
-            textureHeight,
-            THREE.RGBAFormat
-        );
-        surfaceTexture.needsUpdate = true;
 
-        // Frosted acrylic material
-        const lgpMaterial = new THREE.MeshStandardMaterial({
-            color: 0xfafcff,
-            emissive: 0xffffff,
-            emissiveMap: surfaceTexture,
-            emissiveIntensity: emissiveIntensity,
-            roughness: 0.35,
+        // --- K1 Light Guide Plate Setup ---
+
+        const lgpGeometry = new THREE.BoxGeometry(K1_WIDTH * SCALE, K1_HEIGHT * SCALE, K1_DEPTH * SCALE);
+
+        // 1D Texture for LED data (Efficient data transfer to GPU)
+        const ledData = new Uint8Array(LED_COUNT * 4);
+        const ledTexture = new THREE.DataTexture(ledData, LED_COUNT, 1, THREE.RGBAFormat);
+        // LinearFilter enables smooth interpolation between LEDs in the shader (Horizontal smoothness)
+        ledTexture.minFilter = THREE.LinearFilter;
+        ledTexture.magFilter = THREE.LinearFilter;
+        ledTexture.needsUpdate = true;
+
+        // Premium Frosted Acrylic Material (Physical simulation)
+        const lgpMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            roughness: 0.3,          // Frosted surface finish
             metalness: 0.0,
-            transparent: true,
-            opacity: 0.92,
-            side: THREE.DoubleSide
+            transmission: 0.90,      // How much light passes through the material
+            ior: 1.49,               // Index of Refraction for Acrylic
+            thickness: K1_DEPTH * SCALE,
+            side: THREE.DoubleSide,
+            // Add a clearcoat for a polished, premium finish over the frost
+            clearcoat: 0.8,
+            clearcoatRoughness: 0.1
         });
+
+        // Extend the material with Custom Shader Logic for Organic Diffusion
+        // This is where the light propagation is simulated on the GPU.
+        lgpMaterial.onBeforeCompile = (shader) => {
+            // Store reference for uniform updates later
+            lgpMaterial.userData.shader = shader;
+
+            // Pass uniforms (data and settings) to the shader
+            shader.uniforms.ledTexture = { value: ledTexture };
+            shader.uniforms.diffusionFactor = { value: diffusionFactor };
+            shader.uniforms.falloff = { value: falloff };
+            shader.uniforms.emissiveIntensityDynamic = { value: emissiveIntensity };
+
+            // Vertex shader: Ensure UVs are passed to the fragment shader
+            shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>\nvarying vec2 vUv;`);
+            shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>\nvUv = uv;`);
+
+            // Fragment shader: The core diffusion simulation model
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <common>',
+                `
+                #include <common>
+                uniform sampler2D ledTexture;
+                uniform float diffusionFactor;
+                uniform float falloff;
+                uniform float emissiveIntensityDynamic;
+                varying vec2 vUv;
+
+                // Organic Light Diffusion Model (GPU Accelerated, Dual Edge-Lit)
+                vec3 getDiffusedLight(vec2 uv) {
+                    // 1. Sample LED color (smoothly along X axis due to LinearFilter)
+                    vec3 color = texture2D(ledTexture, vec2(uv.x, 0.5)).rgb;
+
+                    // 2. Calculate distance from top (1.0) and bottom (0.0) edges
+                    float distTop = 1.0 - uv.y;
+                    float distBottom = uv.y;
+
+                    // 3. Simulate attenuation (Flexible falloff model)
+                    // 'smoothstep' defines the maximum distance the light travels based on 'diffusionFactor'.
+                    // 'pow' controls the steepness (curve) of the falloff.
+                    float attenuationTop = pow(1.0 - smoothstep(0.0, diffusionFactor, distTop), falloff);
+                    float attenuationBottom = pow(1.0 - smoothstep(0.0, diffusionFactor, distBottom), falloff);
+
+                    // 4. Combine light from both edges.
+                    // Using max() creates a visually compelling interaction where the brightest source dominates.
+                    float attenuation = max(attenuationTop, attenuationBottom);
+
+                    // 5. Refinement: Simulate the 'unified glowing plane' effect.
+                    // Create a subtle parabolic gradient across the vertical axis to blend the center smoothly.
+                    float verticalGradient = 1.0 - pow(abs(uv.y - 0.5) * 2.0, 4.0);
+
+                    // Blend edge attenuation with the overall gradient for a smoother look.
+                    attenuation = mix(attenuation, verticalGradient, 0.2);
+
+                    return color * attenuation;
+                }
+                `
+            );
+
+            // Inject the diffusion calculation into the material's emissive component
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <emissivemap_fragment>',
+                `
+                // Calculate the light contribution from the Lightwave engine
+                vec3 lightwaveEmission = getDiffusedLight(vUv);
+
+                // The emissive component drives the visual brightness and the bloom effect.
+                // We multiply by the dynamic intensity, pushing the values into the HDR range.
+                totalEmissiveRadiance = lightwaveEmission * emissiveIntensityDynamic;
+                `
+            );
+
+             // Enhance the look by simulating internal illumination (Sub-surface scattering approximation)
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <dithering_fragment>',
+                `
+                #include <dithering_fragment>
+                // Add subtle internal scattering visualization (adds depth to the frosted material)
+                vec3 internalIllumination = getDiffusedLight(vUv) * 0.15;
+                gl_FragColor.rgb += internalIllumination;
+                `
+            );
+        };
 
         const lgpMesh = new THREE.Mesh(lgpGeometry, lgpMaterial);
         scene.add(lgpMesh);
 
-        // Ambient lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-        scene.add(ambientLight);
 
-        // Rim light
-        const rimLight = new THREE.DirectionalLight(0x6699ff, 0.3);
-        rimLight.position.set(10, 10, 10);
-        scene.add(rimLight);
-
-        // LED state (dual channels)
+        // LED state (Internal representation uses 16-bit for higher dynamic range before tone mapping)
+        // Note: The current simulation assumes both edges receive the same data.
         let ch1_leds = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
-        let ch2_leds = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
 
-        // Helper functions
-        function tanh(x) { return Math.tanh(x); }
-
+        // Helper functions (Optimized HSV to RGB)
         function hsv_to_rgb(h, s, v) {
-            let c = v * s;
-            let x = c * (1 - Math.abs((h * 6) % 2 - 1));
-            let m = v - c;
-            let r, g, b;
-
-            if (h < 1/6) { r = c; g = x; b = 0; }
-            else if (h < 2/6) { r = x; g = c; b = 0; }
-            else if (h < 3/6) { r = 0; g = c; b = x; }
-            else if (h < 4/6) { r = 0; g = x; b = c; }
-            else if (h < 5/6) { r = x; g = 0; b = c; }
-            else { r = c; g = 0; b = x; }
-
+            let r, g, b, i, f, p, q, t;
+            i = Math.floor(h * 6);
+            f = h * 6 - i;
+            p = v * (1 - s);
+            q = v * (1 - f * s);
+            t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0: r = v, g = t, b = p; break;
+                case 1: r = q, g = v, b = p; break;
+                case 2: r = p, g = v, b = t; break;
+                case 3: r = p, g = q, b = v; break;
+                case 4: r = t, g = p, b = v; break;
+                case 5: r = v, g = p, b = q; break;
+            }
+            // Return 16-bit color values (0-65535)
             return {
-                r: Math.round((r + m) * 65535),
-                g: Math.round((g + m) * 65535),
-                b: Math.round((b + m) * 65535)
+                r: Math.round(r * 65535),
+                g: Math.round(g * 65535),
+                b: Math.round(b * 65535)
             };
         }
 
-        // Snapwave algorithm
+        // Snapwave algorithm (Generates the input LED patterns)
+        // This logic remains largely the same as it defines the input behavior.
         function snapwave_step() {
             const SQUARE_ITER = 2.0;
             const SATURATION = 1.0;
-            const PHOTONS = 1.0;
 
+            // Smooth the amplitude input over time
             waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
 
             let current_sum_color = {r: 0, g: 0, b: 0};
             let total_magnitude = 0.0;
 
+            // Calculate the dominant color based on the chromagram
             for (let c = 0; c < 12; c++) {
                 let prog = c / 12.0;
-                let bin = chromagram[c];
-                let bright = bin;
+                let bright = chromagram[c];
 
+                // Enhance contrast
                 for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
                     bright *= bright;
                 }
@@ -394,98 +544,87 @@
             }
 
             if (total_magnitude > 0.01) {
-                current_sum_color.r /= total_magnitude;
-                current_sum_color.g /= total_magnitude;
-                current_sum_color.b /= total_magnitude;
-                current_sum_color.r *= total_magnitude;
-                current_sum_color.g *= total_magnitude;
-                current_sum_color.b *= total_magnitude;
+                // Normalize and apply magnitude
+                current_sum_color.r = (current_sum_color.r / total_magnitude) * total_magnitude;
+                current_sum_color.g = (current_sum_color.g / total_magnitude) * total_magnitude;
+                current_sum_color.b = (current_sum_color.b / total_magnitude) * total_magnitude;
             }
 
-            current_sum_color.r *= PHOTONS;
-            current_sum_color.g *= PHOTONS;
-            current_sum_color.b *= PHOTONS;
-
-            // Calculate oscillation
-            let amp = waveform_peak_scaled_last;
+            // Calculate oscillation (movement)
             let oscillation = 0.0;
             let millis = Date.now() - startTime;
 
             for (let i = 0; i < 12; i++) {
                 if (chromagram[i] > 0.1) {
+                    // Frequency of oscillation depends on the note
                     oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
                 }
             }
 
-            oscillation = tanh(oscillation * 2.0);
-            amp = oscillation * waveform_peak_scaled_last * 0.7;
-            if (amp > 1.0) amp = 1.0;
-            else if (amp < -1.0) amp = -1.0;
+            oscillation = Math.tanh(oscillation * 2.0);
 
-            // Position
-            let center = 80;
-            let pos = Math.round(center + amp * 80);
-            if (pos < 0) pos = 0;
-            if (pos >= LED_COUNT) pos = LED_COUNT - 1;
+            // Mix oscillation with amplitude
+            let amp = oscillation * waveform_peak_scaled_last * 0.7;
+            amp = Math.max(-1.0, Math.min(1.0, amp));
 
-            // Update LEDs
+            // Calculate position of the light 'dot'
+            let center = LED_COUNT / 2;
+            let pos = Math.round(center + amp * (LED_COUNT / 2.0));
+            pos = Math.max(0, Math.min(LED_COUNT - 1, pos));
+
+            // Set the new dot (Applied to both edges implicitly via the shader setup)
             ch1_leds[pos] = {...current_sum_color};
-            ch2_leds[pos] = {...current_sum_color};
 
-            // Fade
-            let fade_amount = 1.0 - (0.10 * Math.abs(waveform_peak_scaled_last));
-            for (let i = 0; i < LED_COUNT; i++) {
+            // --- Fading/Trails (Symmetrical Fading) ---
+            const HALF = LED_COUNT / 2;
+            let abs_amp = Math.min(1.0, Math.abs(waveform_peak_scaled_last));
+
+            // Fade faster when amplitude (energy) is high, creating dynamic trails
+            let max_fade_reduction = 0.15;
+            let fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            // Apply fading and mirroring (Center-Origin)
+            for (let i = 0; i < HALF; i++) {
                 ch1_leds[i].r *= fade_amount;
                 ch1_leds[i].g *= fade_amount;
                 ch1_leds[i].b *= fade_amount;
-                ch2_leds[i].r *= fade_amount;
-                ch2_leds[i].g *= fade_amount;
-                ch2_leds[i].b *= fade_amount;
+                ch1_leds[LED_COUNT - 1 - i] = {...ch1_leds[i]}; // Mirror
             }
 
-            // Update stats
             document.getElementById('osc').textContent = oscillation.toFixed(2);
-            document.getElementById('frame').textContent = frameCount++;
         }
 
-        // Update surface texture
-        function updateSurfaceTexture() {
-            const data = surfaceData;
+        // Update the 1D LED texture (Prepares data for the GPU)
+        function updateLEDTexture() {
+            const data = ledData;
+            // Gamma correction (approx 2.2) for perceptual linearity when converting from linear internal values to sRGB texture.
+            const gamma = 1.0 / 2.2;
 
-            for (let y = 0; y < textureHeight; y++) {
-                const y_norm = y / (textureHeight - 1);
-                const bottom_inf = Math.pow(1.0 - y_norm, 1.5);
-                const top_inf = Math.pow(y_norm, 1.5);
+            for (let i = 0; i < LED_COUNT; i++) {
+                const led = ch1_leds[i];
 
-                for (let x = 0; x < textureWidth; x++) {
-                    const led_idx = Math.floor(x * (LED_COUNT / textureWidth));
+                // Convert from 16-bit (0-65535) to normalized float (0-1), apply gamma, then scale to 8-bit (0-255)
+                const r = Math.pow(Math.min(1.0, led.r / 65535), gamma) * 255;
+                const g = Math.pow(Math.min(1.0, led.g / 65535), gamma) * 255;
+                const b = Math.pow(Math.min(1.0, led.b / 65535), gamma) * 255;
 
-                    const top = ch2_leds[led_idx];
-                    const bottom = ch1_leds[led_idx];
-
-                    let r = bottom.r * bottom_inf + top.r * top_inf;
-                    let g = bottom.g * bottom_inf + top.g * top_inf;
-                    let b = bottom.b * bottom_inf + top.b * top_inf;
-
-                    r = Math.min(255, (r / 65535) * 255);
-                    g = Math.min(255, (g / 65535) * 255);
-                    b = Math.min(255, (b / 65535) * 255);
-
-                    const idx = (y * textureWidth + x) * 4;
-                    data[idx] = r;
-                    data[idx + 1] = g;
-                    data[idx + 2] = b;
-                    data[idx + 3] = 255;
-                }
+                const idx = i * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = 255; // Alpha
             }
 
-            surfaceTexture.needsUpdate = true;
+            // Signal Three.js to upload the texture to the GPU
+            ledTexture.needsUpdate = true;
         }
 
         // Camera presets
         window.setCamera = function(mode) {
-            document.querySelectorAll('#info button').forEach(b => b.classList.remove('active'));
-            document.getElementById('cam-' + mode).classList.add('active');
+            // Select only the camera control buttons
+            document.querySelectorAll('#camera-controls button').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('cam-' + mode);
+            if (btn) btn.classList.add('active');
 
             controls.enabled = false;
             cameraMode = mode;
@@ -493,37 +632,32 @@
             switch(mode) {
                 case 'front':
                     camera.position.set(0, 0, 50);
-                    camera.lookAt(0, 0, 0);
                     break;
                 case 'angle':
+                    // A dynamic 3/4 view to showcase depth and reflections
                     camera.position.set(30, 15, 40);
-                    camera.lookAt(0, 0, 0);
                     break;
                 case 'top':
-                    camera.position.set(0, 40, 10);
-                    camera.lookAt(0, 0, 0);
+                    camera.position.set(0.1, 50, 0); // Slight offset to prevent gimbal lock issues
                     break;
                 case 'orbit':
                     controls.enabled = true;
-                    break;
+                    return; // Don't force position/target when enabling orbit
             }
+            controls.target.set(0,0,0);
+            controls.update();
         };
 
-        // Presets
+        // Presets (Input data)
         window.loadPreset = function(name) {
             chromagram.fill(0);
             switch(name) {
                 case 'cmajor':
-                    chromagram[0] = 0.8;
-                    chromagram[4] = 0.6;
-                    chromagram[7] = 0.7;
+                    chromagram[0] = 0.8; chromagram[4] = 0.6; chromagram[7] = 0.7;
                     amplitude = 0.7;
                     break;
                 case 'dim7':
-                    chromagram[0] = 0.7;
-                    chromagram[3] = 0.7;
-                    chromagram[6] = 0.7;
-                    chromagram[9] = 0.7;
+                    chromagram[0] = 0.7; chromagram[3] = 0.7; chromagram[6] = 0.7; chromagram[9] = 0.7;
                     amplitude = 0.8;
                     break;
                 case 'chromatic':
@@ -539,59 +673,97 @@
             document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
         };
 
-        // Controls
-        document.getElementById('amplitude').addEventListener('input', (e) => {
-            amplitude = e.target.value / 100;
-            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
-        });
+        // Controls Event Listeners
+        function setupControls() {
+            document.getElementById('amplitude').addEventListener('input', (e) => {
+                amplitude = e.target.value / 100;
+                document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+            });
 
-        document.getElementById('bloom').addEventListener('input', (e) => {
-            bloomStrength = e.target.value / 100;
-            bloomPass.strength = bloomStrength;
-            document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
-        });
+            document.getElementById('bloom').addEventListener('input', (e) => {
+                bloomStrength = e.target.value / 100;
+                bloomPass.strength = bloomStrength;
+                document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
+            });
 
-        document.getElementById('emissive').addEventListener('input', (e) => {
-            emissiveIntensity = e.target.value / 10;
-            lgpMaterial.emissiveIntensity = emissiveIntensity;
-            document.getElementById('emissive-value').textContent = emissiveIntensity.toFixed(1);
-        });
+            document.getElementById('emissive').addEventListener('input', (e) => {
+                emissiveIntensity = e.target.value / 10;
+                // Update the custom shader uniform in real-time
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.emissiveIntensityDynamic.value = emissiveIntensity;
+                }
+                document.getElementById('emissive-value').textContent = emissiveIntensity.toFixed(1);
+            });
+
+            // New Physics Controls Listeners
+            document.getElementById('diffusion').addEventListener('input', (e) => {
+                diffusionFactor = e.target.value / 100;
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.diffusionFactor.value = diffusionFactor;
+                }
+                document.getElementById('diffusion-value').textContent = diffusionFactor.toFixed(2);
+            });
+
+            document.getElementById('falloff').addEventListener('input', (e) => {
+                falloff = e.target.value / 100;
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.falloff.value = falloff;
+                }
+                document.getElementById('falloff-value').textContent = falloff.toFixed(2);
+            });
+        }
 
         // FPS counter
-        let lastTime = Date.now();
+        let lastTime = performance.now();
         let frames = 0;
         setInterval(() => {
-            const fps = Math.round(frames * 1000 / (Date.now() - lastTime));
-            document.getElementById('fps').textContent = fps;
+            const now = performance.now();
+            const delta = now - lastTime;
+            if (delta > 0) {
+                const fps = Math.round(frames * 1000 / delta);
+                document.getElementById('fps').textContent = fps;
+            }
             frames = 0;
-            lastTime = Date.now();
+            lastTime = now;
         }, 1000);
 
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
 
+            // 1. Generate LED data (CPU)
             snapwave_step();
-            updateSurfaceTexture();
+            // 2. Update the texture data and upload to GPU
+            updateLEDTexture();
 
             if (controls.enabled) {
                 controls.update();
             }
 
+            // 3. Render the scene using post-processing composer (GPU)
+            // The custom shader executes here, calculating diffusion.
             composer.render();
             frames++;
         }
 
-        // Window resize
+        // Window resize handler
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(width, height);
+            // Update composer and render target sizes
+            composer.setSize(width, height);
+            const dpr = Math.min(window.devicePixelRatio, 2);
+            renderer.setPixelRatio(dpr);
+            composer.setPixelRatio(dpr);
         });
 
-        // Load default preset
+        // Initialize
+        setupControls();
         loadPreset('cmajor');
+        setCamera(cameraMode); // Set initial camera
 
         // Start
         animate();
