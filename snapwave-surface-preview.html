@@ -323,7 +323,7 @@
                     <div class="stat-value" id="stat-frame">0</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">Spread</div>
+                    <div class="stat-label">Distance</div>
                     <div class="stat-value" id="stat-pos">0</div>
                 </div>
                 <div class="stat">
@@ -506,41 +506,27 @@
             oscillation = tanh(oscillation * 2.0);
             amp = oscillation * waveform_peak_scaled_last * 0.7;
 
-            // CENTER-ORIGIN: oscillation controls SPREAD, not POSITION
+            // CENTER-ORIGIN: Calculate dot offset from center, mirror to both sides
             const CENTER = 80;  // Center of 160 LEDs
-            let spread = Math.abs(oscillation) * waveform_peak_scaled_last * CENTER * 0.7;
-            if (spread < 1.0) spread = 1.0;
 
-            // Create symmetric gaussian bloom centered at LED 80
-            // Compute first half (0-79), then mirror to second half (80-159)
-            for (let i = 0; i < CENTER; i++) {
-                // Distance from center
-                let d = CENTER - i - 1;
+            // Distance from center (signed: -1 to +1)
+            let offset = oscillation * waveform_peak_scaled_last * 0.7;
 
-                // Gaussian falloff: exp(-(d²)/(2σ²))
-                let intensity = Math.exp(-(d * d) / (2 * spread * spread));
+            // Calculate distance in LEDs from center
+            let distance_from_center = Math.round(offset * CENTER);
 
-                // Blend with existing LED value
-                let newColor = {
-                    r: current_sum_color.r * intensity,
-                    g: current_sum_color.g * intensity,
-                    b: current_sum_color.b * intensity
-                };
+            // Clamp to valid range
+            if (distance_from_center > CENTER - 1) distance_from_center = CENTER - 1;
+            if (distance_from_center < -(CENTER - 1)) distance_from_center = -(CENTER - 1);
 
-                // Apply to both edges (top and bottom)
-                // Left half
-                ch1_leds[CENTER - 1 - i].r = Math.max(ch1_leds[CENTER - 1 - i].r, newColor.r);
-                ch1_leds[CENTER - 1 - i].g = Math.max(ch1_leds[CENTER - 1 - i].g, newColor.g);
-                ch1_leds[CENTER - 1 - i].b = Math.max(ch1_leds[CENTER - 1 - i].b, newColor.b);
+            // Place dots symmetrically on BOTH sides for both edges
+            let abs_distance = Math.abs(distance_from_center);
 
-                ch2_leds[CENTER - 1 - i].r = Math.max(ch2_leds[CENTER - 1 - i].r, newColor.r);
-                ch2_leds[CENTER - 1 - i].g = Math.max(ch2_leds[CENTER - 1 - i].g, newColor.g);
-                ch2_leds[CENTER - 1 - i].b = Math.max(ch2_leds[CENTER - 1 - i].b, newColor.b);
+            ch1_leds[CENTER - abs_distance] = {...current_sum_color};  // Left side
+            ch1_leds[CENTER + abs_distance] = {...current_sum_color};  // Right side (mirror)
 
-                // Mirror to right half (perfect bilateral symmetry)
-                ch1_leds[CENTER + i] = {...ch1_leds[CENTER - 1 - i]};
-                ch2_leds[CENTER + i] = {...ch2_leds[CENTER - 1 - i]};
-            }
+            ch2_leds[CENTER - abs_distance] = {...current_sum_color};  // Left side
+            ch2_leds[CENTER + abs_distance] = {...current_sum_color};  // Right side (mirror)
 
             // Fade trails
             let abs_amp = Math.abs(waveform_peak_scaled_last);
@@ -561,7 +547,7 @@
             // Update stats
             document.getElementById('stat-time').textContent = (millis / 1000).toFixed(2) + 's';
             document.getElementById('stat-frame').textContent = frameCount;
-            document.getElementById('stat-pos').textContent = Math.round(spread);
+            document.getElementById('stat-pos').textContent = abs_distance;
             document.getElementById('stat-osc').textContent = oscillation.toFixed(2);
 
             frameCount++;
