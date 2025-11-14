@@ -390,15 +390,14 @@
             shader.uniforms.emissiveIntensityDynamic = { value: params.glowIntensity };
             shader.uniforms.dispersionFactor = { value: params.dispersion * 0.03 }; // Scaled dispersion factor
 
-            // Vertex shader (Pass UVs and View Direction/Normal for Volumetrics)
+            // Vertex shader (Pass View Direction/Normal for Volumetrics)
             shader.vertexShader = shader.vertexShader.replace('#include <common>',
                 `#include <common>
-                varying vec2 vUv; varying vec3 vViewDir; varying vec3 vWorldNormal;
+                varying vec3 vViewDir;
+                varying vec3 vWorldNormal;
                 `);
-            shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>',
-                `#include <uv_vertex>
-                vUv = uv;
-                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+            shader.vertexShader = shader.vertexShader.replace('#include <worldpos_vertex>',
+                `#include <worldpos_vertex>
                 vViewDir = normalize(cameraPosition - worldPosition.xyz);
                 vWorldNormal = normalize(mat3(modelMatrix) * normal);
                 `);
@@ -412,7 +411,8 @@
                 uniform float diffusionFactor;
                 uniform float emissiveIntensityDynamic;
                 uniform float dispersionFactor; // Used in transmission_fragment
-                varying vec2 vUv; varying vec3 vViewDir; varying vec3 vWorldNormal;
+                varying vec3 vViewDir;
+                varying vec3 vWorldNormal;
 
                 // --- Organic Light Diffusion Model (Dual Edge-Lit) ---
                 vec3 getDiffusedLight(vec2 uv) {
@@ -655,7 +655,8 @@
         let cinematicTimeline;
 
         function playIntroAnimation() {
-            toggleCinematicMode(true);
+            isCinematicMode = true;
+            controls.enabled = false;
             clearSimulation();
 
             // Start position for the intro
