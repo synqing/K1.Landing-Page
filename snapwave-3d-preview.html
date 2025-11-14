@@ -29,7 +29,20 @@
             transform: translate(-50%, -50%);
             color: #FFB84D;
             font-family: monospace;
+            font-size: 16px;
+            letter-spacing: 2px;
             z-index: 200;
+            background: linear-gradient(90deg, #FFB84D 0%, #6EE7F3 50%, #FFB84D 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: none;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* lil-gui customization for dark/premium theme */
@@ -62,7 +75,40 @@
 </head>
 <body>
     <div id="canvas-container"></div>
-    <div id="loading">INITIALIZING ULTRA BANGER ENGINE...</div>
+    <div id="loading"></div>
+
+    <script>
+        // Epic Loading Sequence
+        (function() {
+            const loadingElement = document.getElementById('loading');
+            const loadingText = 'INITIALIZING ULTRA BANGER ENGINE...';
+            let charIndex = 0;
+
+            // Typewriter effect
+            function typeWriter() {
+                if (charIndex < loadingText.length) {
+                    loadingElement.textContent = loadingText.substring(0, charIndex + 1);
+                    charIndex++;
+                    setTimeout(typeWriter, 50 + Math.random() * 50); // Variable speed for realism
+                } else {
+                    // Typing complete, start shimmer
+                    setTimeout(startShimmer, 300);
+                }
+            }
+
+            // Shimmer/glisten effect
+            function startShimmer() {
+                loadingElement.style.animation = 'shimmer 1.5s ease-in-out';
+                setTimeout(() => {
+                    // Shimmer complete, signal to start loading
+                    window.loadingAnimationComplete = true;
+                }, 1500);
+            }
+
+            // Start the sequence
+            typeWriter();
+        })();
+    </script>
 
     <script type="importmap">
     {
@@ -168,25 +214,36 @@
 
 
         // --- HDR Environment Lighting (IBL) - The "Gallery" ---
-        new RGBELoader()
-            // 'autoshop_01_1k.hdr' (Public Domain via Poly Haven) - High contrast, clean reflections.
-            .load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/autoshop_01_1k.hdr', function (texture) {
-                texture.mapping = THREE.EquirectangularReflectionMapping;
+        // Wait for the loading animation to complete before loading HDRI
+        function startHDRILoad() {
+            if (window.loadingAnimationComplete) {
+                new RGBELoader()
+                    // 'autoshop_01_1k.hdr' (Public Domain via Poly Haven) - High contrast, clean reflections.
+                    .load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/autoshop_01_1k.hdr', function (texture) {
+                        texture.mapping = THREE.EquirectangularReflectionMapping;
 
-                scene.environment = texture;
-                scene.background = new THREE.Color(0x000000);
+                        scene.environment = texture;
+                        scene.background = new THREE.Color(0x000000);
 
-                document.getElementById('loading').style.display = 'none';
-                // Start the cinematic intro once assets are ready
-                playIntroAnimation();
-            }, undefined, () => {
-                // Fallback Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 3.0);
-                scene.add(ambientLight);
-                scene.background = new THREE.Color(0x000000);
-                document.getElementById('loading').textContent = 'HDRI FAILED. RUNNING.';
-                controls.enabled = true;
-            });
+                        document.getElementById('loading').style.display = 'none';
+                        // Start the cinematic intro once assets are ready
+                        playIntroAnimation();
+                    }, undefined, () => {
+                        // Fallback Lighting
+                        const ambientLight = new THREE.AmbientLight(0xffffff, 3.0);
+                        scene.add(ambientLight);
+                        scene.background = new THREE.Color(0x000000);
+                        document.getElementById('loading').textContent = 'HDRI FAILED. RUNNING.';
+                        controls.enabled = true;
+                    });
+            } else {
+                // Check again in 100ms
+                setTimeout(startHDRILoad, 100);
+            }
+        }
+
+        // Start checking for animation completion
+        startHDRILoad();
 
         // --- The Stage (Mirror Finish Floor) ---
         const stageGeometry = new THREE.PlaneGeometry(200, 200);
