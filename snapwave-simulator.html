@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapwave Simulator - K1 Lightwave</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1C2130;
+            color: #E6E9EF;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            color: #FFB84D;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            grid-column: 1 / -1;
+            color: #B5BDCA;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-group h3 {
+            font-size: 14px;
+            color: #FFB84D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+            color: #B5BDCA;
+        }
+
+        .slider-label .note-name {
+            font-weight: bold;
+            color: #E6E9EF;
+        }
+
+        .slider-label .note-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #6EE7F3;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #E6E9EF;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        button.primary {
+            background: #FFB84D;
+            color: #1C2130;
+            font-weight: bold;
+        }
+
+        button.primary:hover {
+            background: #ffc266;
+        }
+
+        .canvas-container {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+        }
+
+        canvas {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            background: #000;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            transition: filter 0.3s;
+        }
+
+        canvas.surface-mode {
+            filter: blur(3px) brightness(1.2) saturate(1.1);
+            image-rendering: auto;
+        }
+
+        canvas.surface-mode-glow {
+            filter: blur(3px) brightness(1.3) saturate(1.1) drop-shadow(0 0 20px rgba(255,255,255,0.5));
+            image-rendering: auto;
+        }
+
+        .stats {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            font-size: 11px;
+        }
+
+        .stat {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            color: #B5BDCA;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            color: #6EE7F3;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .export-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .checkbox-group label {
+            font-size: 12px;
+            color: #B5BDCA;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SNAPWAVE SIMULATOR</h1>
+        <div class="subtitle">
+            Exact implementation of LightwaveOS Snapwave Mode • 320 LEDs • Real-time chromagram control
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Chromagram (Musical Notes)</h3>
+                <div id="chromagram-sliders"></div>
+            </div>
+
+            <div class="control-group">
+                <h3>Amplitude</h3>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Peak Level</span>
+                        <span class="note-value" id="amplitude-value">0.50</span>
+                    </div>
+                    <input type="range" id="amplitude" min="0" max="100" value="50" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Presets</h3>
+                <div class="preset-buttons">
+                    <button onclick="loadPreset('cmajor')">C Major Chord</button>
+                    <button onclick="loadPreset('dim7')">Diminished 7th</button>
+                    <button onclick="loadPreset('chromatic')">Full Chromatic</button>
+                    <button onclick="loadPreset('single-c')">Single Note (C)</button>
+                    <button onclick="loadPreset('single-a')">Single Note (A)</button>
+                    <button onclick="loadPreset('silence')">Reset All</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Playback</h3>
+                <div class="button-group">
+                    <button id="play-pause" onclick="togglePlayback()">⏸ PAUSE</button>
+                    <button onclick="resetTime()">⏮ RESET</button>
+                </div>
+            </div>
+
+            <div class="control-group export-section">
+                <h3>Display Mode</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="mirror-enabled" checked>
+                    <label for="mirror-enabled">Mirror Mode (160 LEDs/edge)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="surface-mode" onchange="toggleSurfaceMode()">
+                    <label for="surface-mode">Surface Mode (blur/glow preview)</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Export</h3>
+                <div class="button-group" style="grid-template-columns: 1fr;">
+                    <button class="primary" onclick="exportFrameData()">📥 Export KeyShot Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="led-canvas"></canvas>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="stat-time">0.00s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Frame</div>
+                    <div class="stat-value" id="stat-frame">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Position</div>
+                    <div class="stat-value" id="stat-pos">160</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Oscillation</div>
+                    <div class="stat-value" id="stat-osc">0.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const NATIVE_RESOLUTION = 320;
+        const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTE_COLORS = [
+            '#FF0000', '#FF4000', '#FF8000', '#FFBF00',
+            '#FFFF00', '#BFFF00', '#80FF00', '#40FF00',
+            '#00FF00', '#00FF80', '#00FFFF', '#0080FF'
+        ];
+
+        // State
+        let chromagram = new Array(12).fill(0);
+        let amplitude = 0.5;
+        let leds = new Array(NATIVE_RESOLUTION).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        let waveform_peak_scaled_last = 0.0;
+        let startTime = Date.now();
+        let frameCount = 0;
+        let isPlaying = true;
+        let exportData = [];
+
+        // Canvas setup
+        const canvas = document.getElementById('led-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1000;
+        canvas.height = 320;
+
+        // Initialize chromagram sliders
+        const slidersContainer = document.getElementById('chromagram-sliders');
+        NOTE_NAMES.forEach((note, i) => {
+            const div = document.createElement('div');
+            div.className = 'slider-group';
+            div.innerHTML = `
+                <div class="slider-label">
+                    <span class="note-name" style="color: ${NOTE_COLORS[i]}">${note}</span>
+                    <span class="note-value" id="note-${i}-value">0.00</span>
+                </div>
+                <input type="range" id="note-${i}" min="0" max="100" value="0" step="1">
+            `;
+            slidersContainer.appendChild(div);
+
+            const slider = div.querySelector('input');
+            slider.addEventListener('input', (e) => {
+                chromagram[i] = e.target.value / 100;
+                document.getElementById(`note-${i}-value`).textContent = chromagram[i].toFixed(2);
+            });
+        });
+
+        // Amplitude slider
+        document.getElementById('amplitude').addEventListener('input', (e) => {
+            amplitude = e.target.value / 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        });
+
+        // Helper functions
+        function tanh(x) {
+            return Math.tanh(x);
+        }
+
+        function hsv_to_rgb(h, s, v) {
+            // h: 0-1, s: 0-1, v: 0-1
+            let c = v * s;
+            let x = c * (1 - Math.abs((h * 6) % 2 - 1));
+            let m = v - c;
+            let r, g, b;
+
+            if (h < 1/6) { r = c; g = x; b = 0; }
+            else if (h < 2/6) { r = x; g = c; b = 0; }
+            else if (h < 3/6) { r = 0; g = c; b = x; }
+            else if (h < 4/6) { r = 0; g = x; b = c; }
+            else if (h < 5/6) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+
+            return {
+                r: Math.round((r + m) * 65535),
+                g: Math.round((g + m) * 65535),
+                b: Math.round((b + m) * 65535)
+            };
+        }
+
+        function shift_leds_up(leds) {
+            // Shift all LEDs up by 1 position (scrolling effect)
+            for (let i = NATIVE_RESOLUTION - 1; i > 0; i--) {
+                leds[i] = {...leds[i - 1]};
+            }
+        }
+
+        function mirror_image_downwards(leds) {
+            const half = NATIVE_RESOLUTION / 2;
+            for (let i = 0; i < half; i++) {
+                leds[NATIVE_RESOLUTION - 1 - i] = {...leds[i]};
+            }
+        }
+
+        // Main Snapwave algorithm (exact implementation)
+        function snapwave_step() {
+            const SQUARE_ITER = 2.0;
+            const SATURATION = 1.0;
+            const PHOTONS = 1.0;
+
+            // Smooth the waveform peak (98% smoothing)
+            waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
+
+            // --- Color Calculation from Chromagram ---
+            let current_sum_color = {r: 0, g: 0, b: 0};
+            let total_magnitude = 0.0;
+
+            for (let c = 0; c < 12; c++) {
+                let prog = c / 12.0;
+                let bin = chromagram[c];
+
+                // Contrast enhancement
+                let bright = bin;
+                for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
+                    bright *= bright;
+                }
+
+                let fract_iter = SQUARE_ITER - Math.floor(SQUARE_ITER);
+                if (fract_iter > 0.01) {
+                    let squared = bright * bright;
+                    bright = bright * (1.0 - fract_iter) + squared * fract_iter;
+                }
+
+                // Only add colors from active notes
+                if (bright > 0.05) {
+                    let note_col = hsv_to_rgb(prog, SATURATION, bright);
+                    current_sum_color.r += note_col.r;
+                    current_sum_color.g += note_col.g;
+                    current_sum_color.b += note_col.b;
+                    total_magnitude += bright;
+                }
+            }
+
+            // Normalize by total magnitude (chromatic mode)
+            if (total_magnitude > 0.01) {
+                current_sum_color.r /= total_magnitude;
+                current_sum_color.g /= total_magnitude;
+                current_sum_color.b /= total_magnitude;
+
+                current_sum_color.r *= total_magnitude;
+                current_sum_color.g *= total_magnitude;
+                current_sum_color.b *= total_magnitude;
+            }
+
+            // Apply PHOTONS brightness scaling
+            current_sum_color.r *= PHOTONS;
+            current_sum_color.g *= PHOTONS;
+            current_sum_color.b *= PHOTONS;
+
+            // --- Dynamic Fading for Trails ---
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
+
+            let max_fade_reduction = 0.10;
+            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            // Apply the dynamic fade
+            for (let i = 0; i < NATIVE_RESOLUTION; i++) {
+                leds[i].r *= dynamic_fade_amount;
+                leds[i].g *= dynamic_fade_amount;
+                leds[i].b *= dynamic_fade_amount;
+            }
+
+            // --- Waveform Display ---
+            shift_leds_up(leds);
+
+            let amp = waveform_peak_scaled_last;
+
+            // Apply threshold
+            let threshold = 0.05;
+            if (Math.abs(amp) < threshold) {
+                amp = 0.0;
+            }
+
+            // CRITICAL: Time-based oscillation from chromagram
+            let oscillation = 0.0;
+            let millis = Date.now() - startTime;
+
+            for (let i = 0; i < 12; i++) {
+                if (chromagram[i] > 0.1) {
+                    // Each note contributes with different phase
+                    oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
+                }
+            }
+
+            // Normalize with tanh (creates the "snap")
+            oscillation = tanh(oscillation * 2.0);
+
+            // Mix oscillation with amplitude
+            amp = oscillation * waveform_peak_scaled_last * 0.7;
+
+            // Clamp
+            if (amp > 1.0) amp = 1.0;
+            else if (amp < -1.0) amp = -1.0;
+
+            // Calculate position
+            let center = NATIVE_RESOLUTION / 2;
+            let pos_f = center + amp * (NATIVE_RESOLUTION / 2.0);
+            let pos = Math.round(pos_f);
+            if (pos < 0) pos = 0;
+            if (pos >= NATIVE_RESOLUTION) pos = NATIVE_RESOLUTION - 1;
+
+            // Set the new dot
+            leds[pos] = {...current_sum_color};
+
+            // Mirror if enabled
+            if (document.getElementById('mirror-enabled').checked) {
+                mirror_image_downwards(leds);
+            }
+
+            // Update stats
+            document.getElementById('stat-time').textContent = (millis / 1000).toFixed(2) + 's';
+            document.getElementById('stat-frame').textContent = frameCount;
+            document.getElementById('stat-pos').textContent = pos;
+            document.getElementById('stat-osc').textContent = oscillation.toFixed(2);
+
+            frameCount++;
+        }
+
+        // Render LEDs to canvas
+        function render() {
+            const ledWidth = canvas.width / NATIVE_RESOLUTION;
+
+            // Clear with black
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw each LED as a vertical line
+            for (let i = 0; i < NATIVE_RESOLUTION; i++) {
+                const led = leds[i];
+                const r = Math.floor((led.r / 65535) * 255);
+                const g = Math.floor((led.g / 65535) * 255);
+                const b = Math.floor((led.b / 65535) * 255);
+
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.fillRect(i * ledWidth, 0, ledWidth, canvas.height);
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            if (isPlaying) {
+                snapwave_step();
+                render();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Preset loading
+        function loadPreset(name) {
+            chromagram.fill(0);
+
+            switch(name) {
+                case 'cmajor':
+                    chromagram[0] = 0.8;  // C
+                    chromagram[4] = 0.6;  // E
+                    chromagram[7] = 0.7;  // G
+                    amplitude = 0.7;
+                    break;
+                case 'dim7':
+                    chromagram[0] = 0.7;  // C
+                    chromagram[3] = 0.7;  // D#
+                    chromagram[6] = 0.7;  // F#
+                    chromagram[9] = 0.7;  // A
+                    amplitude = 0.8;
+                    break;
+                case 'chromatic':
+                    chromagram.fill(0.5);
+                    amplitude = 0.9;
+                    break;
+                case 'single-c':
+                    chromagram[0] = 1.0;
+                    amplitude = 0.6;
+                    break;
+                case 'single-a':
+                    chromagram[9] = 1.0;
+                    amplitude = 0.6;
+                    break;
+                case 'silence':
+                    chromagram.fill(0);
+                    amplitude = 0;
+                    break;
+            }
+
+            // Update sliders
+            NOTE_NAMES.forEach((note, i) => {
+                document.getElementById(`note-${i}`).value = chromagram[i] * 100;
+                document.getElementById(`note-${i}-value`).textContent = chromagram[i].toFixed(2);
+            });
+            document.getElementById('amplitude').value = amplitude * 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        }
+
+        // Playback controls
+        function togglePlayback() {
+            isPlaying = !isPlaying;
+            document.getElementById('play-pause').textContent = isPlaying ? '⏸ PAUSE' : '▶ PLAY';
+        }
+
+        function resetTime() {
+            startTime = Date.now();
+            frameCount = 0;
+            waveform_peak_scaled_last = 0.0;
+            leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        }
+
+        // Surface mode toggle
+        function toggleSurfaceMode() {
+            const canvas = document.getElementById('led-canvas');
+            const enabled = document.getElementById('surface-mode').checked;
+
+            if (enabled) {
+                canvas.classList.add('surface-mode-glow');
+            } else {
+                canvas.classList.remove('surface-mode-glow');
+            }
+        }
+
+        // Export frame data for KeyShot
+        function exportFrameData() {
+            const duration = 15; // 15 seconds
+            const fps = 30;
+            const totalFrames = duration * fps;
+
+            let exportFrames = [];
+
+            // Save current state
+            let savedTime = Date.now() - startTime;
+            let savedLeds = leds.map(led => ({...led}));
+            let savedPeak = waveform_peak_scaled_last;
+            let savedFrame = frameCount;
+
+            // Reset for export
+            resetTime();
+
+            // Generate frames
+            for (let f = 0; f < totalFrames; f++) {
+                snapwave_step();
+
+                let frameData = {
+                    frame: f,
+                    time: f / fps,
+                    leds: leds.map((led, i) => ({
+                        index: i,
+                        r: Math.floor(led.r),
+                        g: Math.floor(led.g),
+                        b: Math.floor(led.b),
+                        r_norm: led.r / 65535,
+                        g_norm: led.g / 65535,
+                        b_norm: led.b / 65535
+                    }))
+                };
+
+                exportFrames.push(frameData);
+
+                // Advance time to next frame
+                startTime -= (1000 / fps);
+            }
+
+            // Restore state
+            startTime = Date.now() - savedTime;
+            leds = savedLeds;
+            waveform_peak_scaled_last = savedPeak;
+            frameCount = savedFrame;
+
+            // Download as JSON
+            const dataStr = JSON.stringify(exportFrames, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'snapwave_keyshot_data.json';
+            link.click();
+
+            alert(`Exported ${totalFrames} frames (${duration}s @ ${fps}fps)\n\nFile: snapwave_keyshot_data.json\n\nEach frame contains 320 LED states with RGB values (0-65535)`);
+        }
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

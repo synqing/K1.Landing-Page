@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapwave Surface Preview - K1 Lightwave</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1C2130;
+            color: #E6E9EF;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            color: #FFB84D;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            grid-column: 1 / -1;
+            color: #B5BDCA;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .warning {
+            grid-column: 1 / -1;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .warning strong {
+            color: #F59E0B;
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-group h3 {
+            font-size: 14px;
+            color: #FFB84D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+            color: #B5BDCA;
+        }
+
+        .slider-label .note-name {
+            font-weight: bold;
+            color: #E6E9EF;
+        }
+
+        .slider-label .note-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #6EE7F3;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #E6E9EF;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        button.primary {
+            background: #FFB84D;
+            color: #1C2130;
+            font-weight: bold;
+        }
+
+        button.primary:hover {
+            background: #ffc266;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .canvas-container {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+        }
+
+        .preview-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 990px; /* 330mm × 3 scale */
+            margin: 0 auto;
+            aspect-ratio: 330 / 54; /* K1 aspect ratio */
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: #000;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .stats {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            font-size: 11px;
+        }
+
+        .stat {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            color: #B5BDCA;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            color: #6EE7F3;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            background: rgba(110, 231, 243, 0.1);
+            border: 1px solid rgba(110, 231, 243, 0.3);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #6EE7F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SNAPWAVE SURFACE PREVIEW</h1>
+        <div class="subtitle">
+            Realistic K1-Lightwave visualization • Proper vertical blending • Glowing frosted surface
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ SURFACE MODE:</strong> This preview shows what users actually see - a unified glowing surface with top/bottom edge blending. NOT discrete LED pixels. This is the correct visualization for landing page videos and marketing materials.
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Chromagram (Musical Notes)</h3>
+                <div id="chromagram-sliders"></div>
+            </div>
+
+            <div class="control-group">
+                <h3>Amplitude</h3>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Peak Level</span>
+                        <span class="note-value" id="amplitude-value">0.50</span>
+                    </div>
+                    <input type="range" id="amplitude" min="0" max="100" value="50" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Surface Settings</h3>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Bloom Strength</span>
+                        <span class="note-value" id="bloom-value">1.3</span>
+                    </div>
+                    <input type="range" id="bloom" min="100" max="200" value="130" step="1">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="note-name">Blur Radius</span>
+                        <span class="note-value" id="blur-value">3.0</span>
+                    </div>
+                    <input type="range" id="blur" min="10" max="80" value="30" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Presets</h3>
+                <div class="preset-buttons">
+                    <button onclick="loadPreset('cmajor')">C Major Chord</button>
+                    <button onclick="loadPreset('dim7')">Diminished 7th</button>
+                    <button onclick="loadPreset('chromatic')">Full Chromatic</button>
+                    <button onclick="loadPreset('single-c')">Single Note (C)</button>
+                    <button onclick="loadPreset('single-a')">Single Note (A)</button>
+                    <button onclick="loadPreset('silence')">Reset All</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Playback</h3>
+                <div class="button-group">
+                    <button id="play-pause" onclick="togglePlayback()">⏸ PAUSE</button>
+                    <button onclick="resetTime()">⏮ RESET</button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>What you see:</strong> Frosted acrylic surface (330mm × 54mm) with dual edge-lit LED illumination. Light enters at top/bottom edges, diffuses through acrylic volume, creates unified glow. Top ~40% shows top edge dominant, middle ~20% is additive blend, bottom ~40% shows bottom edge dominant.
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <div class="preview-wrapper">
+                <canvas id="surface-canvas"></canvas>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="stat-time">0.00s</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Frame</div>
+                    <div class="stat-value" id="stat-frame">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Center Pos</div>
+                    <div class="stat-value" id="stat-pos">160</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Oscillation</div>
+                    <div class="stat-value" id="stat-osc">0.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const SURFACE_WIDTH = 330;   // Pixels (one per LED)
+        const SURFACE_HEIGHT = 54;    // Pixels (K1 height)
+        const LED_COUNT = 320;
+        const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTE_COLORS = [
+            '#FF0000', '#FF4000', '#FF8000', '#FFBF00',
+            '#FFFF00', '#BFFF00', '#80FF00', '#40FF00',
+            '#00FF00', '#00FF80', '#00FFFF', '#0080FF'
+        ];
+
+        // State
+        let chromagram = new Array(12).fill(0);
+        let amplitude = 0.5;
+        let ch1_leds = new Array(160).fill(null).map(() => ({r: 0, g: 0, b: 0})); // Bottom edge
+        let ch2_leds = new Array(160).fill(null).map(() => ({r: 0, g: 0, b: 0})); // Top edge
+        let waveform_peak_scaled_last = 0.0;
+        let startTime = Date.now();
+        let frameCount = 0;
+        let isPlaying = true;
+        let bloomStrength = 1.3;
+        let blurRadius = 3.0;
+
+        // Canvas setup
+        const canvas = document.getElementById('surface-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = SURFACE_WIDTH;
+        canvas.height = SURFACE_HEIGHT;
+
+        // Initialize chromagram sliders
+        const slidersContainer = document.getElementById('chromagram-sliders');
+        NOTE_NAMES.forEach((note, i) => {
+            const div = document.createElement('div');
+            div.className = 'slider-group';
+            div.innerHTML = `
+                <div class="slider-label">
+                    <span class="note-name" style="color: ${NOTE_COLORS[i]}">${note}</span>
+                    <span class="note-value" id="note-${i}-value">0.00</span>
+                </div>
+                <input type="range" id="note-${i}" min="0" max="100" value="0" step="1">
+            `;
+            slidersContainer.appendChild(div);
+
+            const slider = div.querySelector('input');
+            slider.addEventListener('input', (e) => {
+                chromagram[i] = e.target.value / 100;
+                document.getElementById(`note-${i}-value`).textContent = chromagram[i].toFixed(2);
+            });
+        });
+
+        // Amplitude slider
+        document.getElementById('amplitude').addEventListener('input', (e) => {
+            amplitude = e.target.value / 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        });
+
+        // Bloom slider
+        document.getElementById('bloom').addEventListener('input', (e) => {
+            bloomStrength = e.target.value / 100;
+            document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
+        });
+
+        // Blur slider
+        document.getElementById('blur').addEventListener('input', (e) => {
+            blurRadius = e.target.value / 10;
+            document.getElementById('blur-value').textContent = blurRadius.toFixed(1);
+        });
+
+        // Helper functions
+        function tanh(x) {
+            return Math.tanh(x);
+        }
+
+        function hsv_to_rgb(h, s, v) {
+            let c = v * s;
+            let x = c * (1 - Math.abs((h * 6) % 2 - 1));
+            let m = v - c;
+            let r, g, b;
+
+            if (h < 1/6) { r = c; g = x; b = 0; }
+            else if (h < 2/6) { r = x; g = c; b = 0; }
+            else if (h < 3/6) { r = 0; g = c; b = x; }
+            else if (h < 4/6) { r = 0; g = x; b = c; }
+            else if (h < 5/6) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+
+            return {
+                r: Math.round((r + m) * 65535),
+                g: Math.round((g + m) * 65535),
+                b: Math.round((b + m) * 65535)
+            };
+        }
+
+        function shift_leds_up(leds) {
+            // Shift all LEDs up by 1 position
+            for (let i = SURFACE_HEIGHT - 1; i > 0; i--) {
+                for (let ch = 0; ch < 2; ch++) {
+                    const ledArray = ch === 0 ? ch1_leds : ch2_leds;
+                    // This is just for the scrolling effect, not used in surface rendering
+                }
+            }
+        }
+
+        // Main Snapwave algorithm (adapted for dual-channel)
+        function snapwave_step() {
+            const SQUARE_ITER = 2.0;
+            const SATURATION = 1.0;
+            const PHOTONS = 1.0;
+
+            // Smooth the waveform peak
+            waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
+
+            // --- Color Calculation from Chromagram ---
+            let current_sum_color = {r: 0, g: 0, b: 0};
+            let total_magnitude = 0.0;
+
+            for (let c = 0; c < 12; c++) {
+                let prog = c / 12.0;
+                let bin = chromagram[c];
+
+                let bright = bin;
+                for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
+                    bright *= bright;
+                }
+
+                let fract_iter = SQUARE_ITER - Math.floor(SQUARE_ITER);
+                if (fract_iter > 0.01) {
+                    let squared = bright * bright;
+                    bright = bright * (1.0 - fract_iter) + squared * fract_iter;
+                }
+
+                if (bright > 0.05) {
+                    let note_col = hsv_to_rgb(prog, SATURATION, bright);
+                    current_sum_color.r += note_col.r;
+                    current_sum_color.g += note_col.g;
+                    current_sum_color.b += note_col.b;
+                    total_magnitude += bright;
+                }
+            }
+
+            if (total_magnitude > 0.01) {
+                current_sum_color.r /= total_magnitude;
+                current_sum_color.g /= total_magnitude;
+                current_sum_color.b /= total_magnitude;
+
+                current_sum_color.r *= total_magnitude;
+                current_sum_color.g *= total_magnitude;
+                current_sum_color.b *= total_magnitude;
+            }
+
+            current_sum_color.r *= PHOTONS;
+            current_sum_color.g *= PHOTONS;
+            current_sum_color.b *= PHOTONS;
+
+            // --- Calculate oscillation (same as original Snapwave) ---
+            let amp = waveform_peak_scaled_last;
+            let threshold = 0.05;
+            if (Math.abs(amp) < threshold) amp = 0.0;
+
+            let oscillation = 0.0;
+            let millis = Date.now() - startTime;
+
+            for (let i = 0; i < 12; i++) {
+                if (chromagram[i] > 0.1) {
+                    oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
+                }
+            }
+
+            oscillation = tanh(oscillation * 2.0);
+            amp = oscillation * waveform_peak_scaled_last * 0.7;
+
+            if (amp > 1.0) amp = 1.0;
+            else if (amp < -1.0) amp = -1.0;
+
+            // Calculate position (0-159 range for LED index)
+            let center = 80; // Center of 160 LEDs
+            let pos_f = center + amp * 80;
+            let pos = Math.round(pos_f);
+            if (pos < 0) pos = 0;
+            if (pos >= 160) pos = 159;
+
+            // Update BOTH edges with same color (mirrored mode)
+            // This simulates the dual-edge illumination
+            ch1_leds[pos] = {...current_sum_color};
+            ch2_leds[pos] = {...current_sum_color};
+
+            // Fade trails
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
+            let max_fade_reduction = 0.10;
+            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            for (let i = 0; i < 160; i++) {
+                ch1_leds[i].r *= dynamic_fade_amount;
+                ch1_leds[i].g *= dynamic_fade_amount;
+                ch1_leds[i].b *= dynamic_fade_amount;
+
+                ch2_leds[i].r *= dynamic_fade_amount;
+                ch2_leds[i].g *= dynamic_fade_amount;
+                ch2_leds[i].b *= dynamic_fade_amount;
+            }
+
+            // Update stats
+            document.getElementById('stat-time').textContent = (millis / 1000).toFixed(2) + 's';
+            document.getElementById('stat-frame').textContent = frameCount;
+            document.getElementById('stat-pos').textContent = pos;
+            document.getElementById('stat-osc').textContent = oscillation.toFixed(2);
+
+            frameCount++;
+        }
+
+        // Vertical blending function
+        function blendInfluence(y_position, exponent = 1.5) {
+            const bottom_influence = Math.pow(1.0 - y_position, exponent);
+            const top_influence = Math.pow(y_position, exponent);
+            return { bottom: bottom_influence, top: top_influence };
+        }
+
+        // Render surface with proper vertical blending
+        function renderSurface() {
+            const imageData = ctx.createImageData(SURFACE_WIDTH, SURFACE_HEIGHT);
+            const data = imageData.data;
+
+            for (let y = 0; y < SURFACE_HEIGHT; y++) {
+                const y_norm = y / (SURFACE_HEIGHT - 1);
+                const influence = blendInfluence(y_norm, 1.5);
+
+                for (let x = 0; x < SURFACE_WIDTH; x++) {
+                    // Map x position to LED index (330 pixels → 160 LEDs)
+                    const led_index = Math.floor(x * (160 / SURFACE_WIDTH));
+
+                    // Get LED colors
+                    const top_color = ch2_leds[led_index];
+                    const bottom_color = ch1_leds[led_index];
+
+                    // Additive blending with vertical influence
+                    let r = bottom_color.r * influence.bottom + top_color.r * influence.top;
+                    let g = bottom_color.g * influence.bottom + top_color.g * influence.top;
+                    let b = bottom_color.b * influence.bottom + top_color.b * influence.top;
+
+                    // Apply bloom
+                    r *= bloomStrength;
+                    g *= bloomStrength;
+                    b *= bloomStrength;
+
+                    // Convert from 16-bit to 8-bit
+                    r = Math.min(255, (r / 65535) * 255);
+                    g = Math.min(255, (g / 65535) * 255);
+                    b = Math.min(255, (b / 65535) * 255);
+
+                    const idx = (y * SURFACE_WIDTH + x) * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = 255;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Apply blur for diffusion effect
+            if (blurRadius > 0.1) {
+                ctx.filter = `blur(${blurRadius}px)`;
+                ctx.drawImage(canvas, 0, 0);
+                ctx.filter = 'none';
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            if (isPlaying) {
+                snapwave_step();
+                renderSurface();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Preset loading
+        function loadPreset(name) {
+            chromagram.fill(0);
+
+            switch(name) {
+                case 'cmajor':
+                    chromagram[0] = 0.8;  // C
+                    chromagram[4] = 0.6;  // E
+                    chromagram[7] = 0.7;  // G
+                    amplitude = 0.7;
+                    break;
+                case 'dim7':
+                    chromagram[0] = 0.7;
+                    chromagram[3] = 0.7;
+                    chromagram[6] = 0.7;
+                    chromagram[9] = 0.7;
+                    amplitude = 0.8;
+                    break;
+                case 'chromatic':
+                    chromagram.fill(0.5);
+                    amplitude = 0.9;
+                    break;
+                case 'single-c':
+                    chromagram[0] = 1.0;
+                    amplitude = 0.6;
+                    break;
+                case 'single-a':
+                    chromagram[9] = 1.0;
+                    amplitude = 0.6;
+                    break;
+                case 'silence':
+                    chromagram.fill(0);
+                    amplitude = 0;
+                    break;
+            }
+
+            // Update sliders
+            NOTE_NAMES.forEach((note, i) => {
+                document.getElementById(`note-${i}`).value = chromagram[i] * 100;
+                document.getElementById(`note-${i}-value`).textContent = chromagram[i].toFixed(2);
+            });
+            document.getElementById('amplitude').value = amplitude * 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        }
+
+        // Playback controls
+        function togglePlayback() {
+            isPlaying = !isPlaying;
+            document.getElementById('play-pause').textContent = isPlaying ? '⏸ PAUSE' : '▶ PLAY';
+        }
+
+        function resetTime() {
+            startTime = Date.now();
+            frameCount = 0;
+            waveform_peak_scaled_last = 0.0;
+            ch1_leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
+            ch2_leds.fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        }
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
