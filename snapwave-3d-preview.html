@@ -418,19 +418,42 @@
             }
 
             oscillation = tanh(oscillation * 2.0);
-            amp = oscillation * waveform_peak_scaled_last * 0.7;
-            if (amp > 1.0) amp = 1.0;
-            else if (amp < -1.0) amp = -1.0;
 
-            // Position
-            let center = 80;
-            let pos = Math.round(center + amp * 80);
-            if (pos < 0) pos = 0;
-            if (pos >= LED_COUNT) pos = LED_COUNT - 1;
+            // CENTER-ORIGIN: oscillation controls SPREAD, not POSITION
+            const CENTER = LED_COUNT / 2;  // 80
+            let spread = Math.abs(oscillation) * waveform_peak_scaled_last * CENTER * 0.7;
+            if (spread < 1.0) spread = 1.0;
 
-            // Update LEDs
-            ch1_leds[pos] = {...current_sum_color};
-            ch2_leds[pos] = {...current_sum_color};
+            // Create symmetric gaussian bloom centered at LED 80
+            // Compute first half (0-79), then mirror to second half (80-159)
+            for (let i = 0; i < CENTER; i++) {
+                // Distance from center
+                let d = CENTER - i - 1;
+
+                // Gaussian falloff: exp(-(d²)/(2σ²))
+                let intensity = Math.exp(-(d * d) / (2 * spread * spread));
+
+                // Blend with existing LED value
+                let newColor = {
+                    r: current_sum_color.r * intensity,
+                    g: current_sum_color.g * intensity,
+                    b: current_sum_color.b * intensity
+                };
+
+                // Apply to both edges (top and bottom)
+                // Left half
+                ch1_leds[CENTER - 1 - i].r = Math.max(ch1_leds[CENTER - 1 - i].r, newColor.r);
+                ch1_leds[CENTER - 1 - i].g = Math.max(ch1_leds[CENTER - 1 - i].g, newColor.g);
+                ch1_leds[CENTER - 1 - i].b = Math.max(ch1_leds[CENTER - 1 - i].b, newColor.b);
+
+                ch2_leds[CENTER - 1 - i].r = Math.max(ch2_leds[CENTER - 1 - i].r, newColor.r);
+                ch2_leds[CENTER - 1 - i].g = Math.max(ch2_leds[CENTER - 1 - i].g, newColor.g);
+                ch2_leds[CENTER - 1 - i].b = Math.max(ch2_leds[CENTER - 1 - i].b, newColor.b);
+
+                // Mirror to right half (perfect bilateral symmetry)
+                ch1_leds[CENTER + i] = {...ch1_leds[CENTER - 1 - i]};
+                ch2_leds[CENTER + i] = {...ch2_leds[CENTER - 1 - i]};
+            }
 
             // Fade
             let fade_amount = 1.0 - (0.10 * Math.abs(waveform_peak_scaled_last));
