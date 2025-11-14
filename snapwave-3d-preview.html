@@ -419,37 +419,51 @@
 
             oscillation = tanh(oscillation * 2.0);
 
-            // CENTER-ORIGIN: Calculate dot offset from center, mirror to both sides
-            const CENTER = LED_COUNT / 2;  // 80
+            // Mix oscillation with amplitude (ORIGINAL algorithm)
+            amp = oscillation * waveform_peak_scaled_last * 0.7;
 
-            // Distance from center (signed: -1 to +1)
-            let offset = oscillation * waveform_peak_scaled_last * 0.7;
+            // Clamp
+            if (amp > 1.0) amp = 1.0;
+            else if (amp < -1.0) amp = -1.0;
 
-            // Calculate distance in LEDs from center
-            let distance_from_center = Math.round(offset * CENTER);
+            // Calculate position (ORIGINAL - single oscillating dot per edge)
+            let center = LED_COUNT / 2;
+            let pos = Math.round(center + amp * (LED_COUNT / 2.0));
+            if (pos < 0) pos = 0;
+            if (pos >= LED_COUNT) pos = LED_COUNT - 1;
 
-            // Clamp to valid range
-            if (distance_from_center > CENTER - 1) distance_from_center = CENTER - 1;
-            if (distance_from_center < -(CENTER - 1)) distance_from_center = -(CENTER - 1);
+            // Set the new dot on BOTH edges (ORIGINAL behavior)
+            ch1_leds[pos] = {...current_sum_color};
+            ch2_leds[pos] = {...current_sum_color};
 
-            // Place dots symmetrically on BOTH sides for both edges
-            let abs_distance = Math.abs(distance_from_center);
+            // --- CENTER-ORIGIN: Applied to TRAILS/FADING only ---
+            // Dynamic fading with bilateral symmetry
+            const HALF = LED_COUNT / 2;  // 80
 
-            ch1_leds[CENTER - abs_distance] = {...current_sum_color};  // Left side
-            ch1_leds[CENTER + abs_distance] = {...current_sum_color};  // Right side (mirror)
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
+            let max_fade_reduction = 0.10;
+            let fade_amount = 1.0 - (max_fade_reduction * abs_amp);
 
-            ch2_leds[CENTER - abs_distance] = {...current_sum_color};  // Left side
-            ch2_leds[CENTER + abs_distance] = {...current_sum_color};  // Right side (mirror)
-
-            // Fade
-            let fade_amount = 1.0 - (0.10 * Math.abs(waveform_peak_scaled_last));
-            for (let i = 0; i < LED_COUNT; i++) {
+            // For each edge, compute first half (0-79), mirror to second half (80-159)
+            // CH1 (bottom edge)
+            for (let i = 0; i < HALF; i++) {
                 ch1_leds[i].r *= fade_amount;
                 ch1_leds[i].g *= fade_amount;
                 ch1_leds[i].b *= fade_amount;
+
+                // Mirror to second half (CENTER-ORIGIN compliance)
+                ch1_leds[LED_COUNT - 1 - i] = {...ch1_leds[i]};
+            }
+
+            // CH2 (top edge)
+            for (let i = 0; i < HALF; i++) {
                 ch2_leds[i].r *= fade_amount;
                 ch2_leds[i].g *= fade_amount;
                 ch2_leds[i].b *= fade_amount;
+
+                // Mirror to second half (CENTER-ORIGIN compliance)
+                ch2_leds[LED_COUNT - 1 - i] = {...ch2_leds[i]};
             }
 
             // Update stats

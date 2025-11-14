@@ -310,8 +310,8 @@
                     <div class="stat-value" id="stat-frame">0</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">Distance</div>
-                    <div class="stat-value" id="stat-pos">0</div>
+                    <div class="stat-label">Position</div>
+                    <div class="stat-value" id="stat-pos">160</div>
                 </div>
                 <div class="stat">
                     <div class="stat-label">Oscillation</div>
@@ -469,21 +469,7 @@
             current_sum_color.g *= PHOTONS;
             current_sum_color.b *= PHOTONS;
 
-            // --- Dynamic Fading for Trails ---
-            let abs_amp = Math.abs(waveform_peak_scaled_last);
-            if (abs_amp > 1.0) abs_amp = 1.0;
-
-            let max_fade_reduction = 0.10;
-            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
-
-            // Apply the dynamic fade
-            for (let i = 0; i < NATIVE_RESOLUTION; i++) {
-                leds[i].r *= dynamic_fade_amount;
-                leds[i].g *= dynamic_fade_amount;
-                leds[i].b *= dynamic_fade_amount;
-            }
-
-            // --- Waveform Display (CENTER-ORIGIN COMPLIANT) ---
+            // --- Waveform Display ---
             shift_leds_up(leds);
 
             let amp = waveform_peak_scaled_last;
@@ -508,30 +494,47 @@
             // Normalize with tanh (creates the "snap")
             oscillation = tanh(oscillation * 2.0);
 
-            // CENTER-ORIGIN: Calculate dot offset from center, mirror to both sides
+            // Mix oscillation with amplitude (ORIGINAL algorithm)
+            amp = oscillation * waveform_peak_scaled_last * 0.7;
+
+            // Clamp
+            if (amp > 1.0) amp = 1.0;
+            else if (amp < -1.0) amp = -1.0;
+
+            // Calculate position (ORIGINAL - single oscillating dot)
+            let center = NATIVE_RESOLUTION / 2;
+            let pos_f = center + amp * (NATIVE_RESOLUTION / 2.0);
+            let pos = Math.round(pos_f);
+            if (pos < 0) pos = 0;
+            if (pos >= NATIVE_RESOLUTION) pos = NATIVE_RESOLUTION - 1;
+
+            // Set the new dot (ORIGINAL - single dot placement)
+            leds[pos] = {...current_sum_color};
+
+            // --- CENTER-ORIGIN: Applied to TRAILS/FADING only ---
+            // Dynamic fading with bilateral symmetry
             const LEDS_PER_EDGE = 160;
-            const CENTER = LEDS_PER_EDGE / 2;  // 80
+            const HALF = LEDS_PER_EDGE / 2;  // 80
 
-            // Distance from center (signed: -1 to +1)
-            let offset = oscillation * waveform_peak_scaled_last * 0.7;
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
 
-            // Calculate distance in LEDs from center
-            let distance_from_center = Math.round(offset * CENTER);
+            let max_fade_reduction = 0.10;
+            let dynamic_fade_amount = 1.0 - (max_fade_reduction * abs_amp);
 
-            // Clamp to valid range (0 to CENTER-1)
-            if (distance_from_center > CENTER - 1) distance_from_center = CENTER - 1;
-            if (distance_from_center < -(CENTER - 1)) distance_from_center = -(CENTER - 1);
+            // For each edge, compute first half (0-79), mirror to second half (80-159)
+            // Top edge (LEDs 0-159)
+            for (let i = 0; i < HALF; i++) {
+                // Apply fade to first half
+                leds[i].r *= dynamic_fade_amount;
+                leds[i].g *= dynamic_fade_amount;
+                leds[i].b *= dynamic_fade_amount;
 
-            // CENTER-ORIGIN: Place dot symmetrically on BOTH sides
-            // If offset is positive: right side gets the dot at CENTER+d, left gets it at CENTER-d
-            // This creates perfect bilateral symmetry
-            let abs_distance = Math.abs(distance_from_center);
+                // Mirror to second half (CENTER-ORIGIN compliance)
+                leds[LEDS_PER_EDGE - 1 - i] = {...leds[i]};
+            }
 
-            // Place dots symmetrically
-            leds[CENTER - abs_distance] = {...current_sum_color};  // Left side
-            leds[CENTER + abs_distance] = {...current_sum_color};  // Right side (mirror)
-
-            // Mirror to bottom edge if enabled (top/bottom mirroring)
+            // Bottom edge (LEDs 160-319) - mirror from top if enabled
             if (document.getElementById('mirror-enabled').checked) {
                 for (let i = 0; i < LEDS_PER_EDGE; i++) {
                     leds[NATIVE_RESOLUTION - 1 - i] = {...leds[i]};
@@ -541,7 +544,7 @@
             // Update stats
             document.getElementById('stat-time').textContent = (millis / 1000).toFixed(2) + 's';
             document.getElementById('stat-frame').textContent = frameCount;
-            document.getElementById('stat-pos').textContent = abs_distance;
+            document.getElementById('stat-pos').textContent = pos;
             document.getElementById('stat-osc').textContent = oscillation.toFixed(2);
 
             frameCount++;
