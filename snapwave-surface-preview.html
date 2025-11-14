@@ -570,38 +570,31 @@
             return { bottom: bottom_influence, top: top_influence };
         }
 
-        // Render surface with proper vertical blending
+        // Render surface - STRAIGHT lines (no vertical curvature)
         function renderSurface() {
             const imageData = ctx.createImageData(SURFACE_WIDTH, SURFACE_HEIGHT);
             const data = imageData.data;
 
-            for (let y = 0; y < SURFACE_HEIGHT; y++) {
-                const y_norm = y / (SURFACE_HEIGHT - 1);
-                const influence = blendInfluence(y_norm, 1.5);
+            // Each LED creates a STRAIGHT vertical line (no curvature!)
+            for (let x = 0; x < SURFACE_WIDTH; x++) {
+                // Map x position to LED index (330 pixels → 160 LEDs)
+                const led_index = Math.floor(x * (160 / SURFACE_WIDTH));
 
-                for (let x = 0; x < SURFACE_WIDTH; x++) {
-                    // Map x position to LED index (330 pixels → 160 LEDs)
-                    const led_index = Math.floor(x * (160 / SURFACE_WIDTH));
+                // Both edges show same pattern (dual edge-lit)
+                const led = ch1_leds[led_index];
 
-                    // Get LED colors
-                    const top_color = ch2_leds[led_index];
-                    const bottom_color = ch1_leds[led_index];
+                // Apply bloom
+                let r = led.r * bloomStrength;
+                let g = led.g * bloomStrength;
+                let b = led.b * bloomStrength;
 
-                    // Additive blending with vertical influence
-                    let r = bottom_color.r * influence.bottom + top_color.r * influence.top;
-                    let g = bottom_color.g * influence.bottom + top_color.g * influence.top;
-                    let b = bottom_color.b * influence.bottom + top_color.b * influence.top;
+                // Convert from 16-bit to 8-bit
+                r = Math.min(255, (r / 65535) * 255);
+                g = Math.min(255, (g / 65535) * 255);
+                b = Math.min(255, (b / 65535) * 255);
 
-                    // Apply bloom
-                    r *= bloomStrength;
-                    g *= bloomStrength;
-                    b *= bloomStrength;
-
-                    // Convert from 16-bit to 8-bit
-                    r = Math.min(255, (r / 65535) * 255);
-                    g = Math.min(255, (g / 65535) * 255);
-                    b = Math.min(255, (b / 65535) * 255);
-
+                // Fill entire vertical column with same color (STRAIGHT line)
+                for (let y = 0; y < SURFACE_HEIGHT; y++) {
                     const idx = (y * SURFACE_WIDTH + x) * 4;
                     data[idx] = r;
                     data[idx + 1] = g;

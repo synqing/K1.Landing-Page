@@ -475,25 +475,20 @@
         function updateSurfaceTexture() {
             const data = surfaceData;
 
-            for (let y = 0; y < textureHeight; y++) {
-                const y_norm = y / (textureHeight - 1);
-                const bottom_inf = Math.pow(1.0 - y_norm, 1.5);
-                const top_inf = Math.pow(y_norm, 1.5);
+            // Each LED creates a STRAIGHT vertical line (no curvature!)
+            for (let x = 0; x < textureWidth; x++) {
+                const led_idx = Math.floor(x * (LED_COUNT / textureWidth));
 
-                for (let x = 0; x < textureWidth; x++) {
-                    const led_idx = Math.floor(x * (LED_COUNT / textureWidth));
+                // Both edges show same pattern (dual edge-lit, same data)
+                const led = ch1_leds[led_idx];  // Use same data for entire vertical line
 
-                    const top = ch2_leds[led_idx];
-                    const bottom = ch1_leds[led_idx];
+                // Convert from 16-bit to 8-bit
+                const r = Math.min(255, (led.r / 65535) * 255);
+                const g = Math.min(255, (led.g / 65535) * 255);
+                const b = Math.min(255, (led.b / 65535) * 255);
 
-                    let r = bottom.r * bottom_inf + top.r * top_inf;
-                    let g = bottom.g * bottom_inf + top.g * top_inf;
-                    let b = bottom.b * bottom_inf + top.b * top_inf;
-
-                    r = Math.min(255, (r / 65535) * 255);
-                    g = Math.min(255, (g / 65535) * 255);
-                    b = Math.min(255, (b / 65535) * 255);
-
+                // Fill entire vertical column with same color (STRAIGHT line)
+                for (let y = 0; y < textureHeight; y++) {
                     const idx = (y * textureWidth + x) * 4;
                     data[idx] = r;
                     data[idx + 1] = g;

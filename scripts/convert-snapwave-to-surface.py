@@ -57,14 +57,14 @@ def blend_influence(y_position, exponent=1.5):
 
 def create_surface_texture(ch1_leds, ch2_leds, width=330, height=54, blend_exponent=1.5):
     """
-    Create surface texture from top/bottom LED edge data.
+    Create surface texture from LED edge data.
 
     Args:
         ch1_leds: Array of 160 RGB tuples (bottom edge, LED 160-319)
         ch2_leds: Array of 160 RGB tuples (top edge, LED 0-159)
         width: Output width in pixels (one per LED)
         height: Output height in pixels (vertical surface)
-        blend_exponent: Edge falloff exponent
+        blend_exponent: IGNORED - no vertical blending, straight lines only
 
     Returns:
         PIL Image (width x height, RGB)
@@ -73,31 +73,21 @@ def create_surface_texture(ch1_leds, ch2_leds, width=330, height=54, blend_expon
     img_array = np.zeros((height, width, 3), dtype=np.float32)
 
     # Interpolate LED data to match width (in case width != 160)
-    x_scale = len(ch2_leds) / width
+    x_scale = len(ch1_leds) / width
 
-    for y in range(height):
-        # Calculate vertical position (0.0 = bottom, 1.0 = top)
-        y_norm = y / (height - 1) if height > 1 else 0.5
+    # Each LED creates a STRAIGHT vertical line (no curvature!)
+    for x in range(width):
+        # Map pixel x to LED index
+        led_index = int(x * x_scale)
+        if led_index >= len(ch1_leds):
+            led_index = len(ch1_leds) - 1
 
-        # Get blend influences
-        bottom_inf, top_inf = blend_influence(y_norm, blend_exponent)
+        # Both edges show same pattern (dual edge-lit)
+        led_color = ch1_leds[led_index]
 
-        for x in range(width):
-            # Map pixel x to LED index (with interpolation)
-            led_index = int(x * x_scale)
-            if led_index >= len(ch2_leds):
-                led_index = len(ch2_leds) - 1
-
-            # Get LED colors
-            top_color = ch2_leds[led_index]  # CH2 (top edge)
-            bottom_color = ch1_leds[led_index]  # CH1 (bottom edge)
-
-            # Additive blending
-            r = bottom_color[0] * bottom_inf + top_color[0] * top_inf
-            g = bottom_color[1] * bottom_inf + top_color[1] * top_inf
-            b = bottom_color[2] * bottom_inf + top_color[2] * top_inf
-
-            img_array[y, x] = [r, g, b]
+        # Fill entire vertical column with same color (STRAIGHT line)
+        for y in range(height):
+            img_array[y, x] = led_color
 
     # Convert to 8-bit and create PIL Image
     img_array = np.clip(img_array, 0, 255).astype(np.uint8)
