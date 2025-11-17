@@ -1,0 +1,705 @@
+<html lang="en"><head>
+    <title>K1-Lightwave Founder's Edition</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer=""></script>
+
+  </head>
+  <body class="min-h-screen bg-[#0b1020] text-neutral-100 antialiased bg-[radial-gradient(circle_at_top,_#252d3f55,_transparent_55%),radial-gradient(circle_at_bottom,_#1c2130,_#020617)]">
+    <div class="min-h-screen flex flex-col" style="font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;">
+      <!-- Top Nav / Shell -->
+      <header class="w-full border-b border-white/5 bg-[#0b1020]/80 backdrop-blur-xl sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-4 py-3 lg:py-4">
+          <div class="flex items-center gap-2">
+            <div class="h-7 w-7 rounded-lg bg-[#FFB84D] flex items-center justify-center shadow-md shadow-[#FFB84D]/40">
+              <span class="text-[0.8rem] font-semibold tracking-tight text-neutral-950" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.08em;">
+                K1
+              </span>
+            </div>
+            <span class="text-base lg:text-lg font-semibold tracking-tight text-neutral-100" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.16em;">
+              K1-LIGHTWAVE
+            </span>
+          </div>
+          <nav class="hidden md:flex items-center gap-7 text-sm lg:text-base text-neutral-300">
+            <button class="hover:text-[#FFB84D] transition-colors">
+              Overview
+            </button>
+            <button class="hover:text-[#FFB84D] transition-colors">
+              Specs
+            </button>
+            <button class="hover:text-[#FFB84D] transition-colors">
+              Roadmap
+            </button>
+            <button class="hover:text-[#FFB84D] transition-colors">
+              Reserve
+            </button>
+          </nav>
+          <div class="flex items-center gap-3">
+            <button class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs lg:text-sm text-neutral-100 px-3 lg:px-3.5 py-1.5 transition-colors">
+              <span class="i-lucide-github h-4 w-4 stroke-[1.5]" data-lucide="github"></span>
+              <span>Firmware repo</span>
+            </button>
+            <button class="inline-flex items-center gap-1.5 rounded-full bg-[#FFB84D] text-xs lg:text-sm text-neutral-950 font-medium tracking-tight px-3.5 lg:px-4 py-1.5 shadow-lg shadow-[#FFB84D]/40 hover:brightness-110 transition">
+              <span>Reserve – $249</span>
+              <span class="i-lucide-arrow-right h-4 w-4 stroke-[1.5]" data-lucide="arrow-right"></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1">
+        <!-- TEMPLATE 1: HERO + DEVICE PREVIEW PANEL (K1 HERO) -->
+        <section class="border-b border-white/5">
+          <div class="max-w-6xl mx-auto px-4 py-10 lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <!-- Hero Copy Panel -->
+            <div class="space-y-6 rounded-3xl border border-white/10 bg-[#1c2130]/70 backdrop-blur-2xl p-5 lg:p-7 shadow-[0_18px_60px_rgba(12,15,25,0.9)]">
+              <div class="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 px-3 py-1">
+                <div class="flex h-1.5 w-1.5 rounded-full bg-[#F59E0B]"></div>
+                <span class="text-xs sm:text-sm text-[#F59E0B]">
+                  ⚠️ 73 of 100 units remaining
+                </span>
+              </div>
+
+              <div class="space-y-2">
+                <h1 class="text-3xl sm:text-4xl xl:text-5xl font-semibold tracking-tight text-neutral-50" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.2em;">
+                  K1-LIGHTWAVE
+                </h1>
+                <p class="text-sm sm:text-base font-medium tracking-tight" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.22em; color: #FFB84D;">
+                  FOUNDER'S EDITION
+                </p>
+                <p class="text-base sm:text-lg text-neutral-300/90 leading-relaxed">
+                  First 100 units. Help us build V2. Dual edge-lit LGP. 320
+                  addressable LEDs. ESP32-S3. Open hardware. V1 ships March
+                  2026.
+                </p>
+              </div>
+
+              <!-- Launch CTA Row -->
+              <div class="flex flex-wrap items-center gap-3">
+                <button class="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#FFB84D] text-neutral-950 font-medium tracking-tight text-sm sm:text-base px-4 py-2 shadow-lg shadow-[#FFB84D]/40 hover:brightness-110 transition-colors">
+                  <span>Reserve Yours – $249</span>
+                  <span class="i-lucide-credit-card h-4 w-4 stroke-[1.5]" data-lucide="credit-card"></span>
+                </button>
+                <button class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 text-xs sm:text-sm text-neutral-100 px-3.5 py-1.5 transition-colors">
+                  <span class="i-lucide-arrow-down h-4 w-4 stroke-[1.5]" data-lucide="arrow-down"></span>
+                  <span>Learn More ↓</span>
+                </button>
+              </div>
+
+              <!-- Quick Facts Row -->
+              <div class="grid grid-cols-3 gap-3 pt-2">
+                <div class="space-y-1">
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                    Audience
+                  </p>
+                  <p class="text-sm sm:text-base text-neutral-100">
+                    Hardware hackers
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                    Platform
+                  </p>
+                  <p class="text-sm sm:text-base text-neutral-100">
+                    ESP32-S3
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                    Ship date
+                  </p>
+                  <p class="text-sm sm:text-base text-neutral-100">
+                    March 2026
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Device Preview / Hero Mock Panel -->
+            <div class="relative rounded-3xl border border-white/10 bg-gradient-to-br from-[#252D3F]/80 via-[#1C2130]/60 to-[#252D3F]/80 backdrop-blur-3xl p-5 lg:p-6 flex flex-col gap-4 shadow-[0_18px_80px_rgba(6,8,15,0.95)]">
+              <!-- Floating metrics cards -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-2xl p-3 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-neutral-300">
+                      LED channels
+                    </span>
+                    <span class="i-lucide-sparkles h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="sparkles"></span>
+                  </div>
+                  <p class="text-lg font-semibold tracking-tight text-neutral-50" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    320&nbsp;RGBIC
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    160 LEDs per edge, independently addressable.
+                  </p>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-2xl p-3 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-neutral-300">
+                      Control stack
+                    </span>
+                    <span class="i-lucide-cpu h-4 w-4 stroke-[1.5] text-[#22DD88]" data-lucide="cpu"></span>
+                  </div>
+                  <p class="text-lg font-semibold tracking-tight text-neutral-50" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    ESP32-S3
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Dual-core, WiFi, open firmware (Apache&nbsp;2.0).
+                  </p>
+                </div>
+              </div>
+
+              <!-- Device silhouette / hero object -->
+              <div class="relative mt-2 rounded-2xl border border-[#FFB84D]/20 bg-gradient-to-tr from-[#1C2130] via-[#252D3F]/40 to-[#1C2130] p-4 overflow-hidden">
+                <div class="pointer-events-none absolute -inset-24 bg-[radial-gradient(circle_at_top,_rgba(255,184,77,0.45),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(110,231,243,0.35),_transparent_60%)] opacity-70"></div>
+
+                <div class="relative flex flex-col sm:flex-row items-center sm:items-stretch gap-4">
+                  <!-- Hardware render placeholder -->
+                  <div class="flex-1 flex items-center justify-center rounded-xl border border-white/15 bg-[#0b1020]/70 backdrop-blur-sm">
+                    <div class="aspect-[4/3] w-full max-w-xs sm:max-w-sm bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.25),_transparent_60%),linear-gradient(to_bottom_right,_rgba(15,23,42,0.95),_rgba(15,23,42,0.6))] rounded-[1.4rem] relative overflow-hidden shadow-[0_22px_40px_rgba(3,4,9,0.95)]">
+                      <div class="absolute inset-3 rounded-[1.1rem] border border-white/10 bg-gradient-to-br from-[#252D3F]/80 via-[#1C2130]/80 to-[#252D3F]/95"></div>
+
+                      <!-- Light guide plate representation -->
+                      <div class="absolute inset-x-6 top-8 h-1 rounded-full bg-gradient-to-r from-[#FFB84D] via-[#6EE7F3] to-[#FFB84D] opacity-80"></div>
+                      <div class="absolute inset-x-6 bottom-8 h-1 rounded-full bg-gradient-to-r from-[#FFB84D] via-[#22DD88] to-[#FFB84D] opacity-80"></div>
+
+                      <!-- Port strip -->
+                      <div class="absolute left-3 right-3 bottom-3 h-4 rounded-full bg-black/70 border border-slate-500/40 flex items-center justify-between px-3">
+                        <div class="inline-flex gap-1.5 items-center text-[0.65rem] text-neutral-300" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                          <span class="h-1 w-3 rounded-full bg-[#FFB84D]"></span>
+                          <span>USB-C 5V</span>
+                        </div>
+                        <div class="inline-flex gap-2 items-center text-[0.65rem] text-neutral-300" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                          <span class="h-1 w-3 rounded-full bg-[#6EE7F3]"></span>
+                          <span>WiFi CTRL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Spec summary -->
+                  <div class="w-full sm:w-48 flex flex-col justify-between gap-3">
+                    <div class="space-y-2">
+                      <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                        K1-LIGHTWAVE • V1 FOR PIONEERS
+                      </p>
+                      <p class="text-base sm:text-lg font-medium tracking-tight text-neutral-50">
+                        32&nbsp;cm dual edge-lit light guide for serious desk
+                        setups.
+                      </p>
+                    </div>
+                    <div class="space-y-1.5">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-neutral-300">
+                          LEDs
+                        </span>
+                        <span class="text-xs text-neutral-100" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                          320&nbsp;RGBIC
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-neutral-300">
+                          Controller
+                        </span>
+                        <span class="text-xs text-neutral-100" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                          ESP32-S3
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-neutral-300">
+                          Power
+                        </span>
+                        <span class="text-xs text-neutral-100" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                          USB-C 5V/3A
+                        </span>
+                      </div>
+                    </div>
+                    <button class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-neutral-100 px-3 py-1.5 transition-colors self-start">
+                      <span class="i-lucide-terminal h-4 w-4 stroke-[1.5]" data-lucide="terminal"></span>
+                      <span>Open hardware, Apache&nbsp;2.0 firmware</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-neutral-400">
+                V1 works, but isn't polished. Expect sharp edges: firmware
+                changes, rougher UX, and frequent updates. In return, you
+                influence V2.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEMPLATE 2: SPEC GRID (K1 HARDWARE SPECS) -->
+        <section class="border-b border-white/5" id="specs">
+          <div class="max-w-6xl mx-auto px-4 py-10 lg:py-14 grid lg:grid-cols-[1.4fr,1fr] gap-8 lg:gap-10">
+            <!-- Spec grid card -->
+            <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-[#1C2130]/80 via-[#252D3F]/50 to-[#1C2130]/80 backdrop-blur-2xl p-5 lg:p-7 space-y-5 shadow-[0_18px_60px_rgba(6,8,15,0.9)]">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-xs text-[#6EE7F3] uppercase tracking-wide mb-1">
+                    TECHNICAL SPEC • K1-LIGHTWAVE
+                  </p>
+                  <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-neutral-50" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.18em;">
+                    HONEST V1 HARDWARE SPECS.
+                  </h2>
+                </div>
+                <div class="hidden sm:flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
+                  <span class="i-lucide-brackets h-3.5 w-3.5 stroke-[1.5] text-[#FFB84D]" data-lucide="brackets"></span>
+                  <span class="text-xs text-neutral-200">
+                    Built for hackers
+                  </span>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- LEDs -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      LEDs
+                    </p>
+                    <span class="i-lucide-sparkles h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="sparkles"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    320 RGBIC (160/edge)
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Individually addressable, tuned for smooth gradients and
+                    solid whites.
+                  </p>
+                </div>
+
+                <!-- Controller -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      Controller
+                    </p>
+                    <span class="i-lucide-cpu h-4 w-4 stroke-[1.5] text-[#22DD88]" data-lucide="cpu"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    ESP32-S3 @ 240&nbsp;MHz
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Dual-core, WiFi 6 capable module. Enough headroom for custom
+                    patterns and integrations.
+                  </p>
+                </div>
+
+                <!-- Form factor -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      Form factor
+                    </p>
+                    <span class="i-lucide-monitor h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="monitor"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50">
+                    32&nbsp;cm light guide
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Designed to sit behind 27–34" monitors or along a shelf
+                    edge without visual clutter.
+                  </p>
+                </div>
+
+                <!-- Power -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      Power
+                    </p>
+                    <span class="i-lucide-bolt h-4 w-4 stroke-[1.5] text-[#F59E0B]" data-lucide="bolt"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50" style="font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    USB-C, 5V / 3A max
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Standard USB-C input. No proprietary bricks. Design assumes
+                    a clean 5V/3A source.
+                  </p>
+                </div>
+
+                <!-- Control -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      Control
+                    </p>
+                    <span class="i-lucide-radio-tower h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="radio-tower"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50">
+                    WiFi web UI, open firmware
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Runs on ESP-IDF with an HTTP API. You can fork the firmware,
+                    flash your own builds, or stay on the mainline.
+                  </p>
+                </div>
+
+                <!-- Mounting -->
+                <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-3.5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                      Mounting
+                    </p>
+                    <span class="i-lucide-layout-panel-left h-4 w-4 stroke-[1.5] text-[#22DD88]" data-lucide="layout-panel-left"></span>
+                  </div>
+                  <p class="text-sm sm:text-base font-medium tracking-tight text-neutral-50">
+                    Adhesive + stand options
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    Ships with 3M adhesive for monitor backs and a simple desk
+                    stand option. No drill required.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side card: who this is for -->
+            <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-[#1C2130]/85 via-[#252D3F]/50 to-[#1C2130]/85 backdrop-blur-2xl p-5 lg:p-6 space-y-4 shadow-[0_18px_60px_rgba(3,4,9,0.95)]">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide mb-1">
+                    WHO THIS IS FOR
+                  </p>
+                  <p class="text-base sm:text-lg font-medium tracking-tight text-neutral-50">
+                    Hardware people first, aesthetics second.
+                  </p>
+                </div>
+                <span class="rounded-full border border-[#22DD88]/40 bg-[#22DD88]/10 text-[0.7rem] text-[#22DD88] px-2.5 py-0.5">
+                  V1, not finished
+                </span>
+              </div>
+
+              <ul class="space-y-2 text-sm text-neutral-300">
+                <li>
+                  • You're comfortable flashing firmware and opening an issue
+                  when something's off.
+                </li>
+                <li>
+                  • You want a light bar that talks in APIs, not "modes".
+                </li>
+                <li>
+                  • You care more about control and repeatability than marketing
+                  animations.
+                </li>
+              </ul>
+
+              <p class="text-xs text-neutral-400">
+                No mobile app lock-in. No closed effects engine. If you break
+                it, we'll help you debug it. If you extend it, we'll probably
+                merge it.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEMPLATE 3: ROADMAP / WHAT SHIPS NOW VS WHAT'S COMING -->
+        <section class="border-b border-white/5" id="roadmap">
+          <div class="max-w-6xl mx-auto px-4 py-10 lg:py-14 space-y-6">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs text-neutral-400 uppercase tracking-wide mb-1">
+                  ROADMAP • K1-LIGHTWAVE
+                </p>
+                <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-neutral-50" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.2em;">
+                  WHAT SHIPS NOW VS WHAT'S COMING.
+                </h2>
+              </div>
+              <button class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-neutral-100 px-3 py-1.5 transition-colors">
+                <span class="i-lucide-layers h-3.5 w-3.5 stroke-[1.5]" data-lucide="layers"></span>
+                <span>View firmware roadmap</span>
+              </button>
+            </div>
+
+            <div class="grid md:grid-cols-[1.1fr,1.1fr] gap-6 lg:gap-8">
+              <!-- What ships now -->
+              <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-[#1C2130]/85 via-[#252D3F]/50 to-[#1C2130]/85 backdrop-blur-2xl p-5 lg:p-6 space-y-4 shadow-[0_18px_60px_rgba(3,4,9,0.9)]">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-sm sm:text-base text-neutral-200 leading-relaxed">
+                    <span class="block text-xs text-[#22DD88] uppercase tracking-wide mb-1">
+                      WHAT SHIPS NOW
+                    </span>
+                    The unit you get in March 2026 is functional, debuggable,
+                    and open. It's not "finished".
+                  </p>
+                  <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#22DD88]/40 bg-[#22DD88]/10 text-[0.7rem] text-[#22DD88] px-2.5 py-1">
+                    <span class="i-lucide-check-circle h-3.5 w-3.5 stroke-[1.5]" data-lucide="check-circle"></span>
+                    <span>Shipping baseline</span>
+                  </span>
+                </div>
+
+                <div class="space-y-2">
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                      <span class="i-lucide-sparkle h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="sparkle"></span>
+                      <div>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                          PRESET PATTERNS
+                        </p>
+                        <p class="text-sm sm:text-base text-neutral-100">
+                          12 presets, including gradients, breathing, and
+                          static bars.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                      <span class="i-lucide-waveform h-4 w-4 stroke-[1.5] text-[#F59E0B]" data-lucide="waveform"></span>
+                      <div>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                          MUSIC-REACTIVE MODE
+                        </p>
+                        <p class="text-sm sm:text-base text-neutral-100">
+                          Line-in style mic input on the board. Simple FFT,
+                          tuned for desk distance.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                      <span class="i-lucide-wifi h-4 w-4 stroke-[1.5] text-[#6EE7F3]" data-lucide="wifi"></span>
+                      <div>
+                        <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                          WIFI CONTROL
+                        </p>
+                        <p class="text-sm sm:text-base text-neutral-100">
+                          Local web UI. No cloud, no account. JSON API if you
+                          want to script it.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-2xl border border-[#F59E0B]/40 bg-[#F59E0B]/10 px-3 py-2.5 flex items-start gap-2">
+                    <span class="i-lucide-alert-triangle h-4 w-4 stroke-[1.5] text-[#F59E0B] mt-0.5" data-lucide="alert-triangle"></span>
+                    <div>
+                      <p class="text-xs text-neutral-300 uppercase tracking-wide">
+                        HONEST WARNING
+                      </p>
+                      <p class="text-sm sm:text-base text-neutral-100">
+                        V1 works but isn't polished. UI rough edges, missing
+                        docs, and firmware churn are expected while we converge
+                        with you.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What's coming -->
+              <div class="rounded-3xl border border-white/10 bg-gradient-to-br from-[#1C2130]/85 via-[#252D3F]/50 to-[#1C2130]/85 backdrop-blur-2xl p-5 lg:p-6 space-y-4 shadow-[0_18px_60px_rgba(3,4,9,0.9)]">
+                <div class="flex items-center justify-between gap-3">
+                  <p class="text-sm sm:text-base text-neutral-200 leading-relaxed">
+                    <span class="block text-xs text-[#6EE7F3] uppercase tracking-wide mb-1">
+                      WHAT'S COMING
+                    </span>
+                    These are roadmap items, not promises. Early buyers help
+                    decide what ships first.
+                  </p>
+                  <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 text-[0.7rem] text-neutral-200 px-2.5 py-1">
+                    <span class="i-lucide-timer h-3.5 w-3.5 stroke-[1.5]" data-lucide="timer"></span>
+                    <span>Subject to change</span>
+                  </span>
+                </div>
+
+                <div class="space-y-3">
+                  <!-- Card 1: PRISM.node -->
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-start gap-2">
+                    <span class="i-lucide-orbit h-4 w-4 stroke-[1.5] text-[#6EE7F3] mt-0.5" data-lucide="orbit"></span>
+                    <div>
+                      <p class="text-xs text-neutral-300 uppercase tracking-wide">
+                        PRISM.NODE
+                      </p>
+                      <p class="text-sm sm:text-base text-neutral-100">
+                        Visual programming for patterns. Drag nodes to build
+                        animations instead of compiling C. Early builds will be
+                        rough but scriptable.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Card 2: Marketplace -->
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-start gap-2">
+                    <span class="i-lucide-store h-4 w-4 stroke-[1.5] text-[#FFB84D] mt-0.5" data-lucide="store"></span>
+                    <div>
+                      <p class="text-xs text-neutral-300 uppercase tracking-wide">
+                        PATTERN MARKETPLACE
+                      </p>
+                      <p class="text-sm sm:text-base text-neutral-100">
+                        Share and load community patterns from a small,
+                        curated library. No dark patterns, no subscriptions.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Card 3: Integrations -->
+                  <div class="rounded-2xl border border-white/10 bg-neutral-900/60 px-3 py-2.5 flex items-start gap-2">
+                    <span class="i-lucide-plug-2 h-4 w-4 stroke-[1.5] text-[#22DD88] mt-0.5" data-lucide="plug-2"></span>
+                    <div>
+                      <p class="text-xs text-neutral-300 uppercase tracking-wide">
+                        PLATFORM INTEGRATIONS
+                      </p>
+                      <p class="text-sm sm:text-base text-neutral-100">
+                        Home Assistant, WLED compatibility layer, and potential
+                        Spotify / media sync. Which ones land first depends on
+                        the first 100.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom callout -->
+            <div class="rounded-2xl border border-white/10 bg-[#0b1020]/80 backdrop-blur-2xl px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <p class="text-sm sm:text-base text-neutral-200">
+                <span class="font-medium" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.16em;">
+                  CO-CREATOR GUARANTEE
+                </span>
+                &nbsp;The first 100 decide priority. You're co-creators, not
+                customers.
+              </p>
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[#FFB84D]/40 bg-[#FFB84D]/10 text-xs text-[#FFB84D] px-3 py-1">
+                <span class="i-lucide-users h-3.5 w-3.5 stroke-[1.5]" data-lucide="users"></span>
+                <span>Roadmap feedback calls included</span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEMPLATE 5: PRICING CTA / RESERVE -->
+        <section class="border-b border-white/5" id="reserve">
+          <div class="max-w-6xl mx-auto px-4 py-10 lg:py-14 flex flex-col items-center">
+            <div class="w-full max-w-3xl rounded-3xl border border-[#FFB84D]/60 bg-gradient-to-br from-[#1C2130]/90 via-[#252D3F]/60 to-[#1C2130]/90 backdrop-blur-2xl p-5 sm:p-7 lg:p-8 space-y-5 shadow-[0_22px_70px_rgba(3,4,9,0.95)]">
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <p class="text-xs text-[#FFB84D] uppercase tracking-wide mb-1">
+                    FOUNDER'S EDITION
+                  </p>
+                  <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-neutral-50" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.22em;">
+                    RESERVE YOUR K1-LIGHTWAVE.
+                  </h2>
+                  <p class="text-sm sm:text-base text-neutral-300 mt-2">
+                    73 of 100 units remaining. Production run is capped to keep
+                    the feedback loop tight.
+                  </p>
+                </div>
+                <div class="text-right space-y-1">
+                  <p class="text-2xl sm:text-3xl font-semibold tracking-tight" style="color: #FFB84D; font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                    $249
+                  </p>
+                  <p class="text-xs text-neutral-400">
+                    March 2026 ship window
+                  </p>
+                </div>
+              </div>
+
+              <!-- What's included -->
+              <div class="grid sm:grid-cols-2 gap-4 mt-2">
+                <div class="space-y-1.5">
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                    HARDWARE
+                  </p>
+                  <ul class="space-y-1.5 text-sm text-neutral-200">
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>32&nbsp;cm dual edge-lit light guide plate</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>320 individually addressable RGB LEDs</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>ESP32-S3 control board, USB-C powered</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="space-y-1.5">
+                  <p class="text-xs text-neutral-400 uppercase tracking-wide">
+                    SOFTWARE &amp; SUPPORT
+                  </p>
+                  <ul class="space-y-1.5 text-sm text-neutral-200">
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>Open source firmware (Apache 2.0)</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>Access to roadmap calls and feedback channels</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="i-lucide-check h-3.5 w-3.5 stroke-[1.5] text-[#22DD88]" data-lucide="check"></span>
+                      <span>Early access to PRISM.node and integrations</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Reserve CTA -->
+              <div class="space-y-3 pt-2">
+                <button class="w-full inline-flex items-center justify-center gap-1.5 rounded-2xl bg-[#FFB84D] text-sm sm:text-base text-neutral-950 font-medium tracking-tight px-4 py-2.5 shadow-lg shadow-[#FFB84D]/40 hover:brightness-110 transition">
+                  <span>Reserve Your Unit</span>
+                  <span class="i-lucide-arrow-right h-4 w-4 stroke-[1.5]" data-lucide="arrow-right"></span>
+                </button>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <p class="text-xs text-neutral-400">
+                    30-day returns • 1-year warranty • Optional 50/50 payment
+                    (50% now, 50% before shipment).
+                  </p>
+                  <p class="text-xs text-neutral-500">
+                    No crypto, no BNPL. Plain card payments only.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-xs text-neutral-500">
+            <span class="h-6 w-6 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center">
+              <span class="text-[0.7rem] font-semibold tracking-tight" style="font-family: 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.14em;">
+                K1
+              </span>
+            </span>
+            <span>
+              Built for hardware hackers, ESP32 enthusiasts, and desk setup
+              obsessives.
+            </span>
+          </div>
+          <div class="flex items-center gap-4 text-[0.7rem] text-neutral-500">
+            <button class="hover:text-neutral-300 transition-colors">
+              Open firmware
+            </button>
+            <button class="hover:text-neutral-300 transition-colors">
+              No cloud lock-in
+            </button>
+            <button class="hover:text-neutral-300 transition-colors">
+              V1 for pioneers
+            </button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+      });
+    </script>
+
+</body></html>
