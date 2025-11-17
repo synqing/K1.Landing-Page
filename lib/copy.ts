@@ -18,20 +18,32 @@
 export const COPY = {
   faq: [
     {
-      q: 'Is V1 perfect?',
-      a: 'No. V1 is functional, not flashy. You get 12 presets, music‑reactive mode, Wi‑Fi control, and open‑source firmware + schematics.'
+      q: 'What exactly ships in March 2026?',
+      a: 'Hardware: K1-Lightwave unit, USB-C cable, power adapter, mounting kit. Firmware: V1 with 12 preset patterns, music-reactive mode, WiFi control. Not included: PRISM.node (coming Q3 2026), mobile app (TBD).'
     },
     {
-      q: 'Can I hack it?',
-      a: 'Yes. ESP32‑S3, open firmware, and community support. PRs welcome.'
+      q: 'Can I return it if I don\'t like it?',
+      a: 'Yes. 30-day return window from delivery date. Full refund minus shipping. We\'re confident you\'ll love it, but we understand v1 isn\'t for everyone.'
     },
     {
-      q: 'Does it work with WLED?',
-      a: 'WLED compatibility is planned; early adopters help prioritize. Firmware is open, and integrations are on the roadmap.'
+      q: 'Is the firmware really open source?',
+      a: 'Yes. Full source on GitHub (Apache 2.0 license). Hardware schematics too. Fork it, mod it, share it. We encourage hacking.'
     },
     {
-      q: 'What is the warranty?',
-      a: '30‑day money‑back guarantee and 1‑year hardware warranty.'
+      q: 'Will there be more than 100 units?',
+      a: 'Yes, but not immediately. This is a limited founder\'s run. After we ship these 100 and gather feedback, we\'ll launch a full Kickstarter (Q3 2026) with v2 improvements. Founder\'s Edition holders get 20% off v2 + priority shipping.'
+    },
+    {
+      q: 'What if something breaks?',
+      a: '1-year hardware warranty covers defects. We\'ll replace or repair. For v1, we also offer Discord support (founders-only channel) where we troubleshoot together.'
+    },
+    {
+      q: 'Why should I buy v1 instead of waiting for v2?',
+      a: 'If you want to shape the product: Your feedback becomes features. If you want exclusivity: Only 100 numbered units exist. If you want savings: V2 will cost more (~$329). You get 20% off as a founder. If you want to wait: That\'s totally fine. We\'ll see you at the Kickstarter.'
+    },
+    {
+      q: 'What\'s the difference between K1 and other LED strips?',
+      a: 'It\'s not an LED strip. It\'s a dual edge-lit light guide plate. LEDs are hidden at the edges. Light diffuses through the acrylic. No hotspots, no visible LEDs. Clean, even glow. Also: 320 individually addressable LEDs (RGBIC), not RGB zones.'
     }
   ],
   product: {
