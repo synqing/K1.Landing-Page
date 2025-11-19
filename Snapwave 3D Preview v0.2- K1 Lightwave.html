@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<!-- saved from url=(0096)file:///Users/spectrasynq/Workspace_Management/Software/K1.Landing-Page/snapwave-3d-preview.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapwave 3D Preview - K1 Lightwave</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #E6E9EF;
+            overflow: hidden;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(28, 33, 48, 0.95);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            max-width: 350px;
+            z-index: 100;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            color: #FFB84D;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #B5BDCA;
+            font-size: 11px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group h3 {
+            font-size: 11px;
+            color: #FFB84D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .slider-group {
+            margin-bottom: 10px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 4px;
+            color: #B5BDCA;
+        }
+
+        .slider-label .note-name {
+            font-weight: bold;
+            color: #E6E9EF;
+        }
+
+        .slider-label .note-value {
+            color: #6EE7F3;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
+        button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #E6E9EF;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 2px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        button.active {
+            background: #FFB84D;
+            color: #1C2130;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .stats {
+            font-size: 9px;
+            color: #B5BDCA;
+            line-height: 1.5;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"><canvas data-engine="three.js r160" width="2712" height="1397" style="display: block; width: 2712px; height: 1397px; touch-action: none;"></canvas></div>
+
+    <div id="info">
+        <h1>K1 LIGHTWAVE 3D</h1>
+        <div class="subtitle">
+            Realistic WebGL preview with Three.js • Frosted acrylic material • Bloom post-processing
+        </div>
+
+        <div class="control-group">
+            <h3>Quick Presets</h3>
+            <div class="button-grid">
+                <button onclick="loadPreset(&#39;cmajor&#39;)">C Major</button>
+                <button onclick="loadPreset(&#39;dim7&#39;)">Dim 7th</button>
+                <button onclick="loadPreset(&#39;single-c&#39;)">Single C</button>
+                <button onclick="loadPreset(&#39;chromatic&#39;)">Chromatic</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Amplitude</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Energy</span>
+                    <span class="note-value" id="amplitude-value">0.70</span>
+                </div>
+                <input type="range" id="amplitude" min="0" max="100" value="70">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Rendering</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Bloom Strength</span>
+                    <span class="note-value" id="bloom-value">1.5</span>
+                </div>
+                <input type="range" id="bloom" min="50" max="300" value="150">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Emissive</span>
+                    <span class="note-value" id="emissive-value">3.0</span>
+                </div>
+                <input type="range" id="emissive" min="10" max="100" value="30">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Camera</h3>
+            <div class="button-grid">
+                <button id="cam-front" class="active" onclick="setCamera(&#39;front&#39;)">Front</button>
+                <button id="cam-angle" onclick="setCamera(&#39;angle&#39;)">3/4 View</button>
+                <button id="cam-top" onclick="setCamera(&#39;top&#39;)">Top</button>
+                <button id="cam-orbit" onclick="setCamera(&#39;orbit&#39;)">Orbit</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div><strong>FPS:</strong> <span id="fps">60</span></div>
+            <div><strong>Frame:</strong> <span id="frame">76627</span></div>
+            <div><strong>Oscillation:</strong> <span id="osc">-0.99</span></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // Configuration
+        const K1_WIDTH = 330;   // mm
+        const K1_HEIGHT = 54;   // mm
+        const K1_DEPTH = 4;     // mm
+        const SCALE = 0.1;      // Display scale
+        const LED_COUNT = 160;  // Per edge
+
+        // State
+        let chromagram = new Array(12).fill(0);
+        let amplitude = 0.7;
+        let waveform_peak_scaled_last = 0.0;
+        let frameCount = 0;
+        let startTime = Date.now();
+        let bloomStrength = 1.5;
+        let emissiveIntensity = 3.0;
+        let cameraMode = 'front';
+        let orbitEnabled = false;
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        scene.fog = new THREE.Fog(0x0a0a0a, 50, 200);
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(
+            45,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(0, 0, 50);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Orbit controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enabled = false;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Post-processing
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            bloomStrength,  // strength
+            0.4,            // radius
+            0.85            // threshold
+        );
+        composer.addPass(bloomPass);
+
+        // Create K1 Light Guide Plate geometry
+        const lgpGeometry = new THREE.BoxGeometry(
+            K1_WIDTH * SCALE,
+            K1_HEIGHT * SCALE,
+            K1_DEPTH * SCALE
+        );
+
+        // Create surface texture for emissive map
+        const textureWidth = 330;
+        const textureHeight = 54;
+        const surfaceData = new Uint8Array(textureWidth * textureHeight * 4);
+        const surfaceTexture = new THREE.DataTexture(
+            surfaceData,
+            textureWidth,
+            textureHeight,
+            THREE.RGBAFormat
+        );
+        surfaceTexture.needsUpdate = true;
+
+        // Frosted acrylic material
+        const lgpMaterial = new THREE.MeshStandardMaterial({
+            color: 0xfafcff,
+            emissive: 0xffffff,
+            emissiveMap: surfaceTexture,
+            emissiveIntensity: emissiveIntensity,
+            roughness: 0.35,
+            metalness: 0.0,
+            transparent: true,
+            opacity: 0.92,
+            side: THREE.DoubleSide
+        });
+
+        const lgpMesh = new THREE.Mesh(lgpGeometry, lgpMaterial);
+        scene.add(lgpMesh);
+
+        // Ambient lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+
+        // Rim light
+        const rimLight = new THREE.DirectionalLight(0x6699ff, 0.3);
+        rimLight.position.set(10, 10, 10);
+        scene.add(rimLight);
+
+        // LED state (dual channels)
+        let ch1_leds = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+        let ch2_leds = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+
+        // Helper functions
+        function tanh(x) { return Math.tanh(x); }
+
+        function hsv_to_rgb(h, s, v) {
+            let c = v * s;
+            let x = c * (1 - Math.abs((h * 6) % 2 - 1));
+            let m = v - c;
+            let r, g, b;
+
+            if (h < 1/6) { r = c; g = x; b = 0; }
+            else if (h < 2/6) { r = x; g = c; b = 0; }
+            else if (h < 3/6) { r = 0; g = c; b = x; }
+            else if (h < 4/6) { r = 0; g = x; b = c; }
+            else if (h < 5/6) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+
+            return {
+                r: Math.round((r + m) * 65535),
+                g: Math.round((g + m) * 65535),
+                b: Math.round((b + m) * 65535)
+            };
+        }
+
+        // Snapwave algorithm
+        function snapwave_step() {
+            const SQUARE_ITER = 2.0;
+            const SATURATION = 1.0;
+            const PHOTONS = 1.0;
+
+            waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
+
+            let current_sum_color = {r: 0, g: 0, b: 0};
+            let total_magnitude = 0.0;
+
+            for (let c = 0; c < 12; c++) {
+                let prog = c / 12.0;
+                let bin = chromagram[c];
+                let bright = bin;
+
+                for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
+                    bright *= bright;
+                }
+
+                if (bright > 0.05) {
+                    let note_col = hsv_to_rgb(prog, SATURATION, bright);
+                    current_sum_color.r += note_col.r;
+                    current_sum_color.g += note_col.g;
+                    current_sum_color.b += note_col.b;
+                    total_magnitude += bright;
+                }
+            }
+
+            if (total_magnitude > 0.01) {
+                current_sum_color.r /= total_magnitude;
+                current_sum_color.g /= total_magnitude;
+                current_sum_color.b /= total_magnitude;
+                current_sum_color.r *= total_magnitude;
+                current_sum_color.g *= total_magnitude;
+                current_sum_color.b *= total_magnitude;
+            }
+
+            current_sum_color.r *= PHOTONS;
+            current_sum_color.g *= PHOTONS;
+            current_sum_color.b *= PHOTONS;
+
+            // Calculate oscillation
+            let amp = waveform_peak_scaled_last;
+            let oscillation = 0.0;
+            let millis = Date.now() - startTime;
+
+            for (let i = 0; i < 12; i++) {
+                if (chromagram[i] > 0.1) {
+                    oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
+                }
+            }
+
+            oscillation = tanh(oscillation * 2.0);
+
+            // Mix oscillation with amplitude (ORIGINAL algorithm)
+            amp = oscillation * waveform_peak_scaled_last * 0.7;
+
+            // Clamp
+            if (amp > 1.0) amp = 1.0;
+            else if (amp < -1.0) amp = -1.0;
+
+            // Calculate position (ORIGINAL - single oscillating dot per edge)
+            let center = LED_COUNT / 2;
+            let pos = Math.round(center + amp * (LED_COUNT / 2.0));
+            if (pos < 0) pos = 0;
+            if (pos >= LED_COUNT) pos = LED_COUNT - 1;
+
+            // Set the new dot on BOTH edges (ORIGINAL behavior)
+            ch1_leds[pos] = {...current_sum_color};
+            ch2_leds[pos] = {...current_sum_color};
+
+            // --- CENTER-ORIGIN: Applied to TRAILS/FADING only ---
+            // Dynamic fading with bilateral symmetry
+            const HALF = LED_COUNT / 2;  // 80
+
+            let abs_amp = Math.abs(waveform_peak_scaled_last);
+            if (abs_amp > 1.0) abs_amp = 1.0;
+            let max_fade_reduction = 0.10;
+            let fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            // For each edge, compute first half (0-79), mirror to second half (80-159)
+            // CH1 (bottom edge)
+            for (let i = 0; i < HALF; i++) {
+                ch1_leds[i].r *= fade_amount;
+                ch1_leds[i].g *= fade_amount;
+                ch1_leds[i].b *= fade_amount;
+
+                // Mirror to second half (CENTER-ORIGIN compliance)
+                ch1_leds[LED_COUNT - 1 - i] = {...ch1_leds[i]};
+            }
+
+            // CH2 (top edge)
+            for (let i = 0; i < HALF; i++) {
+                ch2_leds[i].r *= fade_amount;
+                ch2_leds[i].g *= fade_amount;
+                ch2_leds[i].b *= fade_amount;
+
+                // Mirror to second half (CENTER-ORIGIN compliance)
+                ch2_leds[LED_COUNT - 1 - i] = {...ch2_leds[i]};
+            }
+
+            // Update stats
+            document.getElementById('osc').textContent = oscillation.toFixed(2);
+            document.getElementById('frame').textContent = frameCount++;
+        }
+
+        // Update surface texture
+        function updateSurfaceTexture() {
+            const data = surfaceData;
+
+            // Each LED creates a STRAIGHT vertical line (no curvature!)
+            for (let x = 0; x < textureWidth; x++) {
+                const led_idx = Math.floor(x * (LED_COUNT / textureWidth));
+
+                // Both edges show same pattern (dual edge-lit, same data)
+                const led = ch1_leds[led_idx];  // Use same data for entire vertical line
+
+                // Convert from 16-bit to 8-bit
+                const r = Math.min(255, (led.r / 65535) * 255);
+                const g = Math.min(255, (led.g / 65535) * 255);
+                const b = Math.min(255, (led.b / 65535) * 255);
+
+                // Fill entire vertical column with same color (STRAIGHT line)
+                for (let y = 0; y < textureHeight; y++) {
+                    const idx = (y * textureWidth + x) * 4;
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = 255;
+                }
+            }
+
+            surfaceTexture.needsUpdate = true;
+        }
+
+        // Camera presets
+        window.setCamera = function(mode) {
+            document.querySelectorAll('#info button').forEach(b => b.classList.remove('active'));
+            document.getElementById('cam-' + mode).classList.add('active');
+
+            controls.enabled = false;
+            cameraMode = mode;
+
+            switch(mode) {
+                case 'front':
+                    camera.position.set(0, 0, 50);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'angle':
+                    camera.position.set(30, 15, 40);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'top':
+                    camera.position.set(0, 40, 10);
+                    camera.lookAt(0, 0, 0);
+                    break;
+                case 'orbit':
+                    controls.enabled = true;
+                    break;
+            }
+        };
+
+        // Presets
+        window.loadPreset = function(name) {
+            chromagram.fill(0);
+            switch(name) {
+                case 'cmajor':
+                    chromagram[0] = 0.8;
+                    chromagram[4] = 0.6;
+                    chromagram[7] = 0.7;
+                    amplitude = 0.7;
+                    break;
+                case 'dim7':
+                    chromagram[0] = 0.7;
+                    chromagram[3] = 0.7;
+                    chromagram[6] = 0.7;
+                    chromagram[9] = 0.7;
+                    amplitude = 0.8;
+                    break;
+                case 'chromatic':
+                    chromagram.fill(0.5);
+                    amplitude = 0.9;
+                    break;
+                case 'single-c':
+                    chromagram[0] = 1.0;
+                    amplitude = 0.6;
+                    break;
+            }
+            document.getElementById('amplitude').value = amplitude * 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        };
+
+        // Controls
+        document.getElementById('amplitude').addEventListener('input', (e) => {
+            amplitude = e.target.value / 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        });
+
+        document.getElementById('bloom').addEventListener('input', (e) => {
+            bloomStrength = e.target.value / 100;
+            bloomPass.strength = bloomStrength;
+            document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
+        });
+
+        document.getElementById('emissive').addEventListener('input', (e) => {
+            emissiveIntensity = e.target.value / 10;
+            lgpMaterial.emissiveIntensity = emissiveIntensity;
+            document.getElementById('emissive-value').textContent = emissiveIntensity.toFixed(1);
+        });
+
+        // FPS counter
+        let lastTime = Date.now();
+        let frames = 0;
+        setInterval(() => {
+            const fps = Math.round(frames * 1000 / (Date.now() - lastTime));
+            document.getElementById('fps').textContent = fps;
+            frames = 0;
+            lastTime = Date.now();
+        }, 1000);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            snapwave_step();
+            updateSurfaceTexture();
+
+            if (controls.enabled) {
+                controls.update();
+            }
+
+            composer.render();
+            frames++;
+        }
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Load default preset
+        loadPreset('cmajor');
+
+        // Start
+        animate();
+    </script>
+
+
+</body></html>
