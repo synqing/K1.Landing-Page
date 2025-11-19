@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<!-- saved from url=(0096)file:///Users/spectrasynq/Workspace_Management/Software/K1.Landing-Page/snapwave-3d-preview.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K1 Lightwave - Premium PBR Simulator</title>
+    <link href="./K1 Lightwave v1.0 - Premium PBR Simulator_files/css2" rel="stylesheet">
+    <style>
+        /* Modernized, High-End UI Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050505; /* Darker background for maximum contrast */
+            color: #FFFFFF;
+            overflow: hidden;
+        }
+
+        #info {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(10, 10, 15, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(30px);
+            max-width: 320px;
+            z-index: 100;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 24px;
+            color: #FFB84D;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #9999aa;
+            font-size: 12px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            font-size: 11px;
+            color: #FFB84D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 6px;
+            color: #9999aa;
+        }
+
+        .slider-label .note-name {
+            font-weight: 500;
+            color: #E6E9EF;
+        }
+
+        .slider-label .note-value {
+            color: #6EE7F3;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #FFB84D;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #E6E9EF;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 2px 0;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #FFB84D;
+        }
+
+        button.active {
+            background: #FFB84D;
+            color: #050505;
+            font-weight: 600;
+            border-color: #FFB84D;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stats {
+            font-size: 10px;
+            color: #9999aa;
+            line-height: 1.6;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFB84D;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 200;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"><canvas data-engine="three.js r164" width="5424" height="2794" style="display: block; width: 2712px; height: 1397px; touch-action: none;"></canvas></div>
+    <div id="loading" style="display: none;">LOADING HDRI...</div>
+
+    <div id="info">
+        <h1>K1 LIGHTWAVE</h1>
+        <div class="subtitle">
+            PBR Simulation • Shader-based Organic Diffusion • HDR Lighting • ACES Filmic Rendering.
+        </div>
+
+        <div class="control-group">
+            <h3>Presets</h3>
+            <div class="button-grid">
+                <button onclick="loadPreset(&#39;cmajor&#39;)">C Major</button>
+                <button onclick="loadPreset(&#39;dim7&#39;)">Dim 7th</button>
+                <button onclick="loadPreset(&#39;single-c&#39;)">Single C</button>
+                <button onclick="loadPreset(&#39;chromatic&#39;)">Chromatic</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Input</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Energy (Amplitude)</span>
+                    <span class="note-value" id="amplitude-value">0.70</span>
+                </div>
+                <input type="range" id="amplitude" min="0" max="100" value="70">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Light Physics</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Diffusion Spread</span>
+                    <span class="note-value" id="diffusion-value">0.27</span>
+                </div>
+                <input type="range" id="diffusion" min="10" max="100" value="60">
+            </div>
+             <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Edge Falloff (Curve)</span>
+                    <span class="note-value" id="falloff-value">1.50</span>
+                </div>
+                <input type="range" id="falloff" min="50" max="400" value="150">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Rendering</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Bloom Strength</span>
+                    <span class="note-value" id="bloom-value">0.1</span>
+                </div>
+                <input type="range" id="bloom" min="0" max="300" value="100">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span class="note-name">Glow Intensity (HDR)</span>
+                    <span class="note-value" id="emissive-value">10.2</span>
+                </div>
+                <input type="range" id="emissive" min="10" max="150" value="50">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Camera</h3>
+            <div class="button-grid" id="camera-controls">
+                <button id="cam-front" onclick="setCamera(&#39;front&#39;)">Front</button>
+                <button id="cam-angle" class="" onclick="setCamera(&#39;angle&#39;)">3/4 View</button>
+                <button id="cam-top" onclick="setCamera(&#39;top&#39;)">Top</button>
+                <button id="cam-orbit" onclick="setCamera(&#39;orbit&#39;)" class="active">Orbit</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div><strong>FPS:</strong> <span id="fps">43</span></div>
+            <div><strong>Oscillation:</strong> <span id="osc">0.98</span></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+        // Configuration
+        const K1_WIDTH = 330;
+        const K1_HEIGHT = 54;
+        const K1_DEPTH = 4;
+        const SCALE = 0.1;
+        const LED_COUNT = 160;
+
+        // State Initialization
+        let chromagram = new Array(12).fill(0);
+        let amplitude = 0.7;
+        let waveform_peak_scaled_last = 0.0;
+        let startTime = Date.now();
+
+        // Rendering State (Defaults optimized for organic glow)
+        let bloomStrength = 1.0;
+        let emissiveIntensity = 5.0; // Higher intensity for HDR pipeline
+        let diffusionFactor = 0.6;
+        let falloff = 1.5;
+        let cameraMode = 'angle'; // Start with an engaging 3/4 view
+
+        // Scene Setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050505);
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // Renderer Setup (Modern PBR Pipeline)
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimized DPR
+
+        // Enable ACES Filmic Tone Mapping for cinematic color and highlights
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Orbit controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enabled = false;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // --- HDR Environment Lighting (IBL) ---
+        // Crucial for realistic PBR reflections on the acrylic.
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
+
+        // Load a neutral studio HDR map (Public Domain via Poly Haven)
+        new RGBELoader()
+            .setDataType(THREE.HalfFloatType)
+            // Using a subtle studio HDR for clean reflections
+            .load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', function (texture) {
+                const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+                scene.environment = envMap; // Apply environment lighting
+                texture.dispose();
+                pmremGenerator.dispose();
+                document.getElementById('loading').style.display = 'none';
+            }, undefined, (error) => {
+                console.error("HDRI Loading Failed. Falling back to basic lighting.", error);
+                // Fallback lighting if HDRI fails
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+                scene.add(ambientLight);
+                document.getElementById('loading').textContent = 'HDRI FAILED';
+            });
+
+
+        // Post-processing Setup (HDR Compatible)
+        const renderTarget = new THREE.WebGLRenderTarget(
+            window.innerWidth, window.innerHeight,
+            {
+                type: THREE.HalfFloatType, // Use HalfFloat for HDR
+            }
+        );
+
+        const composer = new EffectComposer(renderer, renderTarget);
+        composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        // Bloom Pass (Tuned for soft, wide diffusion)
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            bloomStrength,  // strength
+            0.8,            // radius (wide diffusion)
+            0.01            // threshold (low threshold to capture subtle glow)
+        );
+        composer.addPass(bloomPass);
+
+        // Output pass (Applies Tone Mapping correctly in the modern pipeline)
+        const outputPass = new OutputPass();
+        composer.addPass(outputPass);
+
+
+        // --- K1 Light Guide Plate Setup ---
+
+        const lgpGeometry = new THREE.BoxGeometry(K1_WIDTH * SCALE, K1_HEIGHT * SCALE, K1_DEPTH * SCALE);
+
+        // 1D Texture for LED data (Efficient data transfer to GPU)
+        const ledData = new Uint8Array(LED_COUNT * 4);
+        const ledTexture = new THREE.DataTexture(ledData, LED_COUNT, 1, THREE.RGBAFormat);
+        // LinearFilter enables smooth interpolation between LEDs in the shader (Horizontal smoothness)
+        ledTexture.minFilter = THREE.LinearFilter;
+        ledTexture.magFilter = THREE.LinearFilter;
+        ledTexture.needsUpdate = true;
+
+        // Premium Frosted Acrylic Material (Physical simulation)
+        const lgpMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            roughness: 0.3,          // Frosted surface finish
+            metalness: 0.0,
+            transmission: 0.90,      // How much light passes through the material
+            ior: 1.49,               // Index of Refraction for Acrylic
+            thickness: K1_DEPTH * SCALE,
+            side: THREE.DoubleSide,
+            // Add a clearcoat for a polished, premium finish over the frost
+            clearcoat: 0.8,
+            clearcoatRoughness: 0.1
+        });
+
+        // Extend the material with Custom Shader Logic for Organic Diffusion
+        // This is where the light propagation is simulated on the GPU.
+        lgpMaterial.onBeforeCompile = (shader) => {
+            // Store reference for uniform updates later
+            lgpMaterial.userData.shader = shader;
+
+            // Pass uniforms (data and settings) to the shader
+            shader.uniforms.ledTexture = { value: ledTexture };
+            shader.uniforms.diffusionFactor = { value: diffusionFactor };
+            shader.uniforms.falloff = { value: falloff };
+            shader.uniforms.emissiveIntensityDynamic = { value: emissiveIntensity };
+
+            // Vertex shader: Ensure UVs are passed to the fragment shader
+            shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>\nvarying vec2 vUv;`);
+            shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>\nvUv = uv;`);
+
+            // Fragment shader: The core diffusion simulation model
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <common>',
+                `
+                #include <common>
+                uniform sampler2D ledTexture;
+                uniform float diffusionFactor;
+                uniform float falloff;
+                uniform float emissiveIntensityDynamic;
+                varying vec2 vUv;
+
+                // Organic Light Diffusion Model (GPU Accelerated, Dual Edge-Lit)
+                vec3 getDiffusedLight(vec2 uv) {
+                    // 1. Sample LED color (smoothly along X axis due to LinearFilter)
+                    vec3 color = texture2D(ledTexture, vec2(uv.x, 0.5)).rgb;
+
+                    // 2. Calculate distance from top (1.0) and bottom (0.0) edges
+                    float distTop = 1.0 - uv.y;
+                    float distBottom = uv.y;
+
+                    // 3. Simulate attenuation (Flexible falloff model)
+                    // 'smoothstep' defines the maximum distance the light travels based on 'diffusionFactor'.
+                    // 'pow' controls the steepness (curve) of the falloff.
+                    float attenuationTop = pow(1.0 - smoothstep(0.0, diffusionFactor, distTop), falloff);
+                    float attenuationBottom = pow(1.0 - smoothstep(0.0, diffusionFactor, distBottom), falloff);
+
+                    // 4. Combine light from both edges.
+                    // Using max() creates a visually compelling interaction where the brightest source dominates.
+                    float attenuation = max(attenuationTop, attenuationBottom);
+
+                    // 5. Refinement: Simulate the 'unified glowing plane' effect.
+                    // Create a subtle parabolic gradient across the vertical axis to blend the center smoothly.
+                    float verticalGradient = 1.0 - pow(abs(uv.y - 0.5) * 2.0, 4.0);
+
+                    // Blend edge attenuation with the overall gradient for a smoother look.
+                    attenuation = mix(attenuation, verticalGradient, 0.2);
+
+                    return color * attenuation;
+                }
+                `
+            );
+
+            // Inject the diffusion calculation into the material's emissive component
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <emissivemap_fragment>',
+                `
+                // Calculate the light contribution from the Lightwave engine
+                vec3 lightwaveEmission = getDiffusedLight(vUv);
+
+                // The emissive component drives the visual brightness and the bloom effect.
+                // We multiply by the dynamic intensity, pushing the values into the HDR range.
+                totalEmissiveRadiance = lightwaveEmission * emissiveIntensityDynamic;
+                `
+            );
+
+             // Enhance the look by simulating internal illumination (Sub-surface scattering approximation)
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <dithering_fragment>',
+                `
+                #include <dithering_fragment>
+                // Add subtle internal scattering visualization (adds depth to the frosted material)
+                vec3 internalIllumination = getDiffusedLight(vUv) * 0.15;
+                gl_FragColor.rgb += internalIllumination;
+                `
+            );
+        };
+
+        const lgpMesh = new THREE.Mesh(lgpGeometry, lgpMaterial);
+        scene.add(lgpMesh);
+
+
+        // LED state (Internal representation uses 16-bit for higher dynamic range before tone mapping)
+        // Note: The current simulation assumes both edges receive the same data.
+        let ch1_leds = new Array(LED_COUNT).fill(null).map(() => ({r: 0, g: 0, b: 0}));
+
+        // Helper functions (Optimized HSV to RGB)
+        function hsv_to_rgb(h, s, v) {
+            let r, g, b, i, f, p, q, t;
+            i = Math.floor(h * 6);
+            f = h * 6 - i;
+            p = v * (1 - s);
+            q = v * (1 - f * s);
+            t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0: r = v, g = t, b = p; break;
+                case 1: r = q, g = v, b = p; break;
+                case 2: r = p, g = v, b = t; break;
+                case 3: r = p, g = q, b = v; break;
+                case 4: r = t, g = p, b = v; break;
+                case 5: r = v, g = p, b = q; break;
+            }
+            // Return 16-bit color values (0-65535)
+            return {
+                r: Math.round(r * 65535),
+                g: Math.round(g * 65535),
+                b: Math.round(b * 65535)
+            };
+        }
+
+        // Snapwave algorithm (Generates the input LED patterns)
+        // This logic remains largely the same as it defines the input behavior.
+        function snapwave_step() {
+            const SQUARE_ITER = 2.0;
+            const SATURATION = 1.0;
+
+            // Smooth the amplitude input over time
+            waveform_peak_scaled_last = amplitude * 0.02 + waveform_peak_scaled_last * 0.98;
+
+            let current_sum_color = {r: 0, g: 0, b: 0};
+            let total_magnitude = 0.0;
+
+            // Calculate the dominant color based on the chromagram
+            for (let c = 0; c < 12; c++) {
+                let prog = c / 12.0;
+                let bright = chromagram[c];
+
+                // Enhance contrast
+                for (let s = 0; s < Math.floor(SQUARE_ITER); s++) {
+                    bright *= bright;
+                }
+
+                if (bright > 0.05) {
+                    let note_col = hsv_to_rgb(prog, SATURATION, bright);
+                    current_sum_color.r += note_col.r;
+                    current_sum_color.g += note_col.g;
+                    current_sum_color.b += note_col.b;
+                    total_magnitude += bright;
+                }
+            }
+
+            if (total_magnitude > 0.01) {
+                // Normalize and apply magnitude
+                current_sum_color.r = (current_sum_color.r / total_magnitude) * total_magnitude;
+                current_sum_color.g = (current_sum_color.g / total_magnitude) * total_magnitude;
+                current_sum_color.b = (current_sum_color.b / total_magnitude) * total_magnitude;
+            }
+
+            // Calculate oscillation (movement)
+            let oscillation = 0.0;
+            let millis = Date.now() - startTime;
+
+            for (let i = 0; i < 12; i++) {
+                if (chromagram[i] > 0.1) {
+                    // Frequency of oscillation depends on the note
+                    oscillation += chromagram[i] * Math.sin(millis * 0.001 * (1.0 + i * 0.5));
+                }
+            }
+
+            oscillation = Math.tanh(oscillation * 2.0);
+
+            // Mix oscillation with amplitude
+            let amp = oscillation * waveform_peak_scaled_last * 0.7;
+            amp = Math.max(-1.0, Math.min(1.0, amp));
+
+            // Calculate position of the light 'dot'
+            let center = LED_COUNT / 2;
+            let pos = Math.round(center + amp * (LED_COUNT / 2.0));
+            pos = Math.max(0, Math.min(LED_COUNT - 1, pos));
+
+            // Set the new dot (Applied to both edges implicitly via the shader setup)
+            ch1_leds[pos] = {...current_sum_color};
+
+            // --- Fading/Trails (Symmetrical Fading) ---
+            const HALF = LED_COUNT / 2;
+            let abs_amp = Math.min(1.0, Math.abs(waveform_peak_scaled_last));
+
+            // Fade faster when amplitude (energy) is high, creating dynamic trails
+            let max_fade_reduction = 0.15;
+            let fade_amount = 1.0 - (max_fade_reduction * abs_amp);
+
+            // Apply fading and mirroring (Center-Origin)
+            for (let i = 0; i < HALF; i++) {
+                ch1_leds[i].r *= fade_amount;
+                ch1_leds[i].g *= fade_amount;
+                ch1_leds[i].b *= fade_amount;
+                ch1_leds[LED_COUNT - 1 - i] = {...ch1_leds[i]}; // Mirror
+            }
+
+            document.getElementById('osc').textContent = oscillation.toFixed(2);
+        }
+
+        // Update the 1D LED texture (Prepares data for the GPU)
+        function updateLEDTexture() {
+            const data = ledData;
+            // Gamma correction (approx 2.2) for perceptual linearity when converting from linear internal values to sRGB texture.
+            const gamma = 1.0 / 2.2;
+
+            for (let i = 0; i < LED_COUNT; i++) {
+                const led = ch1_leds[i];
+
+                // Convert from 16-bit (0-65535) to normalized float (0-1), apply gamma, then scale to 8-bit (0-255)
+                const r = Math.pow(Math.min(1.0, led.r / 65535), gamma) * 255;
+                const g = Math.pow(Math.min(1.0, led.g / 65535), gamma) * 255;
+                const b = Math.pow(Math.min(1.0, led.b / 65535), gamma) * 255;
+
+                const idx = i * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = 255; // Alpha
+            }
+
+            // Signal Three.js to upload the texture to the GPU
+            ledTexture.needsUpdate = true;
+        }
+
+        // Camera presets
+        window.setCamera = function(mode) {
+            // Select only the camera control buttons
+            document.querySelectorAll('#camera-controls button').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('cam-' + mode);
+            if (btn) btn.classList.add('active');
+
+            controls.enabled = false;
+            cameraMode = mode;
+
+            switch(mode) {
+                case 'front':
+                    camera.position.set(0, 0, 50);
+                    break;
+                case 'angle':
+                    // A dynamic 3/4 view to showcase depth and reflections
+                    camera.position.set(30, 15, 40);
+                    break;
+                case 'top':
+                    camera.position.set(0.1, 50, 0); // Slight offset to prevent gimbal lock issues
+                    break;
+                case 'orbit':
+                    controls.enabled = true;
+                    return; // Don't force position/target when enabling orbit
+            }
+            controls.target.set(0,0,0);
+            controls.update();
+        };
+
+        // Presets (Input data)
+        window.loadPreset = function(name) {
+            chromagram.fill(0);
+            switch(name) {
+                case 'cmajor':
+                    chromagram[0] = 0.8; chromagram[4] = 0.6; chromagram[7] = 0.7;
+                    amplitude = 0.7;
+                    break;
+                case 'dim7':
+                    chromagram[0] = 0.7; chromagram[3] = 0.7; chromagram[6] = 0.7; chromagram[9] = 0.7;
+                    amplitude = 0.8;
+                    break;
+                case 'chromatic':
+                    chromagram.fill(0.5);
+                    amplitude = 0.9;
+                    break;
+                case 'single-c':
+                    chromagram[0] = 1.0;
+                    amplitude = 0.6;
+                    break;
+            }
+            document.getElementById('amplitude').value = amplitude * 100;
+            document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+        };
+
+        // Controls Event Listeners
+        function setupControls() {
+            document.getElementById('amplitude').addEventListener('input', (e) => {
+                amplitude = e.target.value / 100;
+                document.getElementById('amplitude-value').textContent = amplitude.toFixed(2);
+            });
+
+            document.getElementById('bloom').addEventListener('input', (e) => {
+                bloomStrength = e.target.value / 100;
+                bloomPass.strength = bloomStrength;
+                document.getElementById('bloom-value').textContent = bloomStrength.toFixed(1);
+            });
+
+            document.getElementById('emissive').addEventListener('input', (e) => {
+                emissiveIntensity = e.target.value / 10;
+                // Update the custom shader uniform in real-time
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.emissiveIntensityDynamic.value = emissiveIntensity;
+                }
+                document.getElementById('emissive-value').textContent = emissiveIntensity.toFixed(1);
+            });
+
+            // New Physics Controls Listeners
+            document.getElementById('diffusion').addEventListener('input', (e) => {
+                diffusionFactor = e.target.value / 100;
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.diffusionFactor.value = diffusionFactor;
+                }
+                document.getElementById('diffusion-value').textContent = diffusionFactor.toFixed(2);
+            });
+
+            document.getElementById('falloff').addEventListener('input', (e) => {
+                falloff = e.target.value / 100;
+                if (lgpMaterial.userData.shader) {
+                    lgpMaterial.userData.shader.uniforms.falloff.value = falloff;
+                }
+                document.getElementById('falloff-value').textContent = falloff.toFixed(2);
+            });
+        }
+
+        // FPS counter
+        let lastTime = performance.now();
+        let frames = 0;
+        setInterval(() => {
+            const now = performance.now();
+            const delta = now - lastTime;
+            if (delta > 0) {
+                const fps = Math.round(frames * 1000 / delta);
+                document.getElementById('fps').textContent = fps;
+            }
+            frames = 0;
+            lastTime = now;
+        }, 1000);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 1. Generate LED data (CPU)
+            snapwave_step();
+            // 2. Update the texture data and upload to GPU
+            updateLEDTexture();
+
+            if (controls.enabled) {
+                controls.update();
+            }
+
+            // 3. Render the scene using post-processing composer (GPU)
+            // The custom shader executes here, calculating diffusion.
+            composer.render();
+            frames++;
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            // Update composer and render target sizes
+            composer.setSize(width, height);
+            const dpr = Math.min(window.devicePixelRatio, 2);
+            renderer.setPixelRatio(dpr);
+            composer.setPixelRatio(dpr);
+        });
+
+        // Initialize
+        setupControls();
+        loadPreset('cmajor');
+        setCamera(cameraMode); // Set initial camera
+
+        // Start
+        animate();
+    </script>
+
+
+</body></html>
